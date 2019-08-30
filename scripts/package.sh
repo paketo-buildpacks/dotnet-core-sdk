@@ -28,9 +28,8 @@ if [[ ! -z "$archive" ]]; then #package as archive
 fi
 
 if [[ -z "$version" ]]; then #version not provided, use latest git tag
-#    git_tag=$(git describe --abbrev=0 --tags)
-#    version=${git_tag:1}
-     version="v0.0.1"
+    git_tag=$(git describe --abbrev=0 --tags)
+    version=${git_tag:1}
 fi
 
 args="${args} -version ${version}"
