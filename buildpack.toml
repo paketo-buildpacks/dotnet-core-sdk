@@ -1,0 +1,22 @@
+api = "0.2"
+
+[buildpack]
+id = "org.cloudfoundry.dotnet-core-sdk-cnb"
+name = ".NET SDK Buildpack"
+version = "{{ .Version }}"
+
+[metadata]
+include_files = ["bin/build","bin/detect","buildpack.toml","go.mod","go.sum"]
+pre_package = "./scripts/build.sh"
+
+[[metadata.dependencies]]
+id = "dotnet-sdk"
+sha256 = "f75ce2d94eb8e6da4a71a7f5e694d8b924c87fa9b989a0883341a55200c9836e"
+source = "https://github.com/dotnet/cli/archive/729b316c13bf9289b033272c07c7dfd046ffbcaf.tar.gz"
+source_sha256 = "1e2463cc161ae8f516aa047b09bef29aff6732f8346626b312b3acd75e9191ba"
+stacks = ["org.cloudfoundry.stacks.cflinuxfs3"]
+uri = "https://buildpacks.cloudfoundry.org/dependencies/dotnet-sdk/dotnet-sdk.2.2.401.linux-amd64-cflinuxfs3-f75ce2d9.tar.xz"
+version = "2.2.401"
+
+[[stacks]]
+id = "org.cloudfoundry.stacks.cflinuxfs3"
