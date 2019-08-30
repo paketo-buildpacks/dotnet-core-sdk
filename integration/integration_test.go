@@ -47,11 +47,13 @@ func TestIntegration(t *testing.T) {
 func testIntegration(t *testing.T, _ spec.G, it spec.S) {
 	var (
 		Expect func(interface{}, ...interface{}) Assertion
+		Eventually func(interface{}, ...interface{}) AsyncAssertion
 		app    *dagger.App
 	)
 
 	it.Before(func() {
 		Expect = NewWithT(t).Expect
+		Eventually = NewWithT(t).Eventually
 	})
 
 	it.After(func() {
@@ -68,10 +70,10 @@ func testIntegration(t *testing.T, _ spec.G, it spec.S) {
 
 		Expect(app.StartWithCommand("dotnet simple_web_app.dll --server.urls http://0.0.0.0:${PORT}")).To(Succeed())
 
-		body, _, err := app.HTTPGet("/")
-		Expect(err).NotTo(HaveOccurred())
-		Expect(body).To(ContainSubstring("Welcome"))
-
+		Eventually(func() string {
+			body, _, _ := app.HTTPGet("/")
+			return body
+		}).Should(ContainSubstring("Welcome"))
 	})
 
 }
