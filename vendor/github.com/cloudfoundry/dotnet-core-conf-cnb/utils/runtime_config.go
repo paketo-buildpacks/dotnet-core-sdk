@@ -13,6 +13,7 @@ import (
 )
 
 type RuntimeConfig struct {
+	isPresent  bool
 	config     configJSON
 	appRoot    string
 	BinaryName string
@@ -32,23 +33,26 @@ func NewRuntimeConfig(appRoot string) (*RuntimeConfig, error) {
 	runtimeConfigPath, err := getRuntimeConfigPath(appRoot)
 	if err != nil {
 		return &RuntimeConfig{}, err
-	}
-
-	if runtimeConfigPath == "" {
+	} else if runtimeConfigPath == "" {
 		return &RuntimeConfig{}, nil
 	}
 
-	config, err := createRuntimeConfig(runtimeConfigPath)
+	config, err := parseRuntimeConfig(runtimeConfigPath)
 	if err != nil {
 		return &RuntimeConfig{}, err
 	}
 
 	return &RuntimeConfig{
+		isPresent:  true,
 		config:     config,
 		appRoot:    appRoot,
 		BinaryName: getBinaryName(runtimeConfigPath),
 		Version:    config.RuntimeOptions.Framework.Version,
 	}, nil
+}
+
+func (r *RuntimeConfig) IsPresent() bool {
+	return r.isPresent
 }
 
 func (r *RuntimeConfig) HasRuntimeDependency() bool {
@@ -96,20 +100,6 @@ func isExecutable(fileName string) (bool, error) {
 		return true, nil
 	}
 	return false, nil
-}
-
-func createRuntimeConfig(path string) (configJSON, error) {
-	var err error
-	runtimeJSON := configJSON{}
-
-	if path != "" {
-		runtimeJSON, err = parseRuntimeConfig(path)
-		if err != nil {
-			return configJSON{}, err
-		}
-	}
-
-	return runtimeJSON, nil
 }
 
 func getRuntimeConfigPath(appRoot string) (string, error) {

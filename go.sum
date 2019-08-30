@@ -12,6 +12,8 @@ github.com/cloudfoundry/dagger v0.0.0-20190821204652-0269a001ee97 h1:xTTXdk/T3XK
 github.com/cloudfoundry/dagger v0.0.0-20190821204652-0269a001ee97/go.mod h1:PXeUHc4d2vAVO/31jFE6uD09w/yFfzs4kcayAVEvnEI=
 github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.14 h1:gLxYyEHcbGqRzxZ8TnfcdLKZ75pTItPxktzfObdROiw=
 github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.14/go.mod h1:1S2zSi59oq51109ubuGqzQ94S2Q+oU/FZDRzUvyGLXA=
+github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.18 h1:SC/zFa5BuTmf9O3LlZi6EyDmaOhRQuVEmV/+D9kGAeA=
+github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.18/go.mod h1:u8EWOhBv7KMSjF1U2CjT5q+Io4hlX29W8HyNADiS/wc=
 github.com/cloudfoundry/libcfbuildpack v1.76.0/go.mod h1:QGm+nzixn579dvQNlS7ZQET541y2hEpZ0/5uNxkQ04Y=
 github.com/cloudfoundry/libcfbuildpack v1.82.1-0.20190815154108-ebdea9feb73d/go.mod h1:c3ag+OHs0rnwh7C7kMXw3xsGRVLDvm9LfdoRR5tAnko=
 github.com/cloudfoundry/libcfbuildpack v1.84.0 h1:Z94PAXmryUyGRlq0xXmEwxVmpC8sN713H9DR4lwRBVc=
