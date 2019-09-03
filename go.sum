@@ -8,6 +8,8 @@ github.com/buildpack/libbuildpack v1.22.0 h1:rwavXaBksbJ3K+vvtpUSsmrxwpIkwvEBPTn
 github.com/buildpack/libbuildpack v1.22.0/go.mod h1:ZQhXsfWdbeglOBaeF3Ea5TSppKih/bVVJxNLX5yg2pg=
 github.com/cloudfoundry/dagger v0.0.0-20190821204652-0269a001ee97 h1:xTTXdk/T3XK3EY2YJ+6kG1yKPUuKr5kKGk0IhztmYIQ=
 github.com/cloudfoundry/dagger v0.0.0-20190821204652-0269a001ee97/go.mod h1:PXeUHc4d2vAVO/31jFE6uD09w/yFfzs4kcayAVEvnEI=
+github.com/cloudfoundry/dagger v0.0.0-20190903212040-da6cedf1fbcb h1:5oAtaOdqr3V+3Q1RUq9zDnomY+i0EydlYshKbBH5aGg=
+github.com/cloudfoundry/dagger v0.0.0-20190903212040-da6cedf1fbcb/go.mod h1:PXeUHc4d2vAVO/31jFE6uD09w/yFfzs4kcayAVEvnEI=
 github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.18 h1:SC/zFa5BuTmf9O3LlZi6EyDmaOhRQuVEmV/+D9kGAeA=
 github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.18/go.mod h1:u8EWOhBv7KMSjF1U2CjT5q+Io4hlX29W8HyNADiS/wc=
 github.com/cloudfoundry/libcfbuildpack v1.76.0/go.mod h1:QGm+nzixn579dvQNlS7ZQET541y2hEpZ0/5uNxkQ04Y=
