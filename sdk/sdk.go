@@ -46,9 +46,10 @@ func NewContributor(context build.Build) (Contributor, bool, error) {
 
 func (c Contributor) Contribute() error {
 
+	contributedSDK := false
 	err := c.sdkLayer.Contribute(func(artifact string, layer layers.DependencyLayer) error {
 		layer.Logger.Body("Expanding to %s", layer.Root)
-
+		contributedSDK = true
 		if err := helper.ExtractTarXz(artifact, layer.Root, 0); err != nil {
 			return err
 		}
@@ -57,6 +58,10 @@ func (c Contributor) Contribute() error {
 	}, getFlags(c.plan.Metadata)...)
 
 	err = c.sdkSymlinkLayer.Contribute(c.context.Buildpack, func(layer layers.Layer) error {
+		if !contributedSDK {
+			return nil
+		}
+
 		layer.Logger.Body("Symlinking runtime libraries")
 		pathToRuntime := os.Getenv("DOTNET_ROOT")
 		runtimeFiles, err := filepath.Glob(filepath.Join(pathToRuntime, "shared", "*"))
@@ -69,7 +74,6 @@ func (c Contributor) Contribute() error {
 			}
 		}
 
-		// make new symlink for host from sdk layer
 		hostDir := filepath.Join(c.sdkLayer.Root, "host")
 
 		if err := utils.CreateValidSymlink(hostDir, filepath.Join(layer.Root, filepath.Base(hostDir))); err != nil {
@@ -78,7 +82,6 @@ func (c Contributor) Contribute() error {
 		layer.Logger.Body("Moving dotnet driver from %s", c.sdkLayer.Root)
 
 
-		// copy dotnet file from sdk
 		if err := helper.CopyFile(filepath.Join(c.sdkLayer.Root, "dotnet"), filepath.Join(layer.Root, "dotnet")); err != nil {
 			return err
 		}

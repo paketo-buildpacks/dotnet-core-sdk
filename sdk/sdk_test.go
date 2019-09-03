@@ -1,16 +1,20 @@
 package sdk
 
 import (
+	"bufio"
+	"bytes"
+	lbplogger "github.com/buildpack/libbuildpack/logger"
 	"github.com/cloudfoundry/libcfbuildpack/buildpackplan"
 	"github.com/cloudfoundry/libcfbuildpack/layers"
-	. "github.com/onsi/gomega"
-	"io/ioutil"
-	"os"
-
+	"github.com/cloudfoundry/libcfbuildpack/logger"
 	"github.com/cloudfoundry/libcfbuildpack/test"
+	. "github.com/onsi/gomega"
 	"github.com/sclevine/spec"
 	"github.com/sclevine/spec/report"
+	"io/ioutil"
+	"os"
 	"path/filepath"
+	"regexp"
 	"testing"
 )
 
@@ -21,7 +25,7 @@ func TestUnitSdk(t *testing.T) {
 func testSdk(t *testing.T, when spec.G, it spec.S) {
 	var (
 		factory                 *test.BuildFactory
-		stubDotnetSDKFixture      = filepath.Join("testdata", "stub-sdk-dependency.tar.xz")
+		stubDotnetSDKFixture    = filepath.Join("testdata", "stub-sdk-dependency.tar.xz")
 		fakeSymlinkTarget       string
 		runtimeSymlinkLayerPath string
 		symlinkLayer            layers.Layer
@@ -35,7 +39,6 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 		factory.AddDependency(DotnetSDK, stubDotnetSDKFixture)
 		symlinkLayer = factory.Build.Layers.Layer("driver-symlinks")
 
-
 		fakeSymlinkTarget, err = ioutil.TempDir("", "")
 		runtimeSymlinkLayerPath, err = ioutil.TempDir(os.TempDir(), "runtime")
 		Expect(err).ToNot(HaveOccurred())
@@ -46,7 +49,7 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 		os.Setenv("DOTNET_ROOT", runtimeSymlinkLayerPath)
 	})
 
-	it.After(func () {
+	it.After(func() {
 		os.RemoveAll(fakeSymlinkTarget)
 		os.RemoveAll(runtimeSymlinkLayerPath)
 		os.Unsetenv("DOTNET_ROOT")
@@ -69,6 +72,38 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 	})
 
 	when("Contribute", func() {
+		it("does not rebuild symlink layers when there is no SDK contribution", func() {
+
+			outputBytes := bytes.Buffer{}
+			debugBytes := bytes.Buffer{}
+			sublogger := lbplogger.NewLogger(bufio.NewWriter(&debugBytes), bufio.NewWriter(&outputBytes))
+
+			factory.AddPlan(buildpackplan.Plan{Name: DotnetSDK})
+			contributor1, willContribute, err := NewContributor(factory.Build)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(willContribute).To(BeTrue())
+
+			contributor1.sdkSymlinkLayer.Logger = logger.Logger{sublogger}
+
+			Expect(contributor1.Contribute()).To(Succeed())
+			stripedOutputFirst := StripANSIColor(outputBytes.String())
+			Expect(stripedOutputFirst).To(ContainSubstring("Symlinking runtime libraries"))
+
+			outputBytes.Reset()
+			debugBytes.Reset()
+
+			contributor2, willContribute, err := NewContributor(factory.Build)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(willContribute).To(BeTrue())
+
+			contributor2.sdkSymlinkLayer.Logger = logger.Logger{sublogger}
+			Expect(contributor2.Contribute()).To(Succeed())
+
+			stripedOutputSecond := StripANSIColor(outputBytes.String())
+			Expect(stripedOutputSecond).ToNot(ContainSubstring("Symlinking runtime libraries"))
+
+		})
+
 		it("appends dotnet driver to path, installs the runtime dependency", func() {
 			factory.AddPlan(buildpackplan.Plan{Name: DotnetSDK})
 
@@ -77,11 +112,11 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 
 			Expect(dotnetRuntimeContributor.Contribute()).To(Succeed())
 
-			ExpectSymlink(filepath.Join(symlinkLayer.Root, "host"),t)
+			ExpectSymlink(filepath.Join(symlinkLayer.Root, "host"), t)
 
 			Expect(filepath.Join(symlinkLayer.Root, "shared")).To(BeADirectory())
 
-			ExpectSymlink(filepath.Join(symlinkLayer.Root, "shared", "Microsoft.NETCore.App"),t)
+			ExpectSymlink(filepath.Join(symlinkLayer.Root, "shared", "Microsoft.NETCore.App"), t)
 
 			Expect(symlinkLayer).To(test.HaveAppendPathSharedEnvironment("PATH", filepath.Join(symlinkLayer.Root)))
 			Expect(symlinkLayer).To(test.HaveOverrideSharedEnvironment("DOTNET_ROOT", filepath.Join(symlinkLayer.Root)))
@@ -130,6 +165,7 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 
 			Expect(dotnetRuntimeContributor.Contribute()).To(Succeed())
 
+
 			layer := factory.Build.Layers.Layer(DotnetSDK)
 			Expect(layer).To(test.HaveLayerMetadata(false, false, true))
 		})
@@ -155,4 +191,10 @@ func ExpectSymlink(path string, t *testing.T) {
 	hostFileInfo, err := os.Stat(path)
 	Expect(err).ToNot(HaveOccurred())
 	Expect(hostFileInfo.Mode() & os.ModeSymlink).ToNot(Equal(0))
+}
+
+func StripANSIColor(str string) string {
+	ansi := "[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))"
+	re := regexp.MustCompile(ansi)
+	return re.ReplaceAllString(str, "")
 }
