@@ -65,6 +65,10 @@ func (c Contributor) Contribute() error {
 		if err := helper.ExtractTarXz(artifact, layer.Root, 0); err != nil {
 			return err
 		}
+		
+		if err := layer.OverrideBuildEnv("SDK_LOCATION", layer.Root); err != nil {
+			return err
+		}
 
 		return nil
 	}, getFlags(c.plan.Metadata)...)

@@ -118,10 +118,12 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 		it("appends dotnet driver to path, installs the runtime dependency", func() {
 			factory.AddPlan(buildpackplan.Plan{Name: DotnetSDK, Version: "2.2.0"})
 
-			dotnetRuntimeContributor, _, err := NewContributor(factory.Build)
+			dotnetSDKContributor, _, err := NewContributor(factory.Build)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(dotnetRuntimeContributor.Contribute()).To(Succeed())
+			Expect(dotnetSDKContributor.Contribute()).To(Succeed())
+
+			Expect(dotnetSDKContributor.sdkLayer).To(test.HaveOverrideBuildEnvironment("SDK_LOCATION", dotnetSDKContributor.sdkLayer.Root))
 
 			ExpectSymlink(filepath.Join(symlinkLayer.Root, "host"), t)
 
@@ -138,10 +140,10 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 			factory.SetDefaultVersion(DotnetSDK, "0.9")
 			factory.AddPlan(buildpackplan.Plan{Name: DotnetSDK})
 
-			dotnetRuntimeContributor, _, err := NewContributor(factory.Build)
+			dotnetSDKContributor, _, err := NewContributor(factory.Build)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(dotnetRuntimeContributor.Contribute()).To(Succeed())
+			Expect(dotnetSDKContributor.Contribute()).To(Succeed())
 			layer := factory.Build.Layers.Layer(DotnetSDK)
 			Expect(layer).To(test.HaveLayerVersion("0.9"))
 		})
@@ -155,10 +157,10 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 				},
 			})
 
-			dotnetRuntimeContributor, _, err := NewContributor(factory.Build)
+			dotnetSDKContributor, _, err := NewContributor(factory.Build)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(dotnetRuntimeContributor.Contribute()).To(Succeed())
+			Expect(dotnetSDKContributor.Contribute()).To(Succeed())
 
 			layer := factory.Build.Layers.Layer(DotnetSDK)
 			Expect(layer).To(test.HaveLayerMetadata(true, false, false))
@@ -173,10 +175,10 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 				},
 			})
 
-			dotnetRuntimeContributor, _, err := NewContributor(factory.Build)
+			dotnetSDKContributor, _, err := NewContributor(factory.Build)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(dotnetRuntimeContributor.Contribute()).To(Succeed())
+			Expect(dotnetSDKContributor.Contribute()).To(Succeed())
 
 
 			layer := factory.Build.Layers.Layer(DotnetSDK)
