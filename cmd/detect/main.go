@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"github.com/cloudfoundry/dotnet-core-conf-cnb/utils"
 	"github.com/cloudfoundry/dotnet-core-sdk-cnb/sdk"
-	"github.com/pkg/errors"
 	"os"
-	"strings"
 
 	"github.com/buildpack/libbuildpack/buildplan"
 	"github.com/cloudfoundry/libcfbuildpack/detect"
@@ -49,27 +47,20 @@ func runDetect(context detect.Detect) (int, error) {
 		return context.Pass(plan)
 	}
 
-	runtimeVersion := runtimeConfig.Version
-
-	version, majorMinor, err := getLatestCompatibleSDK(runtimeVersion, context)
-	if err != nil {
-		return context.Fail(), err
-	}
-
 	plan.Requires = []buildplan.Required{{
 		Name:     sdk.DotnetSDK,
-		Version:  version,
-		Metadata: buildplan.Metadata{"launch": true},
+		Version:  runtimeConfig.Version,
+		Metadata: buildplan.Metadata{"build": true},
 	},{
 		Name:     "dotnet-runtime",
-		Version:  majorMinor,
+		Version:  runtimeConfig.Version,
 		Metadata: buildplan.Metadata{"build": true, "launch": true},
 	}}
 
 	if hasASPNetDependency{
 		plan.Requires = append(plan.Requires, buildplan.Required{
 			Name:     "dotnet-aspnet",
-			Version:  majorMinor,
+			Version:  runtimeConfig.Version,
 			Metadata: buildplan.Metadata{"build": true, "launch": true},
 		})
 	}
@@ -79,21 +70,5 @@ func runDetect(context detect.Detect) (int, error) {
 
 
 
-func getLatestCompatibleSDK(frameworkVersion string, context detect.Detect) (string, string, error){
-	splitVersion := strings.Split(frameworkVersion, ".")
-	compatibleVersionConstraint := fmt.Sprintf("%s.%s.*", splitVersion[0], splitVersion[1])
 
-	deps, err := context.Buildpack.Dependencies()
-	if err != nil {
-		return "", "", err
-	}
-
-	compatibleVersion, err := deps.Best(sdk.DotnetSDK, compatibleVersionConstraint, context.Stack)
-
-	if err != nil {
-		return "", "", errors.Wrap(err, "no compatible version of the sdk found")
-	}
-
-	return compatibleVersion.Version.Original(), compatibleVersionConstraint, nil
-}
 

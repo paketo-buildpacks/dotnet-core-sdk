@@ -1,1 +1,4 @@
-dotnet-core-sdk-cnb_*
+/*-cnb_*
+/.bin
+/.idea
+/bin

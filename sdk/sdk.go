@@ -1,12 +1,15 @@
 package sdk
 
 import (
+	"fmt"
+	"github.com/Masterminds/semver"
 	"github.com/cloudfoundry/dotnet-core-conf-cnb/utils"
 	"github.com/cloudfoundry/libcfbuildpack/build"
 	"github.com/cloudfoundry/libcfbuildpack/buildpackplan"
 	"github.com/cloudfoundry/libcfbuildpack/helper"
 	"github.com/cloudfoundry/libcfbuildpack/layers"
 	"github.com/cloudfoundry/libcfbuildpack/logger"
+	"github.com/pkg/errors"
 	"os"
 	"path/filepath"
 )
@@ -29,11 +32,20 @@ func NewContributor(context build.Build) (Contributor, bool, error) {
 	if !wantDependency {
 		return Contributor{}, false, nil
 	}
+	version := plan.Version
 
-	dep, err := context.Buildpack.RuntimeDependency(DotnetSDK, plan.Version, context.Stack)
+	if version != "" {
+		version, err = getLatestCompatibleSDK(plan.Version, context)
+		if err != nil {
+			return Contributor{}, false, err
+		}
+	}
+
+	dep, err := context.Buildpack.RuntimeDependency(DotnetSDK, version, context.Stack)
 	if err != nil {
 		return Contributor{}, false, err
 	}
+
 
 	return Contributor{
 		context:         context,
@@ -74,7 +86,7 @@ func (c Contributor) Contribute() error {
 			}
 		}
 
-		hostDir := filepath.Join(c.sdkLayer.Root, "host")
+		hostDir := filepath.Join(pathToRuntime, "host")
 
 		if err := utils.CreateValidSymlink(hostDir, filepath.Join(layer.Root, filepath.Base(hostDir))); err != nil {
 			return err
@@ -95,7 +107,7 @@ func (c Contributor) Contribute() error {
 		}
 
 		return nil
-	}, getFlags(c.plan.Metadata)...)
+	}, layers.Build, layers.Launch)
 
 	if err != nil {
 		return err
@@ -115,4 +127,27 @@ func getFlags(metadata buildpackplan.Metadata) []layers.Flag{
 	}
 	return flagsArray
 }
+
+func getLatestCompatibleSDK(frameworkVersion string, context build.Build) (string, error){
+	splitVersion, err := semver.NewVersion(frameworkVersion)
+	if err != nil {
+		return "", err
+	}
+
+	compatibleVersionConstraint := fmt.Sprintf("%d.%d.*", splitVersion.Major(), splitVersion.Minor())
+
+	deps, err := context.Buildpack.Dependencies()
+	if err != nil {
+		return "", err
+	}
+
+	compatibleVersion, err := deps.Best(DotnetSDK, compatibleVersionConstraint, context.Stack)
+
+	if err != nil {
+		return "",  errors.Wrap(err, "no compatible version of the sdk found")
+	}
+
+	return compatibleVersion.Version.Original(), nil
+}
+
 

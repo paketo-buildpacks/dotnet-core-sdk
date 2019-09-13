@@ -61,11 +61,11 @@ version = "2.2.806"
 				Provides: []buildplan.Provided{{Name: sdk.DotnetSDK}},
 				Requires: []buildplan.Required{{
 					Name:     sdk.DotnetSDK,
-					Version:  "2.2.806",
-					Metadata: buildplan.Metadata{"launch": true},
+					Version:  "2.2.5",
+					Metadata: buildplan.Metadata{"build": true},
 				},{
 					Name: "dotnet-runtime",
-					Version: "2.2.*",
+					Version: "2.2.5",
 					Metadata: buildplan.Metadata{"build": true, "launch": true},
 				}},
 			}))
@@ -90,37 +90,18 @@ version = "2.2.806"
 				Provides: []buildplan.Provided{{Name: sdk.DotnetSDK}},
 				Requires: []buildplan.Required{{
 					Name:     sdk.DotnetSDK,
-					Version:  "2.2.806",
-					Metadata: buildplan.Metadata{"launch": true},
+					Version:  "2.2.5",
+					Metadata: buildplan.Metadata{"build": true},
 				},{
 					Name: "dotnet-runtime",
-					Version: "2.2.*",
+					Version: "2.2.5",
 					Metadata: buildplan.Metadata{"build": true, "launch": true},
 				},{
 					Name: "dotnet-aspnet",
-					Version: "2.2.*",
+					Version: "2.2.5",
 					Metadata: buildplan.Metadata{"build": true, "launch": true},
 				}},
 			}))
-		})
-
-		it("fails when is no compatible sdk for the given runtime", func() {
-			runtimeConfigJSONPath := filepath.Join(factory.Detect.Application.Root, "appName.runtimeconfig.json")
-			Expect(ioutil.WriteFile(runtimeConfigJSONPath, []byte(`
-{
-  "runtimeOptions": {
-    "tfm": "netcoreapp2.2",
-    "framework": {
-      "name": "Microsoft.NETCore.App",
-      "version": "2.1.5"
-    }
-  }
-}
-`), os.ModePerm)).To(Succeed())
-			code, err := runDetect(factory.Detect)
-			Expect(err).To(HaveOccurred())
-			Expect(code).To(Equal(detect.FailStatusCode))
-			Expect(err.Error()).To(ContainSubstring("no compatible version of the sdk found"))
 		})
 
 	})

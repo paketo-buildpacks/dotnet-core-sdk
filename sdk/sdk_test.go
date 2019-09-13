@@ -36,7 +36,7 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 
 		RegisterTestingT(t)
 		factory = test.NewBuildFactory(t)
-		factory.AddDependency(DotnetSDK, stubDotnetSDKFixture)
+		factory.AddDependencyWithVersion(DotnetSDK, "2.2.800", stubDotnetSDKFixture)
 		symlinkLayer = factory.Build.Layers.Layer("driver-symlinks")
 
 		fakeSymlinkTarget, err = ioutil.TempDir("", "")
@@ -44,7 +44,9 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 		Expect(err).ToNot(HaveOccurred())
 
 		Expect(os.MkdirAll(filepath.Join(runtimeSymlinkLayerPath, "shared"), os.ModePerm)).To(Succeed())
+		Expect(os.MkdirAll(filepath.Join(runtimeSymlinkLayerPath, "host"), os.ModePerm)).To(Succeed())
 		Expect(os.Symlink(fakeSymlinkTarget, filepath.Join(runtimeSymlinkLayerPath, "shared", "Microsoft.NETCore.App"))).To(Succeed())
+		Expect(os.Symlink(fakeSymlinkTarget, filepath.Join(runtimeSymlinkLayerPath, "host", "fxr"))).To(Succeed())
 
 		os.Setenv("DOTNET_ROOT", runtimeSymlinkLayerPath)
 	})
@@ -56,12 +58,21 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 	})
 
 	when("runtime.NewContributor", func() {
-		it("returns true if a build plan exists", func() {
-			factory.AddPlan(buildpackplan.Plan{Name: DotnetSDK})
+		it("returns true if a build plan exists and it finds a compatible sdk version", func() {
+			factory.AddPlan(buildpackplan.Plan{Name: DotnetSDK, Version: "2.2.0"})
 
-			_, willContribute, err := NewContributor(factory.Build)
+			contributor, willContribute, err := NewContributor(factory.Build)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(willContribute).To(BeTrue())
+			Expect(contributor.sdkLayer.Dependency.Version.String()).To(Equal("2.2.800"))
+		})
+
+		it("returns false if a build plan exists and it does not find a compatible sdk version", func() {
+			factory.AddPlan(buildpackplan.Plan{Name: DotnetSDK, Version: "2.1.0"})
+
+			_, willContribute, err := NewContributor(factory.Build)
+			Expect(err).To(HaveOccurred())
+			Expect(willContribute).To(BeFalse())
 		})
 
 		it("returns false if a build plan does not exist", func() {
@@ -78,7 +89,7 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 			debugBytes := bytes.Buffer{}
 			sublogger := lbplogger.NewLogger(bufio.NewWriter(&debugBytes), bufio.NewWriter(&outputBytes))
 
-			factory.AddPlan(buildpackplan.Plan{Name: DotnetSDK})
+			factory.AddPlan(buildpackplan.Plan{Name: DotnetSDK, Version: "2.2.0"})
 			contributor1, willContribute, err := NewContributor(factory.Build)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(willContribute).To(BeTrue())
@@ -105,7 +116,7 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 		})
 
 		it("appends dotnet driver to path, installs the runtime dependency", func() {
-			factory.AddPlan(buildpackplan.Plan{Name: DotnetSDK})
+			factory.AddPlan(buildpackplan.Plan{Name: DotnetSDK, Version: "2.2.0"})
 
 			dotnetRuntimeContributor, _, err := NewContributor(factory.Build)
 			Expect(err).NotTo(HaveOccurred())
@@ -138,6 +149,7 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 		it("contributes dotnet runtime to the build layer when included in the build plan", func() {
 			factory.AddPlan(buildpackplan.Plan{
 				Name: DotnetSDK,
+				Version: "2.2.0",
 				Metadata: buildpackplan.Metadata{
 					"build": true,
 				},
@@ -155,6 +167,7 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 		it("contributes dotnet runtime to the launch layer when included in the build plan", func() {
 			factory.AddPlan(buildpackplan.Plan{
 				Name: DotnetSDK,
+				Version: "2.2.0",
 				Metadata: buildpackplan.Metadata{
 					"launch": true,
 				},
