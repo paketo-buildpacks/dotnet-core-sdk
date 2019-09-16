@@ -29,6 +29,15 @@ version = "2.1.509"
 
 [[metadata.dependencies]]
 id = "dotnet-sdk"
+sha256 = "9157ae93a543b88168d913c97240bf602ffb525170c478414df19bec63a8b51b"
+source = "https://github.com/dotnet/cli/archive/c81e08b11d740793f196d8c6b2f1e90557f7c367.tar.gz"
+source_sha256 = "43baf353e8de58687f29b0d5f107c1803855a316e3062459d1ee1c647074dcf9"
+stacks = ["org.cloudfoundry.stacks.cflinuxfs3"]
+uri = "https://buildpacks.cloudfoundry.org/dependencies/dotnet-sdk/dotnet-sdk.2.1.606.linux-amd64-cflinuxfs3-9157ae93.tar.xz"
+version = "2.1.606"
+
+[[metadata.dependencies]]
+id = "dotnet-sdk"
 sha256 = "f75ce2d94eb8e6da4a71a7f5e694d8b924c87fa9b989a0883341a55200c9836e"
 source = "https://github.com/dotnet/cli/archive/729b316c13bf9289b033272c07c7dfd046ffbcaf.tar.gz"
 source_sha256 = "1e2463cc161ae8f516aa047b09bef29aff6732f8346626b312b3acd75e9191ba"
