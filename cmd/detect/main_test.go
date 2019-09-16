@@ -1,13 +1,14 @@
 package main
 
 import (
-	"github.com/BurntSushi/toml"
-	"github.com/buildpack/libbuildpack/buildplan"
-	"github.com/cloudfoundry/dotnet-core-sdk-cnb/sdk"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/BurntSushi/toml"
+	"github.com/buildpack/libbuildpack/buildplan"
+	"github.com/cloudfoundry/dotnet-core-sdk-cnb/sdk"
 
 	. "github.com/onsi/gomega"
 
@@ -62,10 +63,10 @@ version = "2.2.806"
 				Requires: []buildplan.Required{{
 					Name:     sdk.DotnetSDK,
 					Version:  "2.2.5",
-					Metadata: buildplan.Metadata{"build": true},
-				},{
-					Name: "dotnet-runtime",
-					Version: "2.2.5",
+					Metadata: buildplan.Metadata{"build": true, "launch": true},
+				}, {
+					Name:     "dotnet-runtime",
+					Version:  "2.2.5",
 					Metadata: buildplan.Metadata{"build": true, "launch": true},
 				}},
 			}))
@@ -91,14 +92,14 @@ version = "2.2.806"
 				Requires: []buildplan.Required{{
 					Name:     sdk.DotnetSDK,
 					Version:  "2.2.5",
-					Metadata: buildplan.Metadata{"build": true},
-				},{
-					Name: "dotnet-runtime",
-					Version: "2.2.5",
 					Metadata: buildplan.Metadata{"build": true, "launch": true},
-				},{
-					Name: "dotnet-aspnet",
-					Version: "2.2.5",
+				}, {
+					Name:     "dotnet-runtime",
+					Version:  "2.2.5",
+					Metadata: buildplan.Metadata{"build": true, "launch": true},
+				}, {
+					Name:     "dotnet-aspnet",
+					Version:  "2.2.5",
 					Metadata: buildplan.Metadata{"build": true, "launch": true},
 				}},
 			}))
@@ -106,15 +107,15 @@ version = "2.2.806"
 
 	})
 
-	when("the app is a SCD", func(){
-		it("return with just a provides", func(){
+	when("the app is a SCD", func() {
+		it("return with just a provides", func() {
 			runtimeConfigJSONPath := filepath.Join(factory.Detect.Application.Root, "appName.runtimeconfig.json")
 			Expect(ioutil.WriteFile(runtimeConfigJSONPath, []byte(`
 {
   "runtimeOptions": {}
 }
 `), os.ModePerm)).To(Succeed())
-			Expect(ioutil.WriteFile(filepath.Join(factory.Detect.Application.Root,"appName"), []byte(`fake exe`), os.ModePerm)).To(Succeed())
+			Expect(ioutil.WriteFile(filepath.Join(factory.Detect.Application.Root, "appName"), []byte(`fake exe`), os.ModePerm)).To(Succeed())
 			code, err := runDetect(factory.Detect)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(code).To(Equal(detect.PassStatusCode))
@@ -124,8 +125,8 @@ version = "2.2.806"
 		})
 	})
 
-	when("the app is source based", func(){
-		it("return with just a provides", func(){
+	when("the app is source based", func() {
+		it("return with just a provides", func() {
 			code, err := runDetect(factory.Detect)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(code).To(Equal(detect.PassStatusCode))
@@ -135,8 +136,8 @@ version = "2.2.806"
 		})
 	})
 
-	when("the app is a FDD with a FDE", func(){
-		it("return with just a provides", func(){
+	when("the app is a FDD with a FDE", func() {
+		it("return with just a provides", func() {
 			runtimeConfigJSONPath := filepath.Join(factory.Detect.Application.Root, "appName.runtimeconfig.json")
 			Expect(ioutil.WriteFile(runtimeConfigJSONPath, []byte(`
 {
@@ -149,7 +150,7 @@ version = "2.2.806"
   }
 }
 `), os.ModePerm)).To(Succeed())
-			Expect(ioutil.WriteFile(filepath.Join(factory.Detect.Application.Root,"appName"), []byte(`fake exe`), os.ModePerm)).To(Succeed())
+			Expect(ioutil.WriteFile(filepath.Join(factory.Detect.Application.Root, "appName"), []byte(`fake exe`), os.ModePerm)).To(Succeed())
 			code, err := runDetect(factory.Detect)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(code).To(Equal(detect.PassStatusCode))
