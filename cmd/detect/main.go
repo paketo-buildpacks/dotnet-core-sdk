@@ -50,7 +50,7 @@ func runDetect(context detect.Detect) (int, error) {
 	plan.Requires = []buildplan.Required{{
 		Name:     sdk.DotnetSDK,
 		Version:  runtimeConfig.Version,
-		Metadata: buildplan.Metadata{"build": true},
+		Metadata: buildplan.Metadata{"build": true, "launch": true},
 	},{
 		Name:     "dotnet-runtime",
 		Version:  runtimeConfig.Version,
