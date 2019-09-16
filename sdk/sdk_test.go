@@ -3,6 +3,12 @@ package sdk
 import (
 	"bufio"
 	"bytes"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"regexp"
+	"testing"
+
 	lbplogger "github.com/buildpack/libbuildpack/logger"
 	"github.com/cloudfoundry/libcfbuildpack/buildpackplan"
 	"github.com/cloudfoundry/libcfbuildpack/layers"
@@ -11,11 +17,6 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/sclevine/spec"
 	"github.com/sclevine/spec/report"
-	"io/ioutil"
-	"os"
-	"path/filepath"
-	"regexp"
-	"testing"
 )
 
 func TestUnitSdk(t *testing.T) {
@@ -150,7 +151,7 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 
 		it("contributes dotnet runtime to the build layer when included in the build plan", func() {
 			factory.AddPlan(buildpackplan.Plan{
-				Name: DotnetSDK,
+				Name:    DotnetSDK,
 				Version: "2.2.0",
 				Metadata: buildpackplan.Metadata{
 					"build": true,
@@ -164,11 +165,12 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 
 			layer := factory.Build.Layers.Layer(DotnetSDK)
 			Expect(layer).To(test.HaveLayerMetadata(true, false, false))
+			Expect(symlinkLayer).To(test.HaveLayerMetadata(true, false, false))
 		})
 
 		it("contributes dotnet runtime to the launch layer when included in the build plan", func() {
 			factory.AddPlan(buildpackplan.Plan{
-				Name: DotnetSDK,
+				Name:    DotnetSDK,
 				Version: "2.2.0",
 				Metadata: buildpackplan.Metadata{
 					"launch": true,
@@ -180,9 +182,9 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 
 			Expect(dotnetSDKContributor.Contribute()).To(Succeed())
 
-
 			layer := factory.Build.Layers.Layer(DotnetSDK)
-			Expect(layer).To(test.HaveLayerMetadata(false, false, true))
+			Expect(layer).To(test.HaveLayerMetadata(true, false, false))
+			Expect(symlinkLayer).To(test.HaveLayerMetadata(false, false, true))
 		})
 
 		it("returns an error when unsupported version of dotnet runtime is included in the build plan", func() {

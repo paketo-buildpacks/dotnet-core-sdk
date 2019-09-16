@@ -2,6 +2,9 @@ package sdk
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+
 	"github.com/Masterminds/semver"
 	"github.com/cloudfoundry/dotnet-core-conf-cnb/utils"
 	"github.com/cloudfoundry/libcfbuildpack/build"
@@ -10,8 +13,6 @@ import (
 	"github.com/cloudfoundry/libcfbuildpack/layers"
 	"github.com/cloudfoundry/libcfbuildpack/logger"
 	"github.com/pkg/errors"
-	"os"
-	"path/filepath"
 )
 
 const DotnetSDK = "dotnet-sdk"
@@ -46,7 +47,6 @@ func NewContributor(context build.Build) (Contributor, bool, error) {
 		return Contributor{}, false, err
 	}
 
-
 	return Contributor{
 		context:         context,
 		plan:            plan,
@@ -65,13 +65,17 @@ func (c Contributor) Contribute() error {
 		if err := helper.ExtractTarXz(artifact, layer.Root, 0); err != nil {
 			return err
 		}
-		
+
 		if err := layer.OverrideBuildEnv("SDK_LOCATION", layer.Root); err != nil {
 			return err
 		}
 
 		return nil
-	}, getFlags(c.plan.Metadata)...)
+	}, layers.Build)
+
+	if err != nil {
+		return err
+	}
 
 	err = c.sdkSymlinkLayer.Contribute(c.context.Buildpack, func(layer layers.Layer) error {
 		if !contributedSDK {
@@ -97,7 +101,6 @@ func (c Contributor) Contribute() error {
 		}
 		layer.Logger.Body("Moving dotnet driver from %s", c.sdkLayer.Root)
 
-
 		if err := helper.CopyFile(filepath.Join(c.sdkLayer.Root, "dotnet"), filepath.Join(layer.Root, "dotnet")); err != nil {
 			return err
 		}
@@ -111,7 +114,7 @@ func (c Contributor) Contribute() error {
 		}
 
 		return nil
-	}, layers.Build, layers.Launch)
+	}, getFlags(c.plan.Metadata)...)
 
 	if err != nil {
 		return err
@@ -120,9 +123,9 @@ func (c Contributor) Contribute() error {
 	return nil
 }
 
-func getFlags(metadata buildpackplan.Metadata) []layers.Flag{
+func getFlags(metadata buildpackplan.Metadata) []layers.Flag {
 	flagsArray := []layers.Flag{}
-	flagValueMap := map[string]layers.Flag {"build": layers.Build, "launch": layers.Launch, "cache": layers.Cache}
+	flagValueMap := map[string]layers.Flag{"build": layers.Build, "launch": layers.Launch, "cache": layers.Cache}
 	for _, flagName := range []string{"build", "launch", "cache"} {
 		flagPresent, _ := metadata[flagName].(bool)
 		if flagPresent {
@@ -132,7 +135,7 @@ func getFlags(metadata buildpackplan.Metadata) []layers.Flag{
 	return flagsArray
 }
 
-func getLatestCompatibleSDK(frameworkVersion string, context build.Build) (string, error){
+func getLatestCompatibleSDK(frameworkVersion string, context build.Build) (string, error) {
 	splitVersion, err := semver.NewVersion(frameworkVersion)
 	if err != nil {
 		return "", err
@@ -148,10 +151,8 @@ func getLatestCompatibleSDK(frameworkVersion string, context build.Build) (strin
 	compatibleVersion, err := deps.Best(DotnetSDK, compatibleVersionConstraint, context.Stack)
 
 	if err != nil {
-		return "",  errors.Wrap(err, "no compatible version of the sdk found")
+		return "", errors.Wrap(err, "no compatible version of the sdk found")
 	}
 
 	return compatibleVersion.Version.Original(), nil
 }
-
-
