@@ -11,6 +11,15 @@ pre_package = "./scripts/build.sh"
 
 [[metadata.dependencies]]
 id = "dotnet-sdk"
+sha256 = "553a32a49a46ca21b86789dd9f9c81917eae0485538f5d510be9eef2cf4e0c7c"
+source = "https://github.com/dotnet/cli/archive/436c9d483c971aca295013a966301df7e4e6cc1e.tar.gz"
+source_sha256 = "c4eadc8f92ec21c18c223b88183b796dd9a53a0bc2a754ac2cf16262db4baf32"
+stacks = ["org.cloudfoundry.stacks.cflinuxfs3"]
+uri = "https://buildpacks.cloudfoundry.org/dependencies/dotnet-sdk/dotnet-sdk.2.1.403.linux-amd64-cflinuxfs3-553a32a4.tar.xz"
+version = "2.1.403"
+
+[[metadata.dependencies]]
+id = "dotnet-sdk"
 sha256 = "e9c7179dd5b8311458bde41e554898b0df261ca3fde230f1e64289cb1076de90"
 source = "https://github.com/dotnet/cli/archive/9b0b46aacc95a4e12fa7df23aa2c19dec1dacc03.tar.gz"
 source_sha256 = "ecedcefdf5d8090e83c4f150ea2fa802f5dd92a2c3e1bb23b82a69fe1a9c9f18"
