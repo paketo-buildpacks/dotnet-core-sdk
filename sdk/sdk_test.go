@@ -30,6 +30,7 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 		fakeSymlinkTarget       string
 		runtimeSymlinkLayerPath string
 		symlinkLayer            layers.Layer
+		appRoot string
 	)
 
 	it.Before(func() {
@@ -49,6 +50,8 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 		Expect(os.Symlink(fakeSymlinkTarget, filepath.Join(runtimeSymlinkLayerPath, "shared", "Microsoft.NETCore.App"))).To(Succeed())
 		Expect(os.Symlink(fakeSymlinkTarget, filepath.Join(runtimeSymlinkLayerPath, "host", "fxr"))).To(Succeed())
 
+		appRoot = factory.Build.Application.Root
+
 		os.Setenv("DOTNET_ROOT", runtimeSymlinkLayerPath)
 	})
 
@@ -59,13 +62,133 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 	})
 
 	when("runtime.NewContributor", func() {
-		it("returns true if a build plan exists and it finds a compatible sdk version", func() {
-			factory.AddPlan(buildpackplan.Plan{Name: DotnetSDK, Version: "2.2.0"})
+		when("there is not buildpack.yml or global.json", func() {
+			it("returns true if a build plan exists and it finds a compatible sdk version", func() {
+				factory.AddPlan(buildpackplan.Plan{Name: DotnetSDK, Version: "2.2.0"})
 
-			contributor, willContribute, err := NewContributor(factory.Build)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(willContribute).To(BeTrue())
-			Expect(contributor.sdkLayer.Dependency.Version.String()).To(Equal("2.2.800"))
+				contributor, willContribute, err := NewContributor(factory.Build)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(willContribute).To(BeTrue())
+				Expect(contributor.sdkLayer.Dependency.Version.String()).To(Equal("2.2.800"))
+			})
+		})
+
+		when("there is a buildpack.yml", func() {
+			it.Before(func() {
+				factory.AddDependencyWithVersion(DotnetSDK, "2.2.802", stubDotnetSDKFixture)
+				factory.AddPlan(buildpackplan.Plan{Name: DotnetSDK, Version: "2.2.0"})
+			})
+
+			it.After(func() {
+				os.RemoveAll(filepath.Join(appRoot, "buildpack.yml"))
+			})
+
+			it("use specfic version in buildpack.yml", func() {
+				Expect(ioutil.WriteFile(filepath.Join(appRoot, "buildpack.yml"), []byte(`---
+dotnet-sdk:
+  version: "2.2.800" 
+`), 0644)).To(Succeed())
+
+				contributor, willContribute, err := NewContributor(factory.Build)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(willContribute).To(BeTrue())
+				Expect(contributor.sdkLayer.Dependency.Version.String()).To(Equal("2.2.800"))
+			})
+
+			it("use feature line constraint in buildpack.yml", func() {
+				Expect(ioutil.WriteFile(filepath.Join(appRoot, "buildpack.yml"), []byte(`---
+dotnet-sdk:
+  version: "2.2.8*" 
+`), 0644)).To(Succeed())
+
+				contributor, willContribute, err := NewContributor(factory.Build)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(willContribute).To(BeTrue())
+				Expect(contributor.sdkLayer.Dependency.Version.String()).To(Equal("2.2.802"))
+			})
+
+			it("use minor constraint in buildpack.yml", func() {
+				Expect(ioutil.WriteFile(filepath.Join(appRoot, "buildpack.yml"), []byte(`---
+dotnet-sdk:
+  version: "2.2.*" 
+`), 0644)).To(Succeed())
+
+				contributor, willContribute, err := NewContributor(factory.Build)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(willContribute).To(BeTrue())
+				Expect(contributor.sdkLayer.Dependency.Version.String()).To(Equal("2.2.802"))
+			})
+		})
+
+		when("there is a global.json", func() {
+			it.Before(func() {
+				factory.AddDependencyWithVersion(DotnetSDK, "2.2.805", stubDotnetSDKFixture)
+				factory.AddPlan(buildpackplan.Plan{Name: DotnetSDK, Version: "2.2.0"})
+			})
+
+			it.After(func() {
+				os.RemoveAll(filepath.Join(appRoot, "global.json"))
+			})
+
+			when("exact version exist in global.json and buildpack.toml", func() {
+				it("use the exact version", func() {
+					Expect(ioutil.WriteFile(filepath.Join(appRoot, "global.json"), []byte(`{
+"sdk": {"version" : "2.2.800"}
+}
+`), 0644)).To(Succeed())
+
+					contributor, willContribute, err := NewContributor(factory.Build)
+					Expect(err).NotTo(HaveOccurred())
+					Expect(willContribute).To(BeTrue())
+					Expect(contributor.sdkLayer.Dependency.Version.String()).To(Equal("2.2.800"))
+				})
+			})
+
+			when("feature line compatible version exist in global.json and buildpack.toml", func() {
+				it("use the feature line compatible version", func() {
+					Expect(ioutil.WriteFile(filepath.Join(appRoot, "global.json"), []byte(`{
+"sdk": {"version" : "2.2.801"}
+}
+`), 0644)).To(Succeed())
+
+					contributor, willContribute, err := NewContributor(factory.Build)
+					Expect(err).NotTo(HaveOccurred())
+					Expect(willContribute).To(BeTrue())
+					Expect(contributor.sdkLayer.Dependency.Version.String()).To(Equal("2.2.805"))
+				})
+			})
+		})
+
+		when("there is both a buildpack.yml and a global.json", func() {
+			it.Before(func() {
+				factory.AddDependencyWithVersion(DotnetSDK, "2.2.805", stubDotnetSDKFixture)
+				factory.AddPlan(buildpackplan.Plan{Name: DotnetSDK, Version: "2.2.0"})
+			})
+
+			it.After(func() {
+				os.RemoveAll(filepath.Join(appRoot, "buildpack.yml"))
+				os.RemoveAll(filepath.Join(appRoot, "global.json"))
+			})
+
+
+
+			when("feature line compatible version exist in global.json and buildpack.toml", func() {
+				it("uses buildpack.yml", func() {
+					Expect(ioutil.WriteFile(filepath.Join(appRoot, "global.json"), []byte(`{
+"sdk": {"version" : "2.2.800"}
+}
+`), 0644)).To(Succeed())
+					Expect(ioutil.WriteFile(filepath.Join(appRoot, "buildpack.yml"), []byte(`---
+dotnet-sdk:
+ version: "2.2.805" 
+`), 0644)).To(Succeed())
+
+					contributor, willContribute, err := NewContributor(factory.Build)
+					Expect(err).NotTo(HaveOccurred())
+					Expect(willContribute).To(BeTrue())
+					Expect(contributor.sdkLayer.Dependency.Version.String()).To(Equal("2.2.805"))
+				})
+			})
 		})
 
 		it("returns false if a build plan exists and it does not find a compatible sdk version", func() {
