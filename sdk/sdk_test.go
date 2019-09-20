@@ -172,7 +172,7 @@ dotnet-sdk:
 
 
 
-			when("feature line compatible version exist in global.json and buildpack.toml", func() {
+			when("feature line compatible version exist in global.json and buildpack.yml", func() {
 				it("uses buildpack.yml", func() {
 					Expect(ioutil.WriteFile(filepath.Join(appRoot, "global.json"), []byte(`{
 "sdk": {"version" : "2.2.800"}

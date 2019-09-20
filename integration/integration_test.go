@@ -130,6 +130,39 @@ dotnet-sdk:
 		}).Should(ContainSubstring("Welcome"))
 	})
 
+	it("should build a working OCI image for a simple app with aspnet dependencies", func() {
+		glbJson := `{
+"sdk": { "version": "2.2.100"}
+}`
+
+		glbJsonPath := filepath.Join("testdata", "simple_web_app_with_buildpack_yml_and_global_json", "global.json")
+		Expect(ioutil.WriteFile(glbJsonPath, []byte(glbJson), 0644)).To(Succeed())
+
+		majorMinor := "2.2"
+		version, err := getLowestRuntimeVersionInMajorMinor(majorMinor)
+		Expect(err).ToNot(HaveOccurred())
+		bpYml := fmt.Sprintf(`---
+dotnet-sdk:
+  version: "%s"
+`, version)
+
+		bpYmlPath := filepath.Join("testdata", "simple_web_app_with_buildpack_yml_and_global_json", "buildpack.yml")
+		Expect(ioutil.WriteFile(bpYmlPath, []byte(bpYml), 0644)).To(Succeed())
+
+		app, err := dagger.PackBuild(filepath.Join("testdata", "simple_web_app_with_buildpack_yml_and_global_json"), runtimeURI, aspnetURI, sdkURI)
+		Expect(err).ToNot(HaveOccurred())
+
+		Expect(app.StartWithCommand("dotnet simple_web_app.dll --server.urls http://0.0.0.0:${PORT}")).To(Succeed())
+
+		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-sdk.%s", version)))
+
+		Eventually(func() string {
+			body, _, _ := app.HTTPGet("/")
+			return body
+		}).Should(ContainSubstring("Welcome"))
+
+
+	})
 }
 
 func getLowestRuntimeVersionInMajorMinor(majorMinor string) (string, error) {
