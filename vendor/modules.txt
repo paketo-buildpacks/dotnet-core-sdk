@@ -19,7 +19,7 @@ github.com/buildpack/libbuildpack/stack
 github.com/cloudfoundry/dagger
 # github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.25
 github.com/cloudfoundry/dotnet-core-conf-cnb/utils
-# github.com/cloudfoundry/libcfbuildpack v1.87.1
+# github.com/cloudfoundry/libcfbuildpack v1.87.2
 github.com/cloudfoundry/libcfbuildpack/build
 github.com/cloudfoundry/libcfbuildpack/detect
 github.com/cloudfoundry/libcfbuildpack/buildpackplan
