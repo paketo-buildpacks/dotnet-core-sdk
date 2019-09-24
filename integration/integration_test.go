@@ -163,6 +163,39 @@ dotnet-sdk:
 
 
 	})
+
+
+	it("should build a working OCI image for a fdd app with an old aspnet dependency that has not been rolled forward", func() {
+		app, err := dagger.PackBuild(filepath.Join("testdata", "fdd_apply_patches_false_2.1"), runtimeURI, aspnetURI, sdkURI)
+
+		Expect(err).ToNot(HaveOccurred())
+
+		Expect(app.StartWithCommand("dotnet dotnet.dll --server.urls http://0.0.0.0:${PORT}")).To(Succeed())
+
+		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-runtime.%s", "2.1.12")))
+		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-aspnetcore.%s", "2.1.12")))
+
+		Eventually(func() string {
+			body, _, _ := app.HTTPGet("/")
+			return body
+		}).Should(ContainSubstring("dotnet"))
+	})
+
+	it("should build a working OCI image for a fdd app with an old aspnet dependency that has not been rolled forward", func() {
+		app, err := dagger.PackBuild(filepath.Join("testdata", "fdd_apply_patches_true_2.1"), runtimeURI, aspnetURI, sdkURI)
+
+		Expect(err).ToNot(HaveOccurred())
+
+		Expect(app.StartWithCommand("dotnet dotnet.dll --server.urls http://0.0.0.0:${PORT}")).To(Succeed())
+
+		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-runtime.%s", "2.1.13")))
+		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-aspnetcore.%s", "2.1.13")))
+
+		Eventually(func() string {
+			body, _, _ := app.HTTPGet("/")
+			return body
+		}).Should(ContainSubstring("dotnet"))
+	})
 }
 
 func getLowestRuntimeVersionInMajorMinor(majorMinor string) (string, error) {
