@@ -165,7 +165,7 @@ dotnet-sdk:
 	})
 
 
-	it.Focus("should build a working OCI image for a fdd app with an old aspnet dependency that has not been rolled forward", func() {
+	it("should build a working OCI image for a fdd app with an old aspnet dependency that has not been rolled forward", func() {
 		app, err := dagger.PackBuild(filepath.Join("testdata", "fdd_apply_patches_false_2.1"), runtimeURI, aspnetURI, sdkURI)
 
 		Expect(err).ToNot(HaveOccurred())
@@ -181,7 +181,7 @@ dotnet-sdk:
 		}).Should(ContainSubstring("dotnet"))
 	})
 
-	it.Focus("should build a working OCI image for a fdd app with an old aspnet dependency that has not been rolled forward", func() {
+	it("should build a working OCI image for a fdd app with an old aspnet dependency that has not been rolled forward", func() {
 		app, err := dagger.PackBuild(filepath.Join("testdata", "fdd_apply_patches_true_2.1"), runtimeURI, aspnetURI, sdkURI)
 
 		Expect(err).ToNot(HaveOccurred())
