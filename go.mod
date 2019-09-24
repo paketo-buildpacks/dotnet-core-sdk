@@ -10,6 +10,5 @@ require (
 	github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.25
 	github.com/cloudfoundry/libcfbuildpack v1.87.1
 	github.com/onsi/gomega v1.7.0
-	github.com/pkg/errors v0.8.1
 	github.com/sclevine/spec v1.2.0
 )
