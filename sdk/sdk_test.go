@@ -30,7 +30,7 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 		fakeSymlinkTarget       string
 		runtimeSymlinkLayerPath string
 		symlinkLayer            layers.Layer
-		appRoot string
+		appRoot                 string
 	)
 
 	it.Before(func() {
@@ -170,8 +170,6 @@ dotnet-sdk:
 				os.RemoveAll(filepath.Join(appRoot, "global.json"))
 			})
 
-
-
 			when("feature line compatible version exist in global.json and buildpack.yml", func() {
 				it("uses buildpack.yml", func() {
 					Expect(ioutil.WriteFile(filepath.Join(appRoot, "global.json"), []byte(`{
@@ -259,19 +257,6 @@ dotnet-sdk:
 			Expect(symlinkLayer).To(test.HaveOverrideSharedEnvironment("DOTNET_ROOT", filepath.Join(symlinkLayer.Root)))
 		})
 
-		it("uses the default version when a version is not requested", func() {
-			factory.AddDependencyWithVersion(DotnetSDK, "0.9", filepath.Join("testdata", "stub-sdk-dependency.tar.xz"))
-			factory.SetDefaultVersion(DotnetSDK, "0.9")
-			factory.AddPlan(buildpackplan.Plan{Name: DotnetSDK})
-
-			dotnetSDKContributor, _, err := NewContributor(factory.Build)
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(dotnetSDKContributor.Contribute()).To(Succeed())
-			layer := factory.Build.Layers.Layer(DotnetSDK)
-			Expect(layer).To(test.HaveLayerVersion("0.9"))
-		})
-
 		it("contributes dotnet runtime to the build layer when included in the build plan", func() {
 			factory.AddPlan(buildpackplan.Plan{
 				Name:    DotnetSDK,
@@ -308,20 +293,6 @@ dotnet-sdk:
 			layer := factory.Build.Layers.Layer(DotnetSDK)
 			Expect(layer).To(test.HaveLayerMetadata(true, false, false))
 			Expect(symlinkLayer).To(test.HaveLayerMetadata(false, false, true))
-		})
-
-		it("returns an error when unsupported version of dotnet runtime is included in the build plan", func() {
-			factory.AddPlan(buildpackplan.Plan{
-				Name:    DotnetSDK,
-				Version: "9000.0.0",
-				Metadata: buildpackplan.Metadata{
-					"launch": true,
-				},
-			})
-
-			_, shouldContribute, err := NewContributor(factory.Build)
-			Expect(err).To(HaveOccurred())
-			Expect(shouldContribute).To(BeFalse())
 		})
 	})
 }
