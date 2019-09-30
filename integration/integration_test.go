@@ -164,7 +164,7 @@ dotnet-sdk:
 
 	})
 
-
+	// Test fixture moved from V2 and succeeds
 	it("should build a working OCI image for a fdd app with an old aspnet dependency that has not been rolled forward", func() {
 		app, err := dagger.PackBuild(filepath.Join("testdata", "fdd_apply_patches_false_2.1"), runtimeURI, aspnetURI, sdkURI)
 
@@ -181,6 +181,7 @@ dotnet-sdk:
 		}).Should(ContainSubstring("dotnet"))
 	})
 
+	// Test fixture moved from V2 and succeeds
 	it("should build a working OCI image for a fdd app with an old aspnet dependency that has not been rolled forward", func() {
 		app, err := dagger.PackBuild(filepath.Join("testdata", "fdd_apply_patches_true_2.1"), runtimeURI, aspnetURI, sdkURI)
 
@@ -196,6 +197,50 @@ dotnet-sdk:
 			return body
 		}).Should(ContainSubstring("dotnet"))
 	})
+
+
+	// Test fixture moved from V2 and succeeds
+	it("should build a working OCI image for fdd asp vendored application", func() {
+		app, err := dagger.PackBuild(filepath.Join("testdata", "fdd_asp_vendored_2.1"), runtimeURI, aspnetURI, sdkURI)
+		Expect(err).ToNot(HaveOccurred())
+
+		Expect(app.StartWithCommand("dotnet asp_dotnet2.dll --server.urls http://0.0.0.0:${PORT}")).To(Succeed())
+
+		Eventually(func() string {
+			body, _, _ := app.HTTPGet("/")
+			return body
+		}).Should(ContainSubstring("Hello World!"))
+
+	})
+
+	// Test fixture moved from V2 and succeeds
+	it("should build a working OCI image for fdd aspnet core application", func() {
+		app, err := dagger.PackBuild(filepath.Join("testdata", "fdd_aspnetcore_2.1"), runtimeURI, aspnetURI, sdkURI)
+		Expect(err).ToNot(HaveOccurred())
+
+		Expect(app.StartWithCommand("dotnet source_aspnetcore_2.1.dll --server.urls http://0.0.0.0:${PORT}")).To(Succeed())
+
+		Eventually(func() string {
+			body, _, _ := app.HTTPGet("/")
+			return body
+		}).Should(ContainSubstring("Hello World!"))
+
+	})
+
+	// Test fixture moved from V2 and succeeds
+	it.Focus("should build a working OCI image for an application with comments in runtimeconfig", func() {
+		app, err := dagger.PackBuild(filepath.Join("testdata", "runtimeconfig_with_comments"), runtimeURI, aspnetURI, sdkURI)
+		Expect(err).ToNot(HaveOccurred())
+
+		Expect(app.StartWithCommand("dotnet source_aspnetcore_2.1.dll --server.urls http://0.0.0.0:${PORT}")).To(Succeed())
+
+		Eventually(func() string {
+			body, _, _ := app.HTTPGet("/")
+			return body
+		}).Should(ContainSubstring("Hello World!"))
+
+	})
+
 }
 
 func getLowestRuntimeVersionInMajorMinor(majorMinor string) (string, error) {
