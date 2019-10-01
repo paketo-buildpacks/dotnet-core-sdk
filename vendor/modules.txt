@@ -15,7 +15,7 @@ github.com/buildpack/libbuildpack/buildpack
 github.com/buildpack/libbuildpack/platform
 github.com/buildpack/libbuildpack/services
 github.com/buildpack/libbuildpack/stack
-# github.com/cloudfoundry/dagger v0.0.0-20191001142301-8a1474e2fd63
+# github.com/cloudfoundry/dagger v0.0.0-20191001184736-b0f1e98b53b2
 github.com/cloudfoundry/dagger
 # github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.25
 github.com/cloudfoundry/dotnet-core-conf-cnb/utils
