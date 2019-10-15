@@ -1,4 +1,4 @@
-# cloud.google.com/go v0.46.3
+# cloud.google.com/go v0.47.0
 cloud.google.com/go/compute/metadata
 # code.cloudfoundry.org/lager v2.0.0+incompatible
 code.cloudfoundry.org/lager
@@ -22,7 +22,7 @@ github.com/buildpack/libbuildpack/stack
 # github.com/cloudfoundry/dagger v0.0.0-20191014145151-7f38f25964e1
 github.com/cloudfoundry/dagger
 github.com/cloudfoundry/dagger/utils
-# github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.25
+# github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.47
 github.com/cloudfoundry/dotnet-core-conf-cnb/utils
 # github.com/cloudfoundry/libcfbuildpack v1.89.0
 github.com/cloudfoundry/libcfbuildpack/build
@@ -36,7 +36,7 @@ github.com/cloudfoundry/libcfbuildpack/runner
 github.com/cloudfoundry/libcfbuildpack/services
 github.com/cloudfoundry/libcfbuildpack/test
 github.com/cloudfoundry/libcfbuildpack/internal
-# github.com/cloudfoundry/packit v0.0.0-20191014140300-f8d2e0b20a04
+# github.com/cloudfoundry/packit v0.0.0-20191015134313-760041110f18
 github.com/cloudfoundry/packit
 # github.com/fatih/color v1.7.0
 github.com/fatih/color
@@ -50,7 +50,7 @@ github.com/google/go-querystring/query
 github.com/gravityblast/go-jsmin
 # github.com/mattn/go-colorable v0.1.4
 github.com/mattn/go-colorable
-# github.com/mattn/go-isatty v0.0.9
+# github.com/mattn/go-isatty v0.0.10
 github.com/mattn/go-isatty
 # github.com/mitchellh/mapstructure v1.1.2
 github.com/mitchellh/mapstructure
@@ -74,7 +74,7 @@ github.com/sclevine/spec
 github.com/sclevine/spec/report
 # github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8
 github.com/xi2/xz
-# golang.org/x/net v0.0.0-20191003171128-d98b1b443823
+# golang.org/x/net v0.0.0-20191014212845-da9a3fd4c582
 golang.org/x/net/html/charset
 golang.org/x/net/context/ctxhttp
 golang.org/x/net/context
@@ -86,7 +86,7 @@ golang.org/x/oauth2/google
 golang.org/x/oauth2/internal
 golang.org/x/oauth2/jws
 golang.org/x/oauth2/jwt
-# golang.org/x/sys v0.0.0-20191003212358-c178f38b412c
+# golang.org/x/sys v0.0.0-20191010194322-b09406accb47
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.2
 golang.org/x/text/encoding
@@ -106,7 +106,7 @@ golang.org/x/text/runes
 golang.org/x/text/internal/language
 golang.org/x/text/internal/language/compact
 golang.org/x/text/internal/tag
-# google.golang.org/appengine v1.6.4
+# google.golang.org/appengine v1.6.5
 google.golang.org/appengine
 google.golang.org/appengine/urlfetch
 google.golang.org/appengine/internal

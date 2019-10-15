@@ -26,6 +26,7 @@ type configJSON struct {
 			Name    string `json:"name"`
 			Version string `json:"version"`
 		} `json:"framework"`
+		ApplyPatches bool `json:"applyPatches"`
 	} `json:"runtimeOptions"`
 }
 
@@ -62,6 +63,11 @@ func (r *RuntimeConfig) HasRuntimeDependency() bool {
 func (r *RuntimeConfig) HasASPNetDependency() bool {
 
 	return r.config.RuntimeOptions.Framework.Name == "Microsoft.AspNetCore.App" || r.config.RuntimeOptions.Framework.Name == "Microsoft.AspNetCore.All"
+}
+
+func (r *RuntimeConfig) HasApplyPatches() bool {
+
+	return r.config.RuntimeOptions.ApplyPatches
 }
 
 func getBinaryName(runtimeConfigPath string) string {

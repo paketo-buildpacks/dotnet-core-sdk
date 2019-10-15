@@ -2,14 +2,15 @@ package sdk
 
 import (
 	"encoding/json"
+	"os"
+	"path/filepath"
+
 	"github.com/cloudfoundry/dotnet-core-conf-cnb/utils"
 	"github.com/cloudfoundry/libcfbuildpack/build"
 	"github.com/cloudfoundry/libcfbuildpack/buildpackplan"
 	"github.com/cloudfoundry/libcfbuildpack/helper"
 	"github.com/cloudfoundry/libcfbuildpack/layers"
 	"github.com/cloudfoundry/libcfbuildpack/logger"
-	"os"
-	"path/filepath"
 )
 
 const DotnetSDK = "dotnet-sdk"
@@ -27,8 +28,6 @@ type BuildpackYAML struct {
 		Version string `yaml:"version""`
 	} `yaml:"dotnet-sdk"`
 }
-
-
 
 func NewContributor(context build.Build) (Contributor, bool, error) {
 	plan, wantDependency, err := context.Plans.GetShallowMerged(DotnetSDK)
@@ -61,16 +60,18 @@ func NewContributor(context build.Build) (Contributor, bool, error) {
 		useBuildpackYAML := buildpackYAML != (BuildpackYAML{})
 
 		var buildpackYAMLVersion string
-		if useBuildpackYAML { buildpackYAMLVersion = buildpackYAML.Config.Version}
+		if useBuildpackYAML {
+			buildpackYAMLVersion = buildpackYAML.Config.Version
+		}
 
-		if useBuildpackYAML && useGlobalJSON{
+		if useBuildpackYAML && useGlobalJSON {
 			useBuildpackYAML, useGlobalJSON, err = SelectRollStrategy(buildpackYAMLVersion, globalJSONVersion)
 			if err != nil {
 				return Contributor{}, false, err
 			}
 		}
 
-		if useBuildpackYAML{
+		if useBuildpackYAML {
 			compatible, err := IsCompatibleSDKOptionWithRuntime(version, buildpackYAMLVersion)
 			if err != nil {
 				return Contributor{}, false, err
@@ -84,7 +85,7 @@ func NewContributor(context build.Build) (Contributor, bool, error) {
 			}
 		}
 
-		if useGlobalJSON{
+		if useGlobalJSON {
 			compatible, err := IsCompatibleSDKOptionWithRuntime(version, globalJSONVersion)
 			if err != nil {
 				return Contributor{}, false, err
@@ -141,14 +142,9 @@ func (c Contributor) Contribute() error {
 
 		layer.Logger.Body("Symlinking runtime libraries")
 		pathToRuntime := os.Getenv("DOTNET_ROOT")
-		runtimeFiles, err := filepath.Glob(filepath.Join(pathToRuntime, "shared", "*"))
-		if err != nil {
+
+		if err := utils.SymlinkSharedFolder(pathToRuntime, layer.Root); err != nil {
 			return err
-		}
-		for _, file := range runtimeFiles {
-			if err := helper.CopySymlink(file, filepath.Join(layer.Root, "shared", filepath.Base(file))); err != nil {
-				return err
-			}
 		}
 
 		hostDir := filepath.Join(pathToRuntime, "host")
@@ -204,7 +200,6 @@ func LoadBuildpackYAML(appRoot string) (BuildpackYAML, error) {
 	}
 	return buildpackYAML, err
 }
-
 
 func LoadGlobalJSON(appRoot string) (string, error) {
 	type globalJSONLoad struct {
