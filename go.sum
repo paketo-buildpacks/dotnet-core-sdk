@@ -22,6 +22,8 @@ github.com/Masterminds/semver v1.5.0 h1:H65muMkzWKEuNDnfl9d70GUjFniHKHRbFPGBuZ3Q
 github.com/Masterminds/semver v1.5.0/go.mod h1:MB6lktGJrhw8PrUyiEoblNEGEQ+RzHPF078ddwwvV3Y=
 github.com/buildpack/libbuildpack v1.24.5 h1:r7AM7r8ff7ocI1KOopVHEC3EDTCdrj0YeTXkfYuqH0I=
 github.com/buildpack/libbuildpack v1.24.5/go.mod h1:cBmq8aozSDfy+RiKCERQbT6lk0M/Xf3aJWK2PLbPG1g=
+github.com/buildpack/libbuildpack v1.25.0 h1:9Hs3a9rz4qrjqgcDDTYY5S4zRaQJc5ctoLkV5X0WBDw=
+github.com/buildpack/libbuildpack v1.25.0/go.mod h1:cBmq8aozSDfy+RiKCERQbT6lk0M/Xf3aJWK2PLbPG1g=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cloudfoundry/dagger v0.0.0-20191014145151-7f38f25964e1 h1:E/1EGCXcp+oWHcV8MgQS0tg6HbotneCOo0YdlFEzC18=
 github.com/cloudfoundry/dagger v0.0.0-20191014145151-7f38f25964e1/go.mod h1:xqRl2xy0Q75hzZXM/Cv2DZNl7OIzaT/6JOy8TZbb4yk=
@@ -31,6 +33,8 @@ github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.47 h1:h++tX5b6R/loEsKCNx6uHpCO
 github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.47/go.mod h1:ve20iGFyW16zfZ8z2eQMclGNsUYds4Mznc2UnyXZKms=
 github.com/cloudfoundry/libcfbuildpack v1.89.0 h1:A0OXihcHjvDRLYendhfqMxTBVe5pi5fmM5t4sqNRpao=
 github.com/cloudfoundry/libcfbuildpack v1.89.0/go.mod h1:ufhp/bp0LxbDDwbf2Ms3Bf4x9YnLr9dkL1RTUYSdKg0=
+github.com/cloudfoundry/libcfbuildpack v1.89.1 h1:d0qgnFHUb1pCUdjlawFPKZ+r78Hq1L9C6Lo/AX8LtwU=
+github.com/cloudfoundry/libcfbuildpack v1.89.1/go.mod h1:dcWh59YByoKe7AtQXv9/wa5MWLc/0Vy6laVQqH7FM28=
 github.com/cloudfoundry/packit v0.0.0-20191014140300-f8d2e0b20a04 h1:IKq64UyPDs+HD8dDE7fRHC+W/Vw2L0J+GfPuTiTTo50=
 github.com/cloudfoundry/packit v0.0.0-20191014140300-f8d2e0b20a04/go.mod h1:m8hk5BTIclmOWMxv3aQKIU/0LA4FVe4XKC9o0VNsLow=
 github.com/cloudfoundry/packit v0.0.0-20191015134313-760041110f18 h1:uPn7oTVLGfIoys0HkyFVAvyDOA3RyVH8qzUz/8wU35I=
