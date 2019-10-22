@@ -2,10 +2,11 @@ package sdk
 
 import (
 	"fmt"
-	"github.com/Masterminds/semver"
-	"github.com/cloudfoundry/libcfbuildpack/build"
 	"regexp"
 	"strings"
+
+	"github.com/Masterminds/semver"
+	"github.com/cloudfoundry/libcfbuildpack/build"
 )
 
 const (
@@ -23,8 +24,7 @@ func GetLatestCompatibleSDKConstraint(sdkVersion string) (string, error) {
 	return compatibleVersionConstraint, nil
 }
 
-func IsCompatibleSDKOptionWithRuntime(constraintVersion, sdkVersion string) (bool, error){
-	//Will make sure that version constraint provided by user is compatible with app constraint
+func IsCompatibleSDKOptionWithRuntime(constraintVersion, sdkVersion string) (bool, error) { //Will make sure that version constraint provided by user is compatible with app constraint
 	//(i.e. the version provided in buildpack.yml or global.json is the same major.minor as the
 	//csproj/runtimeconfig major minor)
 
@@ -45,7 +45,7 @@ func IsCompatibleSDKOptionWithRuntime(constraintVersion, sdkVersion string) (boo
 
 func GetConstrainedCompatibleSDK(sdkVersion string, context build.Build) (string, error) {
 	highestCompatibleVersion, err := semver.NewVersion("0.0.0")
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -57,21 +57,21 @@ func GetConstrainedCompatibleSDK(sdkVersion string, context build.Build) (string
 	}
 
 	for _, dep := range deps {
-		if sdkRegex.MatchString(dep.Version.Version.String()){
-			if dep.Version.Version.GreaterThan(highestCompatibleVersion){
+		if sdkRegex.MatchString(dep.Version.Version.String()) {
+			if dep.Version.Version.GreaterThan(highestCompatibleVersion) {
 				highestCompatibleVersion = dep.Version.Version
 			}
 		}
 	}
 
-	if highestCompatibleVersion.String() == "0.0.0"{
+	if highestCompatibleVersion.String() == "0.0.0" {
 		return "", fmt.Errorf("no sdk version matching %s found, please reconfigure the global.json and/or buildpack.yml to use supported sdk version", sdkVersion)
 	}
 
 	return highestCompatibleVersion.String(), nil
 }
 
-func GetFeatureLineConstraint(version string) (string, error){
+func GetFeatureLineConstraint(version string) (string, error) {
 	sdkVersion, err := semver.NewVersion(version)
 	if err != nil {
 		return "", err
@@ -86,7 +86,7 @@ func GetFeatureLineConstraint(version string) (string, error){
 
 func GetConstrainedCompatibleSDKForGlobalJson(sdkVersion string, context build.Build) (string, error) {
 	highestCompatibleVersion, err := semver.NewVersion("0.0.0")
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -108,25 +108,25 @@ func GetConstrainedCompatibleSDKForGlobalJson(sdkVersion string, context build.B
 	}
 
 	for _, dep := range deps {
-		if dep.Version.Version.Equal(sdkVersionCheck){
+		if dep.Version.Version.Equal(sdkVersionCheck) {
 			return sdkVersionCheck.String(), nil
 		}
-		if sdkRegex.MatchString(dep.Version.Version.String()){
-			if dep.Version.Version.GreaterThan(highestCompatibleVersion){
+		if sdkRegex.MatchString(dep.Version.Version.String()) {
+			if dep.Version.Version.GreaterThan(highestCompatibleVersion) {
 				highestCompatibleVersion = dep.Version.Version
 			}
 		}
 	}
 
-	if highestCompatibleVersion.String() == "0.0.0"{
+	if highestCompatibleVersion.String() == "0.0.0" {
 		return "", fmt.Errorf("no sdk version matching %s found, please reconfigure the global.json and/or buildpack.yml to use supported sdk version", sdkVersion)
 	}
 
 	return highestCompatibleVersion.String(), nil
 }
 
-func SelectRollStrategy(buildpackYAMLVersion, globalJSONVersion string) (bool, bool, error){
-	if !strings.Contains(buildpackYAMLVersion, "*"){
+func SelectRollStrategy(buildpackYAMLVersion, globalJSONVersion string) (bool, bool, error) {
+	if !strings.Contains(buildpackYAMLVersion, "*") {
 		bpYMLVersion, err := semver.NewVersion(buildpackYAMLVersion)
 		if err != nil {
 			return false, false, err
@@ -137,15 +137,15 @@ func SelectRollStrategy(buildpackYAMLVersion, globalJSONVersion string) (bool, b
 			return false, false, err
 		}
 
-		if bpYMLVersion.Major() != glbJSONVersion.Major(){
+		if bpYMLVersion.Major() != glbJSONVersion.Major() {
 			return false, false, fmt.Errorf(IncompatibleGlobalAndBuildpackYml)
 		}
 
-		if bpYMLVersion.Minor() != glbJSONVersion.Minor(){
+		if bpYMLVersion.Minor() != glbJSONVersion.Minor() {
 			return false, false, fmt.Errorf(IncompatibleGlobalAndBuildpackYml)
 		}
 
-		if bpYMLVersion.Patch() < glbJSONVersion.Patch(){
+		if bpYMLVersion.Patch() < glbJSONVersion.Patch() {
 			return false, false, fmt.Errorf(IncompatibleGlobalAndBuildpackYml)
 		}
 
@@ -154,13 +154,13 @@ func SelectRollStrategy(buildpackYAMLVersion, globalJSONVersion string) (bool, b
 
 	bpYmlRegex := makeRegex(buildpackYAMLVersion)
 
-	if bpYmlRegex.MatchString(globalJSONVersion){
+	if bpYmlRegex.MatchString(globalJSONVersion) {
 		return false, true, nil
 	}
 	return false, false, fmt.Errorf(IncompatibleGlobalAndBuildpackYml)
 }
 
-func makeRegex(version string) *regexp.Regexp{
+func makeRegex(version string) *regexp.Regexp {
 	version = strings.ReplaceAll(version, ".", `\.`)
 	version = strings.ReplaceAll(version, "*", `.*`)
 	return regexp.MustCompile(version)
