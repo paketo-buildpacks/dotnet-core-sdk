@@ -85,7 +85,7 @@ func testIntegration(t *testing.T, when spec.G, it spec.S) {
 
 	when("global.json is specified", func() {
 		it("should build a working OCI image for a simple app with aspnet dependencies", func() {
-			majorMinor := "2.2"
+			majorMinor := "2.1"
 			version, err := getLowestRuntimeVersionInMajorMinor(majorMinor)
 			Expect(err).ToNot(HaveOccurred())
 			glbJson := fmt.Sprintf(`{
@@ -103,14 +103,14 @@ func testIntegration(t *testing.T, when spec.G, it spec.S) {
 			).Build()
 			Expect(err).ToNot(HaveOccurred())
 
-			Expect(app.StartWithCommand("dotnet simple_web_app.dll --urls http://0.0.0.0:${PORT}")).To(Succeed())
+			Expect(app.StartWithCommand("dotnet simple_web_app_with_global_json.dll --urls http://0.0.0.0:${PORT}")).To(Succeed())
 
 			Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-sdk.%s", version)))
 
 			Eventually(func() string {
 				body, _, _ := app.HTTPGet("/")
 				return body
-			}).Should(ContainSubstring("Welcome"))
+			}).Should(ContainSubstring("simple_web_app_with_global_json"))
 		})
 	})
 
