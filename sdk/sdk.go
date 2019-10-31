@@ -2,6 +2,7 @@ package sdk
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/cloudfoundry/libcfbuildpack/helper"
 	"github.com/cloudfoundry/libcfbuildpack/layers"
 	"github.com/cloudfoundry/libcfbuildpack/logger"
+	"github.com/mitchellh/mapstructure"
 )
 
 const DotnetSDK = "dotnet-sdk"
@@ -21,12 +23,6 @@ type Contributor struct {
 	sdkLayer        layers.DependencyLayer
 	sdkSymlinkLayer layers.Layer
 	logger          logger.Logger
-}
-
-type BuildpackYAML struct {
-	Config struct {
-		Version string `yaml:"version""`
-	} `yaml:"dotnet-sdk"`
 }
 
 func NewContributor(context build.Build) (Contributor, bool, error) {
@@ -40,29 +36,33 @@ func NewContributor(context build.Build) (Contributor, bool, error) {
 
 	version := plan.Version
 
+	runtimetoSDK, err := GetRuntimetoSDKMap(context)
+	if err != nil {
+		return Contributor{}, false, err
+	}
+
 	if version != "" {
-		version, err = GetLatestCompatibleSDKConstraint(plan.Version)
+		floatVersion, err := GetSDKFloatVersion(version)
+		if err != nil {
+			return Contributor{}, false, err
+		}
+		compatibleDeps, err := GetLatestCompatibleSDKDeps(floatVersion, context)
 		if err != nil {
 			return Contributor{}, false, err
 		}
 
-		buildpackYAML, err := LoadBuildpackYAML(context.Application.Root)
+		buildpackYAMLVersion, err := loadBuildpackYAMLVersion(context.Application.Root)
 		if err != nil {
 			return Contributor{}, false, err
 		}
 
-		globalJSONVersion, err := LoadGlobalJSON(context.Application.Root)
+		globalJSONVersion, err := loadGlobalJSONVersion(context.Application.Root)
 		if err != nil {
 			return Contributor{}, false, err
 		}
 
 		useGlobalJSON := globalJSONVersion != ""
-		useBuildpackYAML := buildpackYAML != (BuildpackYAML{})
-
-		var buildpackYAMLVersion string
-		if useBuildpackYAML {
-			buildpackYAMLVersion = buildpackYAML.Config.Version
-		}
+		useBuildpackYAML := buildpackYAMLVersion != ""
 
 		if useBuildpackYAML && useGlobalJSON {
 			useBuildpackYAML, useGlobalJSON, err = SelectRollStrategy(buildpackYAMLVersion, globalJSONVersion)
@@ -71,32 +71,16 @@ func NewContributor(context build.Build) (Contributor, bool, error) {
 			}
 		}
 
+		var rollForwardError error
 		if useBuildpackYAML {
-			compatible, err := IsCompatibleSDKOptionWithRuntime(version, buildpackYAMLVersion)
-			if err != nil {
-				return Contributor{}, false, err
-			}
-
-			if compatible {
-				version, err = GetConstrainedCompatibleSDK(buildpackYAMLVersion, context)
-				if err != nil {
-					return Contributor{}, false, err
-				}
-			}
+			version, rollForwardError = GetConstrainedCompatibleSDK(buildpackYAMLVersion, runtimetoSDK, compatibleDeps)
+		} else if useGlobalJSON {
+			version, rollForwardError = GetConstrainedCompatibleSDKForGlobalJson(globalJSONVersion, compatibleDeps)
+		} else {
+			version, rollForwardError = GetConstrainedCompatibleSDK(floatVersion, runtimetoSDK, compatibleDeps)
 		}
-
-		if useGlobalJSON {
-			compatible, err := IsCompatibleSDKOptionWithRuntime(version, globalJSONVersion)
-			if err != nil {
-				return Contributor{}, false, err
-			}
-
-			if compatible {
-				version, err = GetConstrainedCompatibleSDKForGlobalJson(globalJSONVersion, context)
-				if err != nil {
-					return Contributor{}, false, err
-				}
-			}
+		if rollForwardError != nil {
+			return Contributor{}, false, err
 		}
 	}
 
@@ -188,20 +172,29 @@ func getFlags(metadata buildpackplan.Metadata) []layers.Flag {
 	return flagsArray
 }
 
-func LoadBuildpackYAML(appRoot string) (BuildpackYAML, error) {
+func loadBuildpackYAMLVersion(appRoot string) (string, error) {
+	type buildpackYAML struct {
+		Config struct {
+			Version string `yaml:"version"`
+		} `yaml:"dotnet-sdk"`
+	}
 	var err error
-	buildpackYAML := BuildpackYAML{}
+	bpYAML := buildpackYAML{}
 	bpYamlPath := filepath.Join(appRoot, "buildpack.yml")
 
 	if exists, err := helper.FileExists(bpYamlPath); err != nil {
-		return BuildpackYAML{}, err
+		return "", err
 	} else if exists {
-		err = helper.ReadBuildpackYaml(bpYamlPath, &buildpackYAML)
+		err = helper.ReadBuildpackYaml(bpYamlPath, &bpYAML)
 	}
-	return buildpackYAML, err
+
+	if bpYAML == (buildpackYAML{}) {
+		return "", err
+	}
+	return bpYAML.Config.Version, err
 }
 
-func LoadGlobalJSON(appRoot string) (string, error) {
+func loadGlobalJSONVersion(appRoot string) (string, error) {
 	type globalJSONLoad struct {
 		Sdk struct {
 			Version string `json:"version"`
@@ -224,4 +217,26 @@ func LoadGlobalJSON(appRoot string) (string, error) {
 		jsonDecoder.Decode(&globalJson)
 	}
 	return globalJson.Sdk.Version, err
+}
+
+func GetRuntimetoSDKMap(context build.Build) (map[string][]string, error) {
+	runtimetoSDK := map[string][]string{}
+	type sdkMap struct {
+		RuntimeVersion string   `mapstructure:"runtime-version"`
+		Sdks           []string `mapstructure:"sdks"`
+	}
+
+	metadata, ok := context.Buildpack.Metadata["runtime-to-sdks"].([]map[string]interface{})
+	if !ok {
+		return runtimetoSDK, fmt.Errorf("unexpected metadata format for sdk to runtime mapping")
+	}
+
+	var sdkMapping []sdkMap
+	mapstructure.Decode(metadata, &sdkMapping)
+
+	for _, runtimeMapping := range sdkMapping {
+		runtimetoSDK[runtimeMapping.RuntimeVersion] = runtimeMapping.Sdks
+	}
+
+	return runtimetoSDK, nil
 }

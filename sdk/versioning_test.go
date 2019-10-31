@@ -2,12 +2,15 @@ package sdk
 
 import (
 	"fmt"
-	"github.com/cloudfoundry/libcfbuildpack/test"
+	"os"
 	"path/filepath"
 	"testing"
 
+	"github.com/cloudfoundry/libcfbuildpack/test"
+
 	. "github.com/onsi/gomega"
 
+	"github.com/Masterminds/semver"
 	"github.com/sclevine/spec"
 	"github.com/sclevine/spec/report"
 )
@@ -17,149 +20,164 @@ func TestUnitVersioning(t *testing.T) {
 }
 
 func testVersioning(t *testing.T, when spec.G, it spec.S) {
+	var Expect func(interface{}, ...interface{}) GomegaAssertion
 
-	when("GetLatestCompatibleSDKConstraint", func() {
-		it("returns a patch constrained version", func() {
-			version, err := GetLatestCompatibleSDKConstraint("2.2.0")
+	it.Before(func() {
+		Expect = NewWithT(t).Expect
+	})
+
+	when("GetLatestCompatibleSDKDeps", func() {
+		var (
+			factory              *test.BuildFactory
+			stubDotnetSDKFixture = filepath.Join("testdata", "stub-sdk-dependency.tar.xz")
+		)
+		it.Before(func() {
+			RegisterTestingT(t)
+			factory = test.NewBuildFactory(t)
+			factory.AddDependencyWithVersion(DotnetSDK, "2.2.805", stubDotnetSDKFixture)
+			factory.AddDependencyWithVersion(DotnetSDK, "2.2.605", stubDotnetSDKFixture)
+			factory.AddDependencyWithVersion(DotnetSDK, "2.1.305", stubDotnetSDKFixture)
+		})
+		it("returns a list of runtime compatible sdk versions", func() {
+			compatibleDeps, err := GetLatestCompatibleSDKDeps("2.2.*", factory.Build)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(compatibleDeps).To(Equal([]*semver.Version{semver.MustParse("2.2.805"), semver.MustParse("2.2.605")}))
+		})
+
+		it("returns an error of there there are no compatible runtime", func() {
+			_, err := GetLatestCompatibleSDKDeps("2.3.*", factory.Build)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("no compatible sdk versions found"))
+		})
+	})
+
+	when("GetSDKFloatVersion", func() {
+		it("returns a list of runtime compatible sdk versions", func() {
+			version, err := GetSDKFloatVersion("2.2.0")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(version).To(Equal("2.2.*"))
 		})
 	})
 
-	when("IsCompatibleSDKOptionWithRuntime", func() {
-		when("the sdk version is compatible with the runtime verion", func() {
-			it("returns true and no error when the feature line and patch are a wildcard", func() {
-				compatible, err := IsCompatibleSDKOptionWithRuntime("2.2.*", "2.2.*")
-				Expect(err).ToNot(HaveOccurred())
-				Expect(compatible).To(BeTrue())
-			})
-
-			it("returns true and no error when the patch is a wildcard", func() {
-				compatible, err := IsCompatibleSDKOptionWithRuntime("2.2.*", "2.2.1*")
-				Expect(err).ToNot(HaveOccurred())
-				Expect(compatible).To(BeTrue())
-			})
-
-			it("returns true and no error when the version is set", func() {
-				compatible, err := IsCompatibleSDKOptionWithRuntime("2.2.*", "2.2.100")
-				Expect(err).ToNot(HaveOccurred())
-				Expect(compatible).To(BeTrue())
-			})
-		})
-
-		when("the sdk version is not compatible with the runtime verion", func() {
-			it("returns true and no error when the feature line and patch are a wildcard", func() {
-				compatible, err := IsCompatibleSDKOptionWithRuntime("2.2.*", "2.3.*")
-				Expect(err).ToNot(HaveOccurred())
-				Expect(compatible).To(BeFalse())
-			})
-
-			it("returns true and no error when the patch is a wildcard", func() {
-				compatible, err := IsCompatibleSDKOptionWithRuntime("2.2.*", "2.3.1*")
-				Expect(err).ToNot(HaveOccurred())
-				Expect(compatible).To(BeFalse())
-			})
-
-			it("returns true and no error when the version is set", func() {
-				compatible, err := IsCompatibleSDKOptionWithRuntime("2.2.*", "2.3.100")
-				Expect(err).ToNot(HaveOccurred())
-				Expect(compatible).To(BeFalse())
-			})
-		})
-	})
-
 	when("GetConstrainedCompatibleSDK", func() {
 		var (
-			factory                 *test.BuildFactory
-			stubDotnetSDKFixture    = filepath.Join("testdata", "stub-sdk-dependency.tar.xz")
+			runtimetoSDK   map[string][]string
+			compatibleDeps []*semver.Version
 		)
 
 		it.Before(func() {
-			RegisterTestingT(t)
-			factory = test.NewBuildFactory(t)
-			factory.AddDependencyWithVersion(DotnetSDK, "2.2.805", stubDotnetSDKFixture)
-			factory.AddDependencyWithVersion(DotnetSDK, "2.2.605", stubDotnetSDKFixture)
+			runtimetoSDK = map[string][]string{
+				"2.2.13": []string{"2.2.805", "2.2.605", "2.2.804"},
+				"2.2.12": []string{"2.2.305"},
+			}
+			compatibleDeps = []*semver.Version{semver.MustParse("2.2.805"), semver.MustParse("2.2.605"), semver.MustParse("2.2.305")}
 		})
 
-		when("a compatible version of the sdk is present", func() {
+		when("runtime version is 2.2.13", func() {
+			it.Before(func() {
+				Expect(os.Setenv("RUNTIME_VERSION", "2.2.13")).To(Succeed())
+			})
+
+			it.After(func() {
+				Expect(os.Unsetenv("RUNTIME_VERSION")).To(Succeed())
+			})
+
+			when("a compatible version of the sdk is present", func() {
+				when("the feature line and patch are a wildcard", func() {
+					it("returns the latest sdk for the runtime constraint", func() {
+
+						version, err := GetConstrainedCompatibleSDK("2.2.*", runtimetoSDK, compatibleDeps)
+						Expect(err).ToNot(HaveOccurred())
+						Expect(version).To(Equal("2.2.805"))
+					})
+				})
+
+				when("the patch is a wildcard", func() {
+					it("returns the latest sdk for the runtime and feature line constraint", func() {
+						version, err := GetConstrainedCompatibleSDK("2.2.6*", runtimetoSDK, compatibleDeps)
+						Expect(err).ToNot(HaveOccurred())
+						Expect(version).To(Equal("2.2.605"))
+					})
+				})
+
+				when("the exact version", func() {
+					it("returns the latest sdk for the runtime and feature line constraint", func() {
+						compatibleDeps := append(compatibleDeps, semver.MustParse("2.2.804"))
+						version, err := GetConstrainedCompatibleSDK("2.2.804", runtimetoSDK, compatibleDeps)
+						Expect(err).ToNot(HaveOccurred())
+						Expect(version).To(Equal("2.2.804"))
+					})
+				})
+			})
+
+			when("there are no compatible versions of the sdk", func() {
+				when("the feature line and patch are a wildcard", func() {
+					it("returns an error message and an empty string", func() {
+						version, err := GetConstrainedCompatibleSDK("2.3.*", runtimetoSDK, compatibleDeps)
+						Expect(err).To(Equal(fmt.Errorf("no sdk version matching 2.3.* found, please reconfigure the global.json and/or buildpack.yml to use supported sdk version")))
+						Expect(version).To(Equal(""))
+					})
+				})
+
+				when("the patch is a wildcard", func() {
+					it("returns an error message and an empty string", func() {
+						version, err := GetConstrainedCompatibleSDK("2.2.1*", runtimetoSDK, compatibleDeps)
+						Expect(err).To(Equal(fmt.Errorf("no sdk version matching 2.2.1* found, please reconfigure the global.json and/or buildpack.yml to use supported sdk version")))
+						Expect(version).To(Equal(""))
+					})
+				})
+
+				when("the exact version", func() {
+					it("returns the latest sdk for the runtime and feature line constraint", func() {
+						version, err := GetConstrainedCompatibleSDK("2.2.804", runtimetoSDK, compatibleDeps)
+						Expect(err).To(Equal(fmt.Errorf("no sdk version matching 2.2.804 found, please reconfigure the global.json and/or buildpack.yml to use supported sdk version")))
+						Expect(version).To(Equal(""))
+					})
+				})
+			})
+		})
+
+		when("runtime version is 2.2.12", func() {
+			it.Before(func() {
+				Expect(os.Setenv("RUNTIME_VERSION", "2.2.12")).To(Succeed())
+			})
+			it.After(func() {
+				Expect(os.Unsetenv("RUNTIME_VERSION")).To(Succeed())
+			})
 			when("the feature line and patch are a wildcard", func() {
 				it("returns the latest sdk for the runtime constraint", func() {
-					version, err := GetConstrainedCompatibleSDK("2.2.*", factory.Build)
+
+					version, err := GetConstrainedCompatibleSDK("2.2.*", runtimetoSDK, compatibleDeps)
+					Expect(err).ToNot(HaveOccurred())
+					Expect(version).To(Equal("2.2.305"))
+				})
+			})
+		})
+
+		when("runtime version is not set", func() {
+			when("the feature line and patch are a wildcard", func() {
+				it("returns the latest sdk for the runtime constraint", func() {
+					version, err := GetConstrainedCompatibleSDK("2.2.*", runtimetoSDK, compatibleDeps)
 					Expect(err).ToNot(HaveOccurred())
 					Expect(version).To(Equal("2.2.805"))
 				})
 			})
-
-			when("the patch is a wildcard", func() {
-				it("returns the latest sdk for the runtime and feature line constraint", func() {
-					version, err := GetConstrainedCompatibleSDK("2.2.6*", factory.Build)
-					Expect(err).ToNot(HaveOccurred())
-					Expect(version).To(Equal("2.2.605"))
-				})
-			})
-
-			when("the exact version", func() {
-				it("returns the latest sdk for the runtime and feature line constraint", func() {
-					factory.AddDependencyWithVersion(DotnetSDK, "2.2.804", stubDotnetSDKFixture)
-					version, err := GetConstrainedCompatibleSDK("2.2.804", factory.Build)
-					Expect(err).ToNot(HaveOccurred())
-					Expect(version).To(Equal("2.2.804"))
-				})
-			})
-		})
-
-		when("there are no compatible versions of the sdk", func() {
-			when("the feature line and patch are a wildcard", func() {
-				it("returns an error message and an empty string", func() {
-					version, err := GetConstrainedCompatibleSDK("2.3.*", factory.Build)
-					Expect(err).To(Equal(fmt.Errorf("no sdk version matching 2.3.* found, please reconfigure the global.json and/or buildpack.yml to use supported sdk version")))
-					Expect(version).To(Equal(""))
-				})
-			})
-
-			when("the patch is a wildcard", func() {
-				it("returns an error message and an empty string", func() {
-					version, err := GetConstrainedCompatibleSDK("2.2.1*", factory.Build)
-					Expect(err).To(Equal(fmt.Errorf("no sdk version matching 2.2.1* found, please reconfigure the global.json and/or buildpack.yml to use supported sdk version")))
-					Expect(version).To(Equal(""))
-				})
-			})
-
-			when("the exact version", func() {
-				it("returns the latest sdk for the runtime and feature line constraint", func() {
-					version, err := GetConstrainedCompatibleSDK("2.2.804", factory.Build)
-					Expect(err).To(Equal(fmt.Errorf("no sdk version matching 2.2.804 found, please reconfigure the global.json and/or buildpack.yml to use supported sdk version")))
-					Expect(version).To(Equal(""))
-				})
-			})
-		})
-	})
-
-	when("GetFeatureLineConstraint", func() {
-		it("return a feature line constraint when given a full sdk version", func() {
-			versionConstraint, err := GetFeatureLineConstraint("2.2.800")
-			Expect(err).ToNot(HaveOccurred())
-			Expect(versionConstraint).To(ContainSubstring("2.2.8*"))
 		})
 	})
 
 	when("GetConstrainedCompatibleSDKForGlobalJson", func() {
 		var (
-			factory                 *test.BuildFactory
-			stubDotnetSDKFixture    = filepath.Join("testdata", "stub-sdk-dependency.tar.xz")
+			compatibleDeps []*semver.Version
 		)
 
 		it.Before(func() {
-			RegisterTestingT(t)
-			factory = test.NewBuildFactory(t)
-			factory.AddDependencyWithVersion(DotnetSDK, "2.2.805", stubDotnetSDKFixture)
-			factory.AddDependencyWithVersion(DotnetSDK, "2.2.605", stubDotnetSDKFixture)
+			compatibleDeps = []*semver.Version{semver.MustParse("2.2.805"), semver.MustParse("2.2.605")}
 		})
 
 		when("a compatible version of the sdk is present", func() {
 			when("the feature line and patch specified in global.json are present", func() {
 				it("returns the latest sdk for the runtime constraint", func() {
-					version, err := GetConstrainedCompatibleSDKForGlobalJson("2.2.805", factory.Build)
+					version, err := GetConstrainedCompatibleSDKForGlobalJson("2.2.805", compatibleDeps)
 					Expect(err).ToNot(HaveOccurred())
 					Expect(version).To(Equal("2.2.805"))
 				})
@@ -167,7 +185,7 @@ func testVersioning(t *testing.T, when spec.G, it spec.S) {
 
 			when("the patch cannot be found but there is a matching feature line", func() {
 				it("returns the latest sdk for the runtime and feature line constraint", func() {
-					version, err := GetConstrainedCompatibleSDKForGlobalJson("2.2.800", factory.Build)
+					version, err := GetConstrainedCompatibleSDKForGlobalJson("2.2.800", compatibleDeps)
 					Expect(err).ToNot(HaveOccurred())
 					Expect(version).To(Equal("2.2.805"))
 				})
@@ -178,7 +196,7 @@ func testVersioning(t *testing.T, when spec.G, it spec.S) {
 		when("there are no compatible versions of the sdk", func() {
 			when("mismatch major/minor", func() {
 				it("returns an error message and an empty string", func() {
-					version, err := GetConstrainedCompatibleSDK("2.3.100", factory.Build)
+					version, err := GetConstrainedCompatibleSDKForGlobalJson("2.3.100", compatibleDeps)
 					Expect(err).To(Equal(fmt.Errorf("no sdk version matching 2.3.100 found, please reconfigure the global.json and/or buildpack.yml to use supported sdk version")))
 					Expect(version).To(Equal(""))
 				})
@@ -186,7 +204,7 @@ func testVersioning(t *testing.T, when spec.G, it spec.S) {
 
 			when("no matching feature line", func() {
 				it("returns an error message and an empty string", func() {
-					version, err := GetConstrainedCompatibleSDK("2.2.100", factory.Build)
+					version, err := GetConstrainedCompatibleSDKForGlobalJson("2.2.100", compatibleDeps)
 					Expect(err).To(Equal(fmt.Errorf("no sdk version matching 2.2.100 found, please reconfigure the global.json and/or buildpack.yml to use supported sdk version")))
 					Expect(version).To(Equal(""))
 				})
@@ -194,7 +212,7 @@ func testVersioning(t *testing.T, when spec.G, it spec.S) {
 
 			when("feature line patch is higher than the highest patch in buildpack.toml", func() {
 				it("returns an error message and an empty string", func() {
-					version, err := GetConstrainedCompatibleSDK("2.2.606", factory.Build)
+					version, err := GetConstrainedCompatibleSDKForGlobalJson("2.2.606", compatibleDeps)
 					Expect(err).To(Equal(fmt.Errorf("no sdk version matching 2.2.606 found, please reconfigure the global.json and/or buildpack.yml to use supported sdk version")))
 					Expect(version).To(Equal(""))
 				})
@@ -251,7 +269,7 @@ func testVersioning(t *testing.T, when spec.G, it spec.S) {
 		})
 
 		when("the buildpack.yml version is a constraint", func() {
-			when("the feature line in buildpack.yml and global.json are the same", func(){
+			when("the feature line in buildpack.yml and global.json are the same", func() {
 				it("returns false for buildpack.yml, true for global.json, and no error", func() {
 					useBuildpackYAML, useGlobalJSON, err := SelectRollStrategy("2.2.1*", "2.2.102")
 					Expect(err).ToNot(HaveOccurred())
@@ -260,7 +278,7 @@ func testVersioning(t *testing.T, when spec.G, it spec.S) {
 				})
 			})
 
-			when("the patch  in buildpack.yml and global.json are the same", func(){
+			when("the patch  in buildpack.yml and global.json are the same", func() {
 				it("returns false for buildpack.yml, true for global.json, and no error", func() {
 					useBuildpackYAML, useGlobalJSON, err := SelectRollStrategy("2.2.*", "2.2.102")
 					Expect(err).ToNot(HaveOccurred())
@@ -269,7 +287,7 @@ func testVersioning(t *testing.T, when spec.G, it spec.S) {
 				})
 			})
 
-			when("the feature line in buildpack.yml and global.json are not the same", func(){
+			when("the feature line in buildpack.yml and global.json are not the same", func() {
 				it("returns false for buildpack.yml, true for global.json, and no error", func() {
 					useBuildpackYAML, useGlobalJSON, err := SelectRollStrategy("2.2.2*", "2.2.102")
 					Expect(err).To(Equal(fmt.Errorf(IncompatibleGlobalAndBuildpackYml)))
@@ -278,7 +296,7 @@ func testVersioning(t *testing.T, when spec.G, it spec.S) {
 				})
 			})
 
-			when("the minor in buildpack.yml and global.json are not the same", func(){
+			when("the minor in buildpack.yml and global.json are not the same", func() {
 				it("returns false for buildpack.yml, true for global.json, and no error", func() {
 					useBuildpackYAML, useGlobalJSON, err := SelectRollStrategy("2.1.*", "2.2.102")
 					Expect(err).To(Equal(fmt.Errorf(IncompatibleGlobalAndBuildpackYml)))
@@ -287,7 +305,7 @@ func testVersioning(t *testing.T, when spec.G, it spec.S) {
 				})
 			})
 
-			when("the major in buildpack.yml and global.json are not the same", func(){
+			when("the major in buildpack.yml and global.json are not the same", func() {
 				it("returns false for buildpack.yml, true for global.json, and no error", func() {
 					useBuildpackYAML, useGlobalJSON, err := SelectRollStrategy("3.1.*", "2.2.102")
 					Expect(err).To(Equal(fmt.Errorf(IncompatibleGlobalAndBuildpackYml)))

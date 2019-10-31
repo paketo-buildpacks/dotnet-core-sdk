@@ -2,9 +2,10 @@ package utils
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/Masterminds/semver"
 	"github.com/cloudfoundry/libcfbuildpack/build"
-	"strings"
 )
 
 func BuildpackYAMLVersionCheck(versionRuntimeConfig, versionBuildpackYAML string) error {
@@ -20,7 +21,7 @@ func BuildpackYAMLVersionCheck(versionRuntimeConfig, versionBuildpackYAML string
 		return err
 	}
 
-	if runtimeVersion.Major() != buildpackYAMLVersion.Major(){
+	if runtimeVersion.Major() != buildpackYAMLVersion.Major() {
 		return fmt.Errorf("major versions of runtimes do not match between buildpack.yml and runtimeconfig.json")
 	}
 
@@ -33,17 +34,17 @@ func BuildpackYAMLVersionCheck(versionRuntimeConfig, versionBuildpackYAML string
 
 func FrameworkRollForward(version, framework string, context build.Build) (string, error) {
 	var versions []string
-	splitVersion, err := semver.NewVersion(version)
+	splitVersion, err := semver.NewVersion(strings.ReplaceAll(version, "*", "0"))
 	if err != nil {
 		return "", err
 	}
 	anyPatch := fmt.Sprintf("%d.%d.*", splitVersion.Major(), splitVersion.Minor())
-	anyMinor := fmt.Sprintf("%d.*.*", splitVersion.Major())
+	anyMinor := fmt.Sprintf("%d.*", splitVersion.Major())
 
 	runtimeConfig, err := NewRuntimeConfig(context.Application.Root)
 
 	if runtimeConfig.HasApplyPatches() {
-		versions = append(versions, anyPatch)
+		versions = append(versions, anyPatch, anyMinor)
 	} else {
 		versions = append(versions, version, anyPatch, anyMinor)
 	}
@@ -56,7 +57,7 @@ func FrameworkRollForward(version, framework string, context build.Build) (strin
 	for _, versionConstraint := range versions {
 		highestVersion, err := deps.Best(framework, versionConstraint, context.Stack)
 		if err == nil {
-			if highestVersion.Version.Minor() == splitVersion.Minor() && highestVersion.Version.Patch() < splitVersion.Patch(){
+			if highestVersion.Version.Minor() == splitVersion.Minor() && highestVersion.Version.Patch() < splitVersion.Patch() {
 				continue
 			}
 			if highestVersion.Version.Minor() < splitVersion.Minor() {

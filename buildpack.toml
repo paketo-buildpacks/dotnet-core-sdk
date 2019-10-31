@@ -54,6 +54,26 @@ stacks = ["org.cloudfoundry.stacks.cflinuxfs3", "io.buildpacks.stacks.bionic"]
 uri = "https://buildpacks.cloudfoundry.org/dependencies/dotnet-sdk/dotnet-sdk.3.0.100.linux-amd64-cflinuxfs3-3aa0c694.tar.xz"
 version = "3.0.100"
 
+[[metadata.runtime-to-sdks]]
+runtime-version = "2.1.12"
+sdks = ["2.1.801", "2.1.701", "2.1.605", "2.1.508"]
+
+[[metadata.runtime-to-sdks]]
+runtime-version = "2.1.13"
+sdks = ["2.1.802", "2.1.606", "2.1.509"]
+
+[[metadata.runtime-to-sdks]]
+runtime-version = "2.2.6"
+sdks = ["2.2.401", "2.2.205", "2.2.108"]
+
+[[metadata.runtime-to-sdks]]
+runtime-version = "2.2.7"
+sdks = ["2.2.402", "2.2.301", "2.2.206", "2.2.109"]
+
+[[metadata.runtime-to-sdks]]
+runtime-version = "3.0.0"
+sdks = ["3.0.100"]
+
 [[stacks]]
 id = "org.cloudfoundry.stacks.cflinuxfs3"
 

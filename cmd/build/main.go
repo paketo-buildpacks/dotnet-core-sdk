@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/cloudfoundry/dotnet-core-sdk-cnb/sdk"
 	"os"
+
+	"github.com/cloudfoundry/dotnet-core-sdk-cnb/sdk"
 
 	"github.com/cloudfoundry/libcfbuildpack/build"
 )
