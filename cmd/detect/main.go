@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/cloudfoundry/dotnet-core-conf-cnb/utils"
 	"github.com/cloudfoundry/dotnet-core-sdk-cnb/sdk"
-	"os"
 
 	"github.com/buildpack/libbuildpack/buildplan"
 	"github.com/cloudfoundry/libcfbuildpack/detect"
@@ -16,7 +17,6 @@ func main() {
 		_, _ = fmt.Fprintf(os.Stderr, "failed to create a default detection context: %s", err)
 		os.Exit(100)
 	}
-
 
 	code, err := runDetect(context)
 	if err != nil {
@@ -40,8 +40,8 @@ func runDetect(context detect.Detect) (int, error) {
 	hasRuntimeDependency := runtimeConfig.HasRuntimeDependency()
 	hasFDDependency := hasASPNetDependency || hasRuntimeDependency
 
-	hasFDE, err := runtimeConfig.HasFDE()
-	if err != nil{
+	hasFDE, err := runtimeConfig.HasExecutable()
+	if err != nil {
 		return context.Fail(), err
 	} else if !hasFDDependency || hasFDE {
 		return context.Pass(plan)
@@ -51,13 +51,13 @@ func runDetect(context detect.Detect) (int, error) {
 		Name:     sdk.DotnetSDK,
 		Version:  runtimeConfig.Version,
 		Metadata: buildplan.Metadata{"build": true, "launch": true},
-	},{
+	}, {
 		Name:     "dotnet-runtime",
 		Version:  runtimeConfig.Version,
 		Metadata: buildplan.Metadata{"build": true, "launch": true},
 	}}
 
-	if hasASPNetDependency{
+	if hasASPNetDependency {
 		plan.Requires = append(plan.Requires, buildplan.Required{
 			Name:     "dotnet-aspnet",
 			Version:  runtimeConfig.Version,
@@ -67,8 +67,3 @@ func runDetect(context detect.Detect) (int, error) {
 
 	return context.Pass(plan)
 }
-
-
-
-
-

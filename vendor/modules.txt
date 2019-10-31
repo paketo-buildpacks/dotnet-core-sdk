@@ -6,7 +6,7 @@ code.cloudfoundry.org/lager
 github.com/BurntSushi/toml
 # github.com/Masterminds/semver v1.5.0
 github.com/Masterminds/semver
-# github.com/buildpack/libbuildpack v1.25.3
+# github.com/buildpack/libbuildpack v1.25.4
 github.com/buildpack/libbuildpack/buildplan
 github.com/buildpack/libbuildpack/build
 github.com/buildpack/libbuildpack/layers
@@ -22,13 +22,10 @@ github.com/buildpack/libbuildpack/stack
 # github.com/cloudfoundry/dagger v0.0.0-20191025181811-15ebd2408e87
 github.com/cloudfoundry/dagger
 github.com/cloudfoundry/dagger/utils
-# github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.54
+# github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.64
 github.com/cloudfoundry/dotnet-core-conf-cnb/utils
-<<<<<<< HEAD
-# github.com/cloudfoundry/libcfbuildpack v1.91.2
-=======
-# github.com/cloudfoundry/libcfbuildpack v1.91.0
->>>>>>> Build and use runtime to sdk mapping
+github.com/cloudfoundry/dotnet-core-conf-cnb/utils/dotnettesting
+# github.com/cloudfoundry/libcfbuildpack v1.91.3
 github.com/cloudfoundry/libcfbuildpack/build
 github.com/cloudfoundry/libcfbuildpack/detect
 github.com/cloudfoundry/libcfbuildpack/buildpackplan
@@ -78,11 +75,7 @@ github.com/sclevine/spec
 github.com/sclevine/spec/report
 # github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8
 github.com/xi2/xz
-<<<<<<< HEAD
 # golang.org/x/net v0.0.0-20191028085509-fe3aa8a45271
-=======
-# golang.org/x/net v0.0.0-20191021124707-24d2ffbea1e8
->>>>>>> Build and use runtime to sdk mapping
 golang.org/x/net/html/charset
 golang.org/x/net/context/ctxhttp
 golang.org/x/net/context
@@ -94,11 +87,7 @@ golang.org/x/oauth2/google
 golang.org/x/oauth2/internal
 golang.org/x/oauth2/jws
 golang.org/x/oauth2/jwt
-<<<<<<< HEAD
 # golang.org/x/sys v0.0.0-20191029155521-f43be2a4598c
-=======
-# golang.org/x/sys v0.0.0-20191020212454-3e7259c5e7c2
->>>>>>> Build and use runtime to sdk mapping
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.2
 golang.org/x/text/encoding

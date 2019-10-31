@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/cloudfoundry/libcfbuildpack/helper"
-	"github.com/gravityblast/go-jsmin"
-	"github.com/pkg/errors"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/cloudfoundry/libcfbuildpack/helper"
+	"github.com/gravityblast/go-jsmin"
+	"github.com/pkg/errors"
 )
 
 type RuntimeConfig struct {
@@ -61,50 +62,40 @@ func (r *RuntimeConfig) HasRuntimeDependency() bool {
 }
 
 func (r *RuntimeConfig) HasASPNetDependency() bool {
-
-	return r.config.RuntimeOptions.Framework.Name == "Microsoft.AspNetCore.App" || r.config.RuntimeOptions.Framework.Name == "Microsoft.AspNetCore.All"
+	return r.config.RuntimeOptions.Framework.Name == "Microsoft.AspNetCore.App" ||
+		r.config.RuntimeOptions.Framework.Name == "Microsoft.AspNetCore.All"
 }
 
 func (r *RuntimeConfig) HasApplyPatches() bool {
-
 	return r.config.RuntimeOptions.ApplyPatches
 }
 
 func getBinaryName(runtimeConfigPath string) string {
-
 	runtimeConfigFile := filepath.Base(runtimeConfigPath)
 	executableFile := strings.ReplaceAll(runtimeConfigFile, ".runtimeconfig.json", "")
 
 	return executableFile
 }
 
-func (r *RuntimeConfig) HasFDE() (bool, error) {
-
+func (r *RuntimeConfig) HasExecutable() (bool, error) {
 	exists, err := helper.FileExists(filepath.Join(r.appRoot, r.BinaryName))
 	if err != nil {
 		return false, err
 	}
 
-	executable := false
-
-	if exists {
-		executable, err = isExecutable(filepath.Join(r.appRoot, r.BinaryName))
-		if err != nil {
-			return false, err
-		}
+	if !exists {
+		return false, nil
 	}
 
-	return executable, nil
-}
-
-func isExecutable(fileName string) (bool, error) {
-	info, err := os.Stat(fileName)
+	info, err := os.Stat(filepath.Join(r.appRoot, r.BinaryName))
 	if err != nil {
 		return false, err
 	}
+
 	if info.Mode()&0111 != 0 {
 		return true, nil
 	}
+
 	return false, nil
 }
 
