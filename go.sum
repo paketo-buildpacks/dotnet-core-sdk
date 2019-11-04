@@ -27,6 +27,8 @@ github.com/buildpack/libbuildpack v1.25.4/go.mod h1:GhVefAW5VEN0L2AWrupSzwMUeKd3
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cloudfoundry/dagger v0.0.0-20191025181811-15ebd2408e87 h1:Hp8DTKMSV+0w7iikgiK5ZQo47UzW6kMQy41XZLZ8fc0=
 github.com/cloudfoundry/dagger v0.0.0-20191025181811-15ebd2408e87/go.mod h1:xqRl2xy0Q75hzZXM/Cv2DZNl7OIzaT/6JOy8TZbb4yk=
+github.com/cloudfoundry/dagger v0.0.0-20191104213644-af89c350c4a1 h1:GmtYkG1z74OaxsR6CGKQk67bAkXZqLnX/eDLE5+rw7c=
+github.com/cloudfoundry/dagger v0.0.0-20191104213644-af89c350c4a1/go.mod h1:xqRl2xy0Q75hzZXM/Cv2DZNl7OIzaT/6JOy8TZbb4yk=
 github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.64 h1:UhB4KOfv3KepQhol4iiY5n6rCIiHVNdcg91Lo2l94OE=
 github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.64/go.mod h1:a6A/4JAbwyu10hnlm8QaNssfaU0mwXoY4lqT3oR0bhE=
 github.com/cloudfoundry/libcfbuildpack v1.89.0/go.mod h1:ufhp/bp0LxbDDwbf2Ms3Bf4x9YnLr9dkL1RTUYSdKg0=
