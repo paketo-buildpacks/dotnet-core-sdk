@@ -8,6 +8,8 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/buildpack/libbuildpack/buildplan"
+	"github.com/cloudfoundry/dotnet-core-aspnet-cnb/aspnet"
+	"github.com/cloudfoundry/dotnet-core-runtime-cnb/runtime"
 	"github.com/cloudfoundry/dotnet-core-sdk-cnb/sdk"
 
 	. "github.com/onsi/gomega"
@@ -65,7 +67,7 @@ version = "2.2.806"
 					Version:  "2.2.5",
 					Metadata: buildplan.Metadata{"build": true, "launch": true},
 				}, {
-					Name:     "dotnet-runtime",
+					Name:     runtime.DotnetRuntime,
 					Version:  "2.2.5",
 					Metadata: buildplan.Metadata{"build": true, "launch": true},
 				}},
@@ -94,11 +96,11 @@ version = "2.2.806"
 					Version:  "2.2.5",
 					Metadata: buildplan.Metadata{"build": true, "launch": true},
 				}, {
-					Name:     "dotnet-runtime",
+					Name:     runtime.DotnetRuntime,
 					Version:  "2.2.5",
 					Metadata: buildplan.Metadata{"build": true, "launch": true},
 				}, {
-					Name:     "dotnet-aspnet",
+					Name:     aspnet.DotnetAspNet,
 					Version:  "2.2.5",
 					Metadata: buildplan.Metadata{"build": true, "launch": true},
 				}},

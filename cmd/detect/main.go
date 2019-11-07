@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/cloudfoundry/dotnet-core-aspnet-cnb/aspnet"
 	"github.com/cloudfoundry/dotnet-core-conf-cnb/utils"
+	"github.com/cloudfoundry/dotnet-core-runtime-cnb/runtime"
 	"github.com/cloudfoundry/dotnet-core-sdk-cnb/sdk"
 
 	"github.com/buildpack/libbuildpack/buildplan"
@@ -52,14 +54,14 @@ func runDetect(context detect.Detect) (int, error) {
 		Version:  runtimeConfig.Version,
 		Metadata: buildplan.Metadata{"build": true, "launch": true},
 	}, {
-		Name:     "dotnet-runtime",
+		Name:     runtime.DotnetRuntime,
 		Version:  runtimeConfig.Version,
 		Metadata: buildplan.Metadata{"build": true, "launch": true},
 	}}
 
 	if hasASPNetDependency {
 		plan.Requires = append(plan.Requires, buildplan.Required{
-			Name:     "dotnet-aspnet",
+			Name:     aspnet.DotnetAspNet,
 			Version:  runtimeConfig.Version,
 			Metadata: buildplan.Metadata{"build": true, "launch": true},
 		})
