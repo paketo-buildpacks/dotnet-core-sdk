@@ -129,8 +129,8 @@ func testVersioning(t *testing.T, when spec.G, it spec.S) {
 
 				when("the exact version", func() {
 					it("returns the latest sdk for the runtime and feature line constraint", func() {
-						version, err := GetConstrainedCompatibleSDK("2.2.804", runtimetoSDK, compatibleDeps)
-						Expect(err).To(Equal(fmt.Errorf("no sdk version matching 2.2.804 found, please reconfigure the global.json and/or buildpack.yml to use supported sdk version")))
+						version, err := GetConstrainedCompatibleSDK("2.2.803", runtimetoSDK, compatibleDeps)
+						Expect(err).To(Equal(fmt.Errorf("no sdk version matching 2.2.803 found, please reconfigure the global.json and/or buildpack.yml to use supported sdk version")))
 						Expect(version).To(Equal(""))
 					})
 				})

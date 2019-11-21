@@ -260,10 +260,10 @@ dotnet-sdk:
 			app.SetHealthCheck("stat /workspace", "2s", "15s")
 		}
 
-		Expect(app.StartWithCommand("dotnet dotnet.dll --urls http://0.0.0.0:${PORT}")).To(Succeed())
+		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-runtime.%s", "2.1.14")))
+		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-aspnetcore.%s", "2.1.14")))
 
-		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-runtime.%s", "2.1.13")))
-		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-aspnetcore.%s", "2.1.13")))
+		Expect(app.StartWithCommand("dotnet dotnet.dll --urls http://0.0.0.0:${PORT}")).To(Succeed())
 
 		Eventually(func() string {
 			body, _, _ := app.HTTPGet("/")

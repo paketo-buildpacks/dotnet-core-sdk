@@ -80,7 +80,7 @@ func NewContributor(context build.Build) (Contributor, bool, error) {
 			version, rollForwardError = GetConstrainedCompatibleSDK(floatVersion, runtimetoSDK, compatibleDeps)
 		}
 		if rollForwardError != nil {
-			return Contributor{}, false, err
+			return Contributor{}, false, rollForwardError
 		}
 	}
 
