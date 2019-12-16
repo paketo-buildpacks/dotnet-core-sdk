@@ -56,10 +56,19 @@ api = "0.2"
 
   [[metadata.dependencies]]
     id = "dotnet-sdk"
+    sha256 = "7327511c467cdfa730f38c332b86c66db6fcbf03a38dc8769bb86ea339112252"
+    source = "https://download.visualstudio.microsoft.com/download/pr/46411df1-f625-45c8-b5e7-08ab736d3daa/0fbc446088b471b0a483f42eb3cbf7a2/dotnet-sdk-2.2.402-linux-x64.tar.gz"
+    source_sha256 = "4dafe1e6e49c6ddeb658bd702ed7724c4eb393ed719e2d6f557536f17917579a"
+    stacks = ["io.buildpacks.stacks.bionic"]
+    uri = "https://buildpacks.cloudfoundry.org/dependencies/dotnet-sdk/dotnet-sdk.2.2.402.linux-amd64-any-stack-7327511c.tar.xz"
+    version = "2.2.402"
+
+  [[metadata.dependencies]]
+    id = "dotnet-sdk"
     sha256 = "4fb1b0c17777fba8a9decd019caf3b86cb141f26b4eb625d73de46e2471a0364"
-    source = "https://github.com/dotnet/cli/archive/9f70fab4d2ab026c15d247ca228232c956b309e2.tar.gz"
+    source = "https://github.com/dotnet/cli"
     source_sha256 = "8db9f1acfc0820043f097aef33f46aa065bd66384a6778327d09536a3acf9cc6"
-    stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
+    stacks = ["org.cloudfoundry.stacks.cflinuxfs3"]
     uri = "https://buildpacks.cloudfoundry.org/dependencies/dotnet-sdk/dotnet-sdk.2.2.402.linux-amd64-cflinuxfs3-4fb1b0c1.tar.xz"
     version = "2.2.402"
 
