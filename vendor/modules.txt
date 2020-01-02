@@ -6,7 +6,7 @@ code.cloudfoundry.org/lager
 github.com/BurntSushi/toml
 # github.com/Masterminds/semver v1.5.0
 github.com/Masterminds/semver
-# github.com/buildpack/libbuildpack v1.25.7
+# github.com/buildpack/libbuildpack v1.25.8
 github.com/buildpack/libbuildpack/application
 github.com/buildpack/libbuildpack/build
 github.com/buildpack/libbuildpack/buildpack
@@ -29,7 +29,7 @@ github.com/cloudfoundry/dotnet-core-conf-cnb/utils
 github.com/cloudfoundry/dotnet-core-conf-cnb/utils/dotnettesting
 # github.com/cloudfoundry/dotnet-core-runtime-cnb v0.0.87
 github.com/cloudfoundry/dotnet-core-runtime-cnb/runtime
-# github.com/cloudfoundry/libcfbuildpack v1.91.12
+# github.com/cloudfoundry/libcfbuildpack v1.91.13
 github.com/cloudfoundry/libcfbuildpack/build
 github.com/cloudfoundry/libcfbuildpack/buildpack
 github.com/cloudfoundry/libcfbuildpack/buildpackplan
