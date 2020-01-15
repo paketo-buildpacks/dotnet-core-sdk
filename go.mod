@@ -6,7 +6,7 @@ require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/Masterminds/semver v1.5.0
 	github.com/buildpack/libbuildpack v1.25.10
-	github.com/cloudfoundry/dagger v0.0.0-20200114192520-43fb0b3ec98f
+	github.com/cloudfoundry/dagger v0.0.0-20200115142400-b69a9b4eabf4
 	github.com/cloudfoundry/dotnet-core-aspnet-cnb v0.0.78
 	github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.82
 	github.com/cloudfoundry/dotnet-core-runtime-cnb v0.0.87
