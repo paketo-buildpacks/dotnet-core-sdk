@@ -85,7 +85,7 @@ func testIntegration(t *testing.T, when spec.G, it spec.S) {
 
 	it("should build a working OCI image for a simple app with aspnet dependencies", func() {
 		app, err = dagger.NewPack(
-			filepath.Join("testdata", "simple_web_app"),
+			filepath.Join("testdata", "simple_web_app_3.1"),
 			dagger.RandomImage(),
 			dagger.SetBuildpacks(bpList...),
 			dagger.SetBuilder(builder),
@@ -96,17 +96,17 @@ func testIntegration(t *testing.T, when spec.G, it spec.S) {
 			app.SetHealthCheck("stat /workspace", "2s", "15s")
 		}
 
-		Expect(app.StartWithCommand("dotnet simple_web_app.dll --server.urls http://0.0.0.0:${PORT}")).To(Succeed())
+		Expect(app.StartWithCommand("dotnet simple_web_app.dll --urls http://0.0.0.0:${PORT}")).To(Succeed())
 
 		Eventually(func() string {
 			body, _, _ := app.HTTPGet("/")
 			return body
-		}).Should(ContainSubstring("Welcome"))
+		}).Should(ContainSubstring("Hello World!"))
 	})
 
 	when("global.json is specified", func() {
 		it("should build a working OCI image for a simple app with aspnet dependencies", func() {
-			majorMinor := "2.1"
+			majorMinor := "3.1"
 			version, err := dotnettesting.GetLowestRuntimeVersionInMajorMinor(majorMinor, filepath.Join("..", "buildpack.toml"))
 			Expect(err).ToNot(HaveOccurred())
 			glbJson := fmt.Sprintf(`{
@@ -114,47 +114,11 @@ func testIntegration(t *testing.T, when spec.G, it spec.S) {
 }
 `, version)
 
-			glbJsonPath := filepath.Join("testdata", "simple_web_app_with_global_json", "global.json")
+			glbJsonPath := filepath.Join("testdata", "simple_web_app_with_global_json_3.1", "global.json")
 			Expect(ioutil.WriteFile(glbJsonPath, []byte(glbJson), 0644)).To(Succeed())
 
 			app, err = dagger.NewPack(
-				filepath.Join("testdata", "simple_web_app_with_global_json"),
-				dagger.RandomImage(),
-				dagger.SetBuildpacks(bpList...),
-				dagger.SetBuilder(builder),
-			).Build()
-			Expect(err).ToNot(HaveOccurred())
-
-			if builder == "bionic" {
-				app.SetHealthCheck("stat /workspace", "2s", "15s")
-			}
-
-			Expect(app.StartWithCommand("dotnet simple_web_app_with_global_json.dll --urls http://0.0.0.0:${PORT}")).To(Succeed())
-
-			Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-sdk.%s", version)))
-
-			Eventually(func() string {
-				body, _, _ := app.HTTPGet("/")
-				return body
-			}).Should(ContainSubstring("simple_web_app_with_global_json"))
-		})
-	})
-
-	when("buildpack.yml is specified", func() {
-		it("should build a working OCI image for a simple app with aspnet dependencies", func() {
-			majorMinor := "2.2"
-			version, err := dotnettesting.GetLowestRuntimeVersionInMajorMinor(majorMinor, filepath.Join("..", "buildpack.toml"))
-			Expect(err).ToNot(HaveOccurred())
-			bpYml := fmt.Sprintf(`---
-dotnet-sdk:
-  version: "%s"
-`, version)
-
-			bpYmlPath := filepath.Join("testdata", "simple_web_app_with_buildpack_yml", "buildpack.yml")
-			Expect(ioutil.WriteFile(bpYmlPath, []byte(bpYml), 0644)).To(Succeed())
-
-			app, err = dagger.NewPack(
-				filepath.Join("testdata", "simple_web_app_with_buildpack_yml"),
+				filepath.Join("testdata", "simple_web_app_with_global_json_3.1"),
 				dagger.RandomImage(),
 				dagger.SetBuildpacks(bpList...),
 				dagger.SetBuilder(builder),
@@ -172,20 +136,56 @@ dotnet-sdk:
 			Eventually(func() string {
 				body, _, _ := app.HTTPGet("/")
 				return body
-			}).Should(ContainSubstring("Welcome"))
+			}).Should(ContainSubstring("Hello World!"))
+		})
+	})
+
+	when("buildpack.yml is specified", func() {
+		it("should build a working OCI image for a simple app with aspnet dependencies", func() {
+			majorMinor := "3.1"
+			version, err := dotnettesting.GetLowestRuntimeVersionInMajorMinor(majorMinor, filepath.Join("..", "buildpack.toml"))
+			Expect(err).ToNot(HaveOccurred())
+			bpYml := fmt.Sprintf(`---
+dotnet-sdk:
+  version: "%s"
+`, version)
+
+			bpYmlPath := filepath.Join("testdata", "simple_web_app_with_buildpack_yml_3.1", "buildpack.yml")
+			Expect(ioutil.WriteFile(bpYmlPath, []byte(bpYml), 0644)).To(Succeed())
+
+			app, err = dagger.NewPack(
+				filepath.Join("testdata", "simple_web_app_with_buildpack_yml_3.1"),
+				dagger.RandomImage(),
+				dagger.SetBuildpacks(bpList...),
+				dagger.SetBuilder(builder),
+			).Build()
+			Expect(err).ToNot(HaveOccurred())
+
+			if builder == "bionic" {
+				app.SetHealthCheck("stat /workspace", "2s", "15s")
+			}
+
+			Expect(app.StartWithCommand("dotnet simple_web_app.dll --urls http://0.0.0.0:${PORT}")).To(Succeed())
+
+			Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-sdk.%s", version)))
+
+			Eventually(func() string {
+				body, _, _ := app.HTTPGet("/")
+				return body
+			}).Should(ContainSubstring("Hello World!"))
 		})
 	})
 
 	when("buildpack.yml and global.json are specified", func() {
 		it("should build a working OCI image for a simple app with aspnet dependencies", func() {
 			glbJson := `{
-"sdk": { "version": "2.2.100"}
+"sdk": { "version": "3.1.100"}
 }`
 
-			glbJsonPath := filepath.Join("testdata", "simple_web_app_with_buildpack_yml_and_global_json", "global.json")
+			glbJsonPath := filepath.Join("testdata", "simple_web_app_with_buildpack_yml_and_global_json_3.1", "global.json")
 			Expect(ioutil.WriteFile(glbJsonPath, []byte(glbJson), 0644)).To(Succeed())
 
-			majorMinor := "2.2"
+			majorMinor := "3.1"
 			version, err := dotnettesting.GetLowestRuntimeVersionInMajorMinor(majorMinor, filepath.Join("..", "buildpack.toml"))
 			Expect(err).ToNot(HaveOccurred())
 			bpYml := fmt.Sprintf(`---
@@ -193,11 +193,11 @@ dotnet-sdk:
   version: "%s"
 `, version)
 
-			bpYmlPath := filepath.Join("testdata", "simple_web_app_with_buildpack_yml_and_global_json", "buildpack.yml")
+			bpYmlPath := filepath.Join("testdata", "simple_web_app_with_buildpack_yml_and_global_json_3.1", "buildpack.yml")
 			Expect(ioutil.WriteFile(bpYmlPath, []byte(bpYml), 0644)).To(Succeed())
 
 			app, err = dagger.NewPack(
-				filepath.Join("testdata", "simple_web_app_with_buildpack_yml_and_global_json"),
+				filepath.Join("testdata", "simple_web_app_with_buildpack_yml_and_global_json_3.1"),
 				dagger.RandomImage(),
 				dagger.SetBuildpacks(bpList...),
 				dagger.SetBuilder(builder),
@@ -215,7 +215,7 @@ dotnet-sdk:
 			Eventually(func() string {
 				body, _, _ := app.HTTPGet("/")
 				return body
-			}).Should(ContainSubstring("Welcome"))
+			}).Should(ContainSubstring("Hello World!"))
 		})
 	})
 
@@ -236,8 +236,8 @@ dotnet-sdk:
 
 		Expect(app.StartWithCommand("dotnet dotnet.dll --urls http://0.0.0.0:${PORT}")).To(Succeed())
 
-		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-runtime.%s", "2.1.12")))
-		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-aspnetcore.%s", "2.1.12")))
+		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-runtime.%s", "2.1.15")))
+		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-aspnetcore.%s", "2.1.15")))
 
 		Eventually(func() string {
 			body, _, _ := app.HTTPGet("/")
@@ -260,8 +260,8 @@ dotnet-sdk:
 			app.SetHealthCheck("stat /workspace", "2s", "15s")
 		}
 
-		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-runtime.%s", "2.1.14")))
-		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-aspnetcore.%s", "2.1.14")))
+		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-runtime.%s", "2.1.15")))
+		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-aspnetcore.%s", "2.1.15")))
 
 		Expect(app.StartWithCommand("dotnet dotnet.dll --urls http://0.0.0.0:${PORT}")).To(Succeed())
 
