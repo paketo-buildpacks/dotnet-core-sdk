@@ -96,6 +96,10 @@ api = "0.2"
     runtime-version = "3.1.1"
     sdks = ["3.1.101"]
 
+  [[metadata.runtime-to-sdks]]
+    runtime-version = "2.1.5"
+    sdks = ["2.1.403"]
+
 [[stacks]]
   id = "org.cloudfoundry.stacks.cflinuxfs3"
 
