@@ -1,6 +1,52 @@
-.NET Core SDK Cloud Native Buildpack
+# Dotnet Core SDK Cloud Native Buildpack
+
+## Integration
+
+The Dotnet Core SDK CNB provides the bundled dotnet sdk & driver as a dependency. Downstream buildpacks, like
+[Dotnet Core Build](https://github.com/cloudfoundry/dotnet-core-build-cnb) or
+by generating a [Build Plan
+TOML](https://github.com/buildpacks/spec/blob/master/buildpack.md#build-plan-toml)
+file that looks like the following:
+
+```toml
+[[requires]]
+
+  # The name of the Dotnet Core SDK dependency is "dotnet-sdk". This value is considered
+  # part of the public API for the buildpack and will not change without a plan
+  # for deprecation.
+  name = "dotnet-sdk"
+
+  # The version of the Dotnet Core SDK dependency is not required. In the case it
+  # is not specified, the buildpack will provide the default version, which can
+  # be seen in the buildpack.toml file.
+  # If you wish to request a specific version, the buildpack supports
+  # specifying a semver constraint in the form of "3.*", "3.1.*", or even
+  # "3.1.100".
+  version = "3.1.100"
+
+  # The Dotnet Core SDK buildpack supports some non-required metadata options.
+  [requires.metadata]
+
+    # Setting the build flag to true will ensure that the Dotnet Core SDK
+    # depdendency is available on the $PATH for subsequent buildpacks during
+    # their build phase. If you are writing a buildpack that needs to use the
+    # dotnet sdk & driver during its build process, this flag should be set to true.
+    build = true
+
+    # Setting the cache flag to true will enable caching of the Dotnet Core SDK
+    # dependency between builds. The benefits of caching include improved build
+    # speeds at the cost of a higher storage requirement to store the cached
+    # layer contents.
+    cache = true
+```
+
+## Usage
+
 To package this buildpack for consumption:
+
 ```
 $ ./scripts/package.sh
 ```
-This builds the buildpack's Go source using GOOS=linux by default. You can supply another value as the first argument to package.sh.
+
+This builds the buildpack's Go source using `GOOS=linux` by default. You can
+supply another value as the first argument to `package.sh`.
