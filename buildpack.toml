@@ -11,15 +11,6 @@ api = "0.2"
 
   [[metadata.dependencies]]
     id = "dotnet-sdk"
-    sha256 = "505ee870eb9a6a8563d1c94866e80ddf48ee9d10f85277093ec657fd6c012098"
-    source = "https://download.visualstudio.microsoft.com/download/pr/39e68289-0364-4173-a12b-c6234e94c527/92f3eb83bfca8b7cd360868996763125/dotnet-sdk-2.1.607-linux-x64.tar.gz"
-    source_sha256 = "f38a08584fff6014beb8f6729bcda22040fae40c8bce21a38ec2249823cd173b"
-    stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
-    uri = "https://buildpacks.cloudfoundry.org/dependencies/dotnet-sdk/dotnet-sdk.2.1.607.linux-amd64-cflinuxfs3-505ee870.tar.xz"
-    version = "2.1.607"
-
-  [[metadata.dependencies]]
-    id = "dotnet-sdk"
     sha256 = "761e82b26e016bc45bf8c90a122b2342f0ec55313e449d1766aa6f16cb4679d3"
     source = "https://download.visualstudio.microsoft.com/download/pr/701502b0-f9a2-464f-9832-4e6ca3126a2a/62655f151db917025e9be8cc4b7c1ed9/dotnet-sdk-2.1.803-linux-x64.tar.gz"
     source_sha256 = "fcb46a4a0c99bf82b591bca2cd276e2d73b65e199f0d14c9cc48dcdf5fb2ffb0"
@@ -73,12 +64,12 @@ api = "0.2"
     version = "3.1.101"
 
   [[metadata.runtime-to-sdks]]
-    runtime-version = "2.1.14"
-    sdks = ["2.1.607"]
-
-  [[metadata.runtime-to-sdks]]
     runtime-version = "2.1.15"
     sdks = ["2.1.803"]
+
+  [[metadata.runtime-to-sdks]]
+    runtime-version = "2.1.16"
+    sdks = ["2.1.804"]
 
   [[metadata.runtime-to-sdks]]
     runtime-version = "3.0.1"
