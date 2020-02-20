@@ -9,7 +9,7 @@ import (
 	"github.com/Masterminds/semver"
 )
 
-func GetLowestRuntimeVersionInMajorMinor(majorMinor, bpTomlPath string) (string, error) {
+func GetLowestRuntimeVersionInMajorMinor(majorMinor, bpTOMLPath string) (string, error) {
 	type buildpackTomlVersion struct {
 		Metadata struct {
 			Dependencies []struct {
@@ -19,7 +19,7 @@ func GetLowestRuntimeVersionInMajorMinor(majorMinor, bpTomlPath string) (string,
 	}
 
 	bpToml := buildpackTomlVersion{}
-	output, err := ioutil.ReadFile(filepath.Join(bpTomlPath))
+	output, err := ioutil.ReadFile(filepath.Join(bpTOMLPath))
 	if err != nil {
 		return "", err
 	}
@@ -52,4 +52,33 @@ func GetLowestRuntimeVersionInMajorMinor(majorMinor, bpTomlPath string) (string,
 	}
 
 	return lowestVersion.String(), nil
+}
+
+func GetCorrespondingRuntimeFromSDK(sdkVersion, bpTOMLPath string) (string, error) {
+	var frameworkVersion string
+	var runtimeSDKMap struct {
+		Metadata struct {
+			RuntimeToSdks []struct {
+				RuntimeVersion string   `toml:"runtime-version"`
+				Sdks           []string `toml:"sdks"`
+			} `toml:"runtime-to-sdks"`
+		} `toml:"metadata"`
+	}
+
+	_, err := toml.DecodeFile(bpTOMLPath, &runtimeSDKMap)
+	if err != nil {
+		return "", err
+	}
+
+	for _, r := range runtimeSDKMap.Metadata.RuntimeToSdks {
+		for _, s := range r.Sdks {
+			if s == sdkVersion {
+				frameworkVersion = r.RuntimeVersion
+			}
+		}
+	}
+	if frameworkVersion == "" {
+		return "", fmt.Errorf("no runtime version found for sdk-version %s", sdkVersion)
+	}
+	return frameworkVersion, nil
 }

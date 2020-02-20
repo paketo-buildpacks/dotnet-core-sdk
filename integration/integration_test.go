@@ -22,7 +22,7 @@ var (
 
 const testBuildpack = "test-buildpack"
 
-var suite = spec.New("Integration", spec.Report(report.Terminal{}))
+var suite = spec.New("Integration", spec.Report(report.Terminal{}), spec.Parallel())
 
 func init() {
 	suite("Integration", testIntegration)
@@ -145,10 +145,15 @@ func testIntegration(t *testing.T, when spec.G, it spec.S) {
 			majorMinor := "3.1"
 			version, err := dotnettesting.GetLowestRuntimeVersionInMajorMinor(majorMinor, filepath.Join("..", "buildpack.toml"))
 			Expect(err).ToNot(HaveOccurred())
+			frameworkVersion, err := dotnettesting.GetCorrespondingRuntimeFromSDK(version, filepath.Join("..", "buildpack.toml"))
+			Expect(err).ToNot(HaveOccurred())
+
 			bpYml := fmt.Sprintf(`---
+dotnet-framework:
+  version: "%s"
 dotnet-sdk:
   version: "%s"
-`, version)
+`, frameworkVersion, version)
 
 			bpYmlPath := filepath.Join("testdata", "simple_web_app_with_buildpack_yml_3.1", "buildpack.yml")
 			Expect(ioutil.WriteFile(bpYmlPath, []byte(bpYml), 0644)).To(Succeed())
@@ -188,10 +193,15 @@ dotnet-sdk:
 			majorMinor := "3.1"
 			version, err := dotnettesting.GetLowestRuntimeVersionInMajorMinor(majorMinor, filepath.Join("..", "buildpack.toml"))
 			Expect(err).ToNot(HaveOccurred())
+			frameworkVersion, err := dotnettesting.GetCorrespondingRuntimeFromSDK(version, filepath.Join("..", "buildpack.toml"))
+			Expect(err).ToNot(HaveOccurred())
+
 			bpYml := fmt.Sprintf(`---
+dotnet-framework:
+  version: "%s"
 dotnet-sdk:
   version: "%s"
-`, version)
+`, frameworkVersion, version)
 
 			bpYmlPath := filepath.Join("testdata", "simple_web_app_with_buildpack_yml_and_global_json_3.1", "buildpack.yml")
 			Expect(ioutil.WriteFile(bpYmlPath, []byte(bpYml), 0644)).To(Succeed())
@@ -260,8 +270,8 @@ dotnet-sdk:
 			app.SetHealthCheck("stat /workspace", "2s", "15s")
 		}
 
-		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-runtime.%s", "2.1.15")))
-		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-aspnetcore.%s", "2.1.15")))
+		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-runtime.%s", "2.1.16")))
+		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-aspnetcore.%s", "2.1.16")))
 
 		Expect(app.StartWithCommand("dotnet dotnet.dll --urls http://0.0.0.0:${PORT}")).To(Succeed())
 
