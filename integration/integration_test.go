@@ -184,7 +184,7 @@ dotnet-sdk:
 	when("buildpack.yml and global.json are specified", func() {
 		it("should build a working OCI image for a simple app with aspnet dependencies", func() {
 			glbJson := `{
-"sdk": { "version": "3.1.100"}
+"sdk": { "version": "3.1.102"}
 }`
 
 			glbJsonPath := filepath.Join("testdata", "simple_web_app_with_buildpack_yml_and_global_json_3.1", "global.json")
@@ -246,8 +246,8 @@ dotnet-sdk:
 
 		Expect(app.StartWithCommand("dotnet dotnet.dll --urls http://0.0.0.0:${PORT}")).To(Succeed())
 
-		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-runtime.%s", "2.1.15")))
-		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-aspnetcore.%s", "2.1.15")))
+		Expect(app.BuildLogs()).To(MatchRegexp(fmt.Sprintf(`dotnet-runtime.%s`, `2\.1\.16`)))
+		Expect(app.BuildLogs()).To(MatchRegexp(fmt.Sprintf(`dotnet-runtime.%s`, `2\.1\.16`)))
 
 		Eventually(func() string {
 			body, _, _ := app.HTTPGet("/")
@@ -270,8 +270,8 @@ dotnet-sdk:
 			app.SetHealthCheck("stat /workspace", "2s", "15s")
 		}
 
-		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-runtime.%s", "2.1.16")))
-		Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-aspnetcore.%s", "2.1.16")))
+		Expect(app.BuildLogs()).To(MatchRegexp(fmt.Sprintf(`dotnet-runtime.%s`, `2\.1\.17`)))
+		Expect(app.BuildLogs()).To(MatchRegexp(fmt.Sprintf(`dotnet-runtime.%s`, `2\.1\.17`)))
 
 		Expect(app.StartWithCommand("dotnet dotnet.dll --urls http://0.0.0.0:${PORT}")).To(Succeed())
 
