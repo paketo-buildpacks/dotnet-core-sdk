@@ -131,7 +131,7 @@ func testIntegration(t *testing.T, when spec.G, it spec.S) {
 
 			Expect(app.StartWithCommand("dotnet simple_web_app.dll --urls http://0.0.0.0:${PORT}")).To(Succeed())
 
-			Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-sdk.%s", version)))
+			Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-sdk_%s", version)))
 
 			Eventually(func() string {
 				body, _, _ := app.HTTPGet("/")
@@ -172,7 +172,7 @@ dotnet-sdk:
 
 			Expect(app.StartWithCommand("dotnet simple_web_app.dll --urls http://0.0.0.0:${PORT}")).To(Succeed())
 
-			Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-sdk.%s", version)))
+			Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-sdk_%s", version)))
 
 			Eventually(func() string {
 				body, _, _ := app.HTTPGet("/")
@@ -220,7 +220,7 @@ dotnet-sdk:
 
 			Expect(app.StartWithCommand("dotnet simple_web_app.dll --urls http://0.0.0.0:${PORT}")).To(Succeed())
 
-			Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-sdk.%s", version)))
+			Expect(app.BuildLogs()).To(ContainSubstring(fmt.Sprintf("dotnet-sdk_%s", version)))
 
 			Eventually(func() string {
 				body, _, _ := app.HTTPGet("/")

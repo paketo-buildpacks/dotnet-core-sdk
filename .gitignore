@@ -2,3 +2,7 @@
 .bin
 /.idea
 /bin
+
+integration/testdata/simple_web_app_with_buildpack_yml_3.1/buildpack.yml
+integration/testdata/simple_web_app_with_buildpack_yml_and_global_json_3.1/buildpack.yml
+integration/testdata/simple_web_app_with_global_json_3.1/global.json
