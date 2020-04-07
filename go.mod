@@ -13,7 +13,7 @@ require (
 	github.com/cloudfoundry/dotnet-core-runtime-cnb v0.0.127
 	github.com/cloudfoundry/libcfbuildpack v1.91.23
 	github.com/kr/text v0.2.0 // indirect
-	github.com/mitchellh/mapstructure v1.1.2
+	github.com/mitchellh/mapstructure v1.2.2
 	github.com/onsi/ginkgo v1.12.0 // indirect
 	github.com/onsi/gomega v1.9.0
 	github.com/pkg/errors v0.9.1 // indirect
