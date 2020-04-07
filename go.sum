@@ -56,6 +56,8 @@ github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.64 h1:UhB4KOfv3KepQhol4iiY5n6r
 github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.64/go.mod h1:a6A/4JAbwyu10hnlm8QaNssfaU0mwXoY4lqT3oR0bhE=
 github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.115 h1:e7Dv4i/R7z1lhqtTiLEnXx0wpR1A/JyAIlRXVDoR+Fc=
 github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.115/go.mod h1:DcJclmw5yeTDYV3SY4WwRHpOKWtJqlx/USSlnG6BfHA=
+github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.121 h1:O4pPyVb2e8pGfEGijiP20//nIIgqWIBV+5Ij78TPrI4=
+github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.121/go.mod h1:DcJclmw5yeTDYV3SY4WwRHpOKWtJqlx/USSlnG6BfHA=
 github.com/cloudfoundry/dotnet-core-runtime-cnb v0.0.78 h1:Yy70h6D/rn7daXBG1guB4nTi6d0YctoaKgnXQMtCkG4=
 github.com/cloudfoundry/dotnet-core-runtime-cnb v0.0.78/go.mod h1:P4LmYM/n/VM+gzg+MI8YpgwLLPlstAVBzm7xgIa5p4Q=
 github.com/cloudfoundry/dotnet-core-runtime-cnb v0.0.127 h1:i+Ian3oKg4GuK+a0u6/bauGRNvpojt+Vmhq52T9ia+s=
