@@ -60,6 +60,8 @@ github.com/cloudfoundry/dotnet-core-runtime-cnb v0.0.78 h1:Yy70h6D/rn7daXBG1guB4
 github.com/cloudfoundry/dotnet-core-runtime-cnb v0.0.78/go.mod h1:P4LmYM/n/VM+gzg+MI8YpgwLLPlstAVBzm7xgIa5p4Q=
 github.com/cloudfoundry/dotnet-core-runtime-cnb v0.0.127 h1:i+Ian3oKg4GuK+a0u6/bauGRNvpojt+Vmhq52T9ia+s=
 github.com/cloudfoundry/dotnet-core-runtime-cnb v0.0.127/go.mod h1:rwWv+AKJEL9E12EWoloEjMyuGwyiHusOIYEIjYw7s3A=
+github.com/cloudfoundry/dotnet-core-runtime-cnb v0.0.136 h1:2+MyhmAnGwgoZ6GoC6Qm6QsK9Q8UvQ1lzWuQQ/SUZoY=
+github.com/cloudfoundry/dotnet-core-runtime-cnb v0.0.136/go.mod h1:BjUJfaJu05kf1DNiTXfL0TKiHMxcbRZbzEy5qiwCv4Y=
 github.com/cloudfoundry/icu-cnb v0.0.2/go.mod h1:R/8NkqqmxKWKAUl25fvc++FJawmoQGmI26kuKaplHpA=
 github.com/cloudfoundry/libcfbuildpack v1.89.0/go.mod h1:ufhp/bp0LxbDDwbf2Ms3Bf4x9YnLr9dkL1RTUYSdKg0=
 github.com/cloudfoundry/libcfbuildpack v1.91.2 h1:c6hwFmHLqYWhtC3CYPsfCeo/9d1LcKwtqC+SBFGcYIY=
