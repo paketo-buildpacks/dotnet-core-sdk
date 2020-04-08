@@ -8,16 +8,13 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/buildpack/libbuildpack/buildplan"
-	"github.com/cloudfoundry/dotnet-core-aspnet-cnb/aspnet"
-	"github.com/cloudfoundry/dotnet-core-runtime-cnb/runtime"
 	"github.com/cloudfoundry/dotnet-core-sdk-cnb/sdk"
-
-	. "github.com/onsi/gomega"
-
 	"github.com/cloudfoundry/libcfbuildpack/detect"
 	"github.com/cloudfoundry/libcfbuildpack/test"
 	"github.com/sclevine/spec"
 	"github.com/sclevine/spec/report"
+
+	. "github.com/onsi/gomega"
 )
 
 func TestUnitDetect(t *testing.T) {
@@ -67,7 +64,7 @@ version = "2.2.806"
 					Version:  "2.2.5",
 					Metadata: buildplan.Metadata{"build": true, "launch": true},
 				}, {
-					Name:     runtime.DotnetRuntime,
+					Name:     "dotnet-runtime",
 					Version:  "2.2.5",
 					Metadata: buildplan.Metadata{"build": true, "launch": true},
 				}},
@@ -96,11 +93,11 @@ version = "2.2.806"
 					Version:  "2.2.5",
 					Metadata: buildplan.Metadata{"build": true, "launch": true},
 				}, {
-					Name:     runtime.DotnetRuntime,
+					Name:     "dotnet-runtime",
 					Version:  "2.2.5",
 					Metadata: buildplan.Metadata{"build": true, "launch": true},
 				}, {
-					Name:     aspnet.DotnetAspNet,
+					Name:     "dotnet-aspnetcore",
 					Version:  "2.2.5",
 					Metadata: buildplan.Metadata{"build": true, "launch": true},
 				}},
