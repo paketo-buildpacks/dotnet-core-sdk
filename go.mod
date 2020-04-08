@@ -9,7 +9,7 @@ require (
 	github.com/buildpack/libbuildpack v1.25.11
 	github.com/cloudfoundry/dagger v0.0.0-20200213200846-c2a9723f08c4
 	github.com/cloudfoundry/dotnet-core-aspnet-cnb v0.0.118
-	github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.115
+	github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.123
 	github.com/cloudfoundry/dotnet-core-runtime-cnb v0.0.127
 	github.com/cloudfoundry/libcfbuildpack v1.91.23
 	github.com/kr/text v0.2.0 // indirect
