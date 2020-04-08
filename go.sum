@@ -52,6 +52,8 @@ github.com/cloudfoundry/dagger v0.0.0-20200213200846-c2a9723f08c4 h1:J2mh0/z+4BN
 github.com/cloudfoundry/dagger v0.0.0-20200213200846-c2a9723f08c4/go.mod h1:u5NQ0WO/W1nwFEwmLuvLoJVrKF4LIFVkKTh9hGODwZs=
 github.com/cloudfoundry/dotnet-core-aspnet-cnb v0.0.118 h1:8cWh2jVazAg6ht7tEqpfDJifm97SY9AcGvv5/VwwzCI=
 github.com/cloudfoundry/dotnet-core-aspnet-cnb v0.0.118/go.mod h1:puQDdsL2/HzoNLqd5mRleoExjycaY5ESE2vA58hXuxE=
+github.com/cloudfoundry/dotnet-core-aspnet-cnb v0.0.130 h1:rv6fhp+iB74rFB6Ck3RK8k8ejGpqBeuCv2aX/vA+37w=
+github.com/cloudfoundry/dotnet-core-aspnet-cnb v0.0.130/go.mod h1:VLocgxlpsopiidUTd21bn4RyZ9sglC2RIFB27kcsqTk=
 github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.64 h1:UhB4KOfv3KepQhol4iiY5n6rCIiHVNdcg91Lo2l94OE=
 github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.64/go.mod h1:a6A/4JAbwyu10hnlm8QaNssfaU0mwXoY4lqT3oR0bhE=
 github.com/cloudfoundry/dotnet-core-conf-cnb v0.0.115 h1:e7Dv4i/R7z1lhqtTiLEnXx0wpR1A/JyAIlRXVDoR+Fc=
