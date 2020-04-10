@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/cloudfoundry/dotnet-core-conf-cnb/utils"
 	"github.com/cloudfoundry/libcfbuildpack/build"
 	"github.com/cloudfoundry/libcfbuildpack/buildpackplan"
 	"github.com/cloudfoundry/libcfbuildpack/helper"
@@ -127,13 +126,13 @@ func (c Contributor) Contribute() error {
 		layer.Logger.Body("Symlinking runtime libraries")
 		pathToRuntime := os.Getenv("DOTNET_ROOT")
 
-		if err := utils.SymlinkSharedFolder(pathToRuntime, layer.Root); err != nil {
+		if err := SymlinkSharedFolder(pathToRuntime, layer.Root); err != nil {
 			return err
 		}
 
 		hostDir := filepath.Join(pathToRuntime, "host")
 
-		if err := utils.CreateValidSymlink(hostDir, filepath.Join(layer.Root, filepath.Base(hostDir))); err != nil {
+		if err := CreateValidSymlink(hostDir, filepath.Join(layer.Root, filepath.Base(hostDir))); err != nil {
 			return err
 		}
 		layer.Logger.Body("Moving dotnet driver from %s", c.sdkLayer.Root)

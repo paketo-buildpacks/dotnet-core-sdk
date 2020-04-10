@@ -1,4 +1,4 @@
-package utils
+package sdk
 
 import (
 	"fmt"

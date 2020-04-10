@@ -1,4 +1,4 @@
-package utils
+package sdk
 
 import (
 	"bytes"
@@ -57,24 +57,17 @@ func (r *RuntimeConfig) IsPresent() bool {
 	return r.isPresent
 }
 
-func (r *RuntimeConfig) HasRuntimeDependency() bool {
-	return r.config.RuntimeOptions.Framework.Name == "Microsoft.NETCore.App"
-}
-
 func (r *RuntimeConfig) HasASPNetDependency() bool {
 	return r.config.RuntimeOptions.Framework.Name == "Microsoft.AspNetCore.App" ||
 		r.config.RuntimeOptions.Framework.Name == "Microsoft.AspNetCore.All"
 }
 
-func (r *RuntimeConfig) HasApplyPatches() bool {
-	return r.config.RuntimeOptions.ApplyPatches
+func (r *RuntimeConfig) HasRuntimeDependency() bool {
+	return r.config.RuntimeOptions.Framework.Name == "Microsoft.NETCore.App"
 }
 
-func getBinaryName(runtimeConfigPath string) string {
-	runtimeConfigFile := filepath.Base(runtimeConfigPath)
-	executableFile := strings.ReplaceAll(runtimeConfigFile, ".runtimeconfig.json", "")
-
-	return executableFile
+func (r *RuntimeConfig) HasApplyPatches() bool {
+	return r.config.RuntimeOptions.ApplyPatches
 }
 
 func (r *RuntimeConfig) HasExecutable() (bool, error) {
@@ -139,4 +132,11 @@ func sanitizeJsonConfig(runtimeConfigPath string) ([]byte, error) {
 	}
 
 	return output.Bytes(), nil
+}
+
+func getBinaryName(runtimeConfigPath string) string {
+	runtimeConfigFile := filepath.Base(runtimeConfigPath)
+	executableFile := strings.ReplaceAll(runtimeConfigFile, ".runtimeconfig.json", "")
+
+	return executableFile
 }

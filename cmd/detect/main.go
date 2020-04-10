@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/buildpack/libbuildpack/buildplan"
-	"github.com/cloudfoundry/dotnet-core-conf-cnb/utils"
 	"github.com/cloudfoundry/dotnet-core-sdk-cnb/sdk"
 	"github.com/cloudfoundry/libcfbuildpack/detect"
 )
@@ -30,7 +29,7 @@ func runDetect(context detect.Detect) (int, error) {
 		Provides: []buildplan.Provided{{Name: sdk.DotnetSDK}},
 	}
 
-	runtimeConfig, err := utils.NewRuntimeConfig(context.Application.Root)
+	runtimeConfig, err := sdk.NewRuntimeConfig(context.Application.Root)
 	if err != nil {
 		return context.Fail(), err
 	}
