@@ -3,7 +3,7 @@
 ## Integration
 
 The Dotnet Core SDK CNB provides the bundled dotnet sdk & driver as a dependency. Downstream buildpacks, like
-[Dotnet Core Build](https://github.com/cloudfoundry/dotnet-core-build-cnb) or
+[Dotnet Core Build](https://github.com/paketo-buildpacks/dotnet-core-build) or
 by generating a [Build Plan
 TOML](https://github.com/buildpacks/spec/blob/master/buildpack.md#build-plan-toml)
 file that looks like the following:
