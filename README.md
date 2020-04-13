@@ -32,12 +32,6 @@ file that looks like the following:
     # their build phase. If you are writing a buildpack that needs to use the
     # dotnet sdk & driver during its build process, this flag should be set to true.
     build = true
-
-    # Setting the cache flag to true will enable caching of the Dotnet Core SDK
-    # dependency between builds. The benefits of caching include improved build
-    # speeds at the cost of a higher storage requirement to store the cached
-    # layer contents.
-    cache = true
 ```
 
 ## Usage
