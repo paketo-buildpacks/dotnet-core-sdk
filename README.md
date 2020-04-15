@@ -1,8 +1,13 @@
 # Dotnet Core SDK Cloud Native Buildpack
 
+The Dotnet Core SDK CNB provides a version of the Dotnet Core SDK and a version of the
+Dotnet Core Driver or the `dotnet` binary. It also sets the Dotnet Core SDK on the`$DOTNET_ROOT`
+so that it is available to subsequent buildpacks during their build phase and sets the Dotnet Core
+Driver on the `$PATH` so that is available to subsequent buildpacks and in the final running container.
+
 ## Integration
 
-The Dotnet Core SDK CNB provides the bundled dotnet sdk & driver as a dependency. Downstream buildpacks, like
+The Dotnet Core SDK CNB provides the dotnet-sdk as a dependency. Downstream buildpacks, like
 [Dotnet Core Build](https://github.com/paketo-buildpacks/dotnet-core-build) or
 by generating a [Build Plan
 TOML](https://github.com/buildpacks/spec/blob/master/buildpack.md#build-plan-toml)
@@ -28,9 +33,11 @@ file that looks like the following:
   [requires.metadata]
 
     # Setting the build flag to true will ensure that the Dotnet Core SDK
-    # depdendency is available on the $PATH for subsequent buildpacks during
-    # their build phase. If you are writing a buildpack that needs to use the
-    # dotnet sdk & driver during its build process, this flag should be set to true.
+    # depdendency is available in the $DOTNET_ROOT for subsequent buildpacks during
+    # their build phase and ensures that the Dotnet Core Driver dependency is available
+    # in the $PATH for subsequent buildpacks. If you are writing a buildpack that needs
+    # to use the dotnet sdk & driver during its build process, this flag should be set
+    # to true.
     build = true
 ```
 
