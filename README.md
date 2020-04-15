@@ -8,8 +8,8 @@ Driver on the `$PATH` so that is available to subsequent buildpacks and in the f
 ## Integration
 
 The Dotnet Core SDK CNB provides the dotnet-sdk as a dependency. Downstream buildpacks, like
-[Dotnet Core Build](https://github.com/paketo-buildpacks/dotnet-core-build) or
-by generating a [Build Plan
+[Dotnet Core Build](https://github.com/paketo-buildpacks/dotnet-core-build) can
+require the dotnet-sdk dependency by generating a [Build Plan
 TOML](https://github.com/buildpacks/spec/blob/master/buildpack.md#build-plan-toml)
 file that looks like the following:
 
