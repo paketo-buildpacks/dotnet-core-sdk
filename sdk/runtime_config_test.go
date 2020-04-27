@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/cloudfoundry/dotnet-core-sdk-cnb/sdk"
+	"github.com/paketo-buildpacks/dotnet-core-sdk/sdk"
 	"github.com/sclevine/spec"
 	"github.com/sclevine/spec/report"
 

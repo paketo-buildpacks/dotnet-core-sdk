@@ -5,8 +5,8 @@ import (
 	"os"
 
 	"github.com/buildpack/libbuildpack/buildplan"
-	"github.com/cloudfoundry/dotnet-core-sdk-cnb/sdk"
 	"github.com/cloudfoundry/libcfbuildpack/detect"
+	"github.com/paketo-buildpacks/dotnet-core-sdk/sdk"
 )
 
 func main() {
