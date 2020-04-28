@@ -8,9 +8,9 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/buildpack/libbuildpack/buildplan"
-	"github.com/cloudfoundry/dotnet-core-sdk-cnb/sdk"
 	"github.com/cloudfoundry/libcfbuildpack/detect"
 	"github.com/cloudfoundry/libcfbuildpack/test"
+	"github.com/paketo-buildpacks/dotnet-core-sdk/sdk"
 	"github.com/sclevine/spec"
 	"github.com/sclevine/spec/report"
 
