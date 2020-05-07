@@ -11,7 +11,7 @@ require (
 	github.com/cloudfoundry/libcfbuildpack v1.91.23
 	github.com/gravityblast/go-jsmin v0.0.0-20141027113318-a32d741b3595
 	github.com/kr/text v0.2.0 // indirect
-	github.com/mitchellh/mapstructure v1.2.2
+	github.com/mitchellh/mapstructure v1.3.0
 	github.com/onsi/ginkgo v1.12.0 // indirect
 	github.com/onsi/gomega v1.9.0
 	github.com/pilu/miniassert v0.0.0-20140522125902-bee63581261a // indirect
