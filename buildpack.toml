@@ -4,6 +4,7 @@ api = "0.2"
   id = "paketo-buildpacks/dotnet-core-sdk"
   name = ".NET SDK Buildpack"
   version = "{{ .Version }}"
+  homepage = "https://github.com/paketo-buildpacks/dotnet-core-sdk"
 
 [metadata]
   include_files = ["bin/build", "bin/detect", "buildpack.toml", "go.mod", "go.sum"]
