@@ -141,7 +141,7 @@ func (c Contributor) Contribute() error {
 			return err
 		}
 
-		if err := layer.AppendPathSharedEnv("PATH", layer.Root); err != nil {
+		if err := layer.PrependPathSharedEnv("PATH", layer.Root); err != nil {
 			return err
 		}
 
@@ -185,6 +185,9 @@ func loadBuildpackYAMLVersion(appRoot string) (string, error) {
 		return "", err
 	} else if exists {
 		err = helper.ReadBuildpackYaml(bpYamlPath, &bpYAML)
+		if err != nil {
+			return "", err
+		}
 	}
 
 	if bpYAML == (buildpackYAML{}) {
@@ -213,7 +216,10 @@ func loadGlobalJSONVersion(appRoot string) (string, error) {
 		}
 
 		jsonDecoder := json.NewDecoder(f)
-		jsonDecoder.Decode(&globalJson)
+		err = jsonDecoder.Decode(&globalJson)
+		if err != nil {
+			return "", err
+		}
 	}
 	return globalJson.Sdk.Version, err
 }
@@ -231,7 +237,10 @@ func GetRuntimetoSDKMap(context build.Build) (map[string][]string, error) {
 	}
 
 	var sdkMapping []sdkMap
-	mapstructure.Decode(metadata, &sdkMapping)
+	err := mapstructure.Decode(metadata, &sdkMapping)
+	if err != nil {
+		return nil, err
+	}
 
 	for _, runtimeMapping := range sdkMapping {
 		runtimetoSDK[runtimeMapping.RuntimeVersion] = runtimeMapping.Sdks
