@@ -56,6 +56,8 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 		symlinkLayer = factory.Build.Layers.Layer("driver-symlinks")
 
 		fakeSymlinkTarget, err = ioutil.TempDir("", "")
+		Expect(err).ToNot(HaveOccurred())
+
 		runtimeSymlinkLayerPath, err = ioutil.TempDir(os.TempDir(), "runtime")
 		Expect(err).ToNot(HaveOccurred())
 
@@ -297,7 +299,7 @@ dotnet-sdk:
 
 			ExpectSymlink(filepath.Join(symlinkLayer.Root, "shared", "Microsoft.NETCore.App"), t)
 
-			Expect(symlinkLayer).To(test.HaveAppendPathSharedEnvironment("PATH", filepath.Join(symlinkLayer.Root)))
+			Expect(symlinkLayer).To(test.HavePrependPathSharedEnvironment("PATH", filepath.Join(symlinkLayer.Root)))
 			Expect(symlinkLayer).To(test.HaveOverrideSharedEnvironment("DOTNET_ROOT", filepath.Join(symlinkLayer.Root)))
 		})
 
