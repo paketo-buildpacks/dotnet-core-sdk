@@ -17,8 +17,8 @@ import (
 )
 
 var (
-	bpDir, sdkURI, builder string
-	bpList                 []string
+	sdkURI, builder string
+	bpList          []string
 )
 
 const testBuildpack = "test-buildpack"
@@ -80,7 +80,7 @@ func testIntegration(t *testing.T, when spec.G, it spec.S) {
 
 	it.After(func() {
 		if app != nil {
-			app.Destroy()
+			Expect(app.Destroy()).To(Succeed())
 		}
 	})
 
