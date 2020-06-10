@@ -247,8 +247,8 @@ dotnet-sdk:
 
 		Expect(app.StartWithCommand("dotnet dotnet.dll --urls http://0.0.0.0:${PORT}")).To(Succeed())
 
-		Expect(app.BuildLogs()).To(MatchRegexp(fmt.Sprintf(`dotnet-runtime.%s`, `2\.1\.17`)))
-		Expect(app.BuildLogs()).To(MatchRegexp(fmt.Sprintf(`dotnet-runtime.%s`, `2\.1\.17`)))
+		Expect(app.BuildLogs()).To(MatchRegexp(fmt.Sprintf(`dotnet-runtime.%s`, `2\.1\.18`)))
+		Expect(app.BuildLogs()).To(MatchRegexp(fmt.Sprintf(`dotnet-runtime.%s`, `2\.1\.18`)))
 
 		Eventually(func() string {
 			body, _, _ := app.HTTPGet("/")
@@ -271,8 +271,8 @@ dotnet-sdk:
 			app.SetHealthCheck("stat /workspace", "2s", "15s")
 		}
 
-		Expect(app.BuildLogs()).To(MatchRegexp(fmt.Sprintf(`dotnet-runtime_%s`, `2\.1\.18`)))
-		Expect(app.BuildLogs()).To(MatchRegexp(fmt.Sprintf(`dotnet-runtime_%s`, `2\.1\.18`)))
+		Expect(app.BuildLogs()).To(MatchRegexp(fmt.Sprintf(`dotnet-runtime_%s`, `2\.1\.19`)))
+		Expect(app.BuildLogs()).To(MatchRegexp(fmt.Sprintf(`dotnet-runtime_%s`, `2\.1\.19`)))
 
 		Expect(app.StartWithCommand("dotnet dotnet.dll --urls http://0.0.0.0:${PORT}")).To(Succeed())
 
