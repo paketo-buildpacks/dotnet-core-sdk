@@ -2,7 +2,7 @@ api = "0.2"
 
 [buildpack]
   id = "paketo-buildpacks/dotnet-core-sdk"
-  name = ".NET SDK Buildpack"
+  name = "Paketo .NET SDK Buildpack"
   version = "{{ .Version }}"
   homepage = "https://github.com/paketo-buildpacks/dotnet-core-sdk"
 
