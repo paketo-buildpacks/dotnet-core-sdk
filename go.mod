@@ -3,7 +3,6 @@ module github.com/paketo-buildpacks/dotnet-core-sdk
 go 1.12
 
 require (
-	cloud.google.com/go v0.60.0 // indirect
 	code.cloudfoundry.org/lager v2.0.0+incompatible // indirect
 	github.com/BurntSushi/toml v0.3.1
 	github.com/Masterminds/semver v1.5.0
@@ -20,8 +19,9 @@ require (
 	github.com/pilu/miniassert v0.0.0-20140522125902-bee63581261a // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/sclevine/spec v1.4.0
-	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
-	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
+	golang.org/x/net v0.0.0-20200904194848-62affa334b73 // indirect
+	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43 // indirect
+	golang.org/x/sys v0.0.0-20200909081042-eff7692f9009 // indirect
 	gopkg.in/VividCortex/ewma.v1 v1.1.1 // indirect
 	gopkg.in/cheggaaa/pb.v2 v2.0.7 // indirect
 	gopkg.in/fatih/color.v1 v1.7.0 // indirect

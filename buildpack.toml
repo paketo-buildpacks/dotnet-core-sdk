@@ -51,9 +51,11 @@ api = "0.2"
     runtime-version = "2.1.21"
     sdks = ["2.1.809"]
 
+  [[metadata.runtime-to-sdks]]
     runtime-version = "2.1.22"
     sdks = ["2.1.810"]
 
+  [[metadata.runtime-to-sdks]]
     runtime-version = "3.1.7"
     sdks = ["3.1.401"]
 
