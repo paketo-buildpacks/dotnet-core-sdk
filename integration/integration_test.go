@@ -72,7 +72,7 @@ func BeforeSuite() {
 			bpList = append(bpList, sdkURI)
 			continue
 		}
-		bpURI, err = dagger.GetLatestBuildpack(bp)
+		bpURI, err = dagger.GetLatestCommunityBuildpack("paketo-buildpacks", bp)
 		Expect(err).NotTo(HaveOccurred())
 		bpList = append(bpList, bpURI)
 	}
