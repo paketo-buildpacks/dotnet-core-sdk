@@ -72,7 +72,7 @@ func BeforeSuite() {
 			bpList = append(bpList, sdkURI)
 			continue
 		}
-		bpURI, err = dagger.GetLatestBuildpack(bp)
+		bpURI, err = dagger.GetLatestCommunityBuildpack("paketo-buildpacks", bp)
 		Expect(err).NotTo(HaveOccurred())
 		bpList = append(bpList, bpURI)
 	}
@@ -273,8 +273,8 @@ dotnet-sdk:
 
 		Expect(app.StartWithCommand("dotnet dotnet.dll --urls http://0.0.0.0:${PORT}")).To(Succeed())
 
-		Expect(app.BuildLogs()).To(MatchRegexp(fmt.Sprintf(`dotnet-runtime_%s`, `2\.1\.21`)))
-		Expect(app.BuildLogs()).To(MatchRegexp(fmt.Sprintf(`dotnet-aspnetcore_%s`, `2\.1\.21`)))
+		Expect(app.BuildLogs()).To(MatchRegexp(fmt.Sprintf(`dotnet-runtime_%s`, `2\.1\.22`)))
+		Expect(app.BuildLogs()).To(MatchRegexp(fmt.Sprintf(`dotnet-aspnetcore_%s`, `2\.1\.22`)))
 
 		Eventually(func() string {
 			body, _, _ := app.HTTPGet("/")
@@ -297,8 +297,8 @@ dotnet-sdk:
 			app.SetHealthCheck("stat /workspace", "2s", "15s")
 		}
 
-		Expect(app.BuildLogs()).To(MatchRegexp(fmt.Sprintf(`dotnet-runtime_%s`, `2\.1\.22`)))
-		Expect(app.BuildLogs()).To(MatchRegexp(fmt.Sprintf(`dotnet-aspnetcore_%s`, `2\.1\.22`)))
+		Expect(app.BuildLogs()).To(MatchRegexp(fmt.Sprintf(`dotnet-runtime_%s`, `2\.1\.23`)))
+		Expect(app.BuildLogs()).To(MatchRegexp(fmt.Sprintf(`dotnet-aspnetcore_%s`, `2\.1\.23`)))
 
 		Expect(app.StartWithCommand("dotnet dotnet.dll --urls http://0.0.0.0:${PORT}")).To(Succeed())
 
