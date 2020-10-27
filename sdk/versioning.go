@@ -15,12 +15,12 @@ const (
 )
 
 func GetSDKFloatVersion(version string) (string, error) {
-	splitVersion, err := semver.NewVersion(version)
-	if err != nil {
-		return "", err
+	parts := []string{"*", "*", "*"}
+	for i, part := range strings.SplitN(version, ".", 3) {
+		parts[i] = part
 	}
 
-	return fmt.Sprintf("%d.%d.*", splitVersion.Major(), splitVersion.Minor()), nil
+	return fmt.Sprintf("%s.%s.*", parts[0], parts[1]), nil
 }
 
 func GetLatestCompatibleSDKDeps(sdkVersion string, context build.Build) ([]*semver.Version, error) {

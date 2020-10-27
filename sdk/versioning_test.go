@@ -52,10 +52,20 @@ func testVersioning(t *testing.T, when spec.G, it spec.S) {
 	})
 
 	when("GetSDKFloatVersion", func() {
-		it("returns a list of runtime compatible sdk versions", func() {
-			version, err := GetSDKFloatVersion("2.2.0")
-			Expect(err).ToNot(HaveOccurred())
-			Expect(version).To(Equal("2.2.*"))
+		when("when given a specific version", func() {
+			it("returns a wildcard floating version", func() {
+				version, err := GetSDKFloatVersion("2.2.0")
+				Expect(err).ToNot(HaveOccurred())
+				Expect(version).To(Equal("2.2.*"))
+			})
+		})
+
+		when("when given a wildcard version", func() {
+			it("returns a wildcard floating version", func() {
+				version, err := GetSDKFloatVersion("2.2.*")
+				Expect(err).ToNot(HaveOccurred())
+				Expect(version).To(Equal("2.2.*"))
+			})
 		})
 	})
 
