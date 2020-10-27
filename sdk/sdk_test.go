@@ -90,6 +90,7 @@ func testSdk(t *testing.T, when spec.G, it spec.S) {
 			when("there is not buildpack.yml or global.json", func() {
 				it("returns true if a build plan exists and it finds a compatible sdk version", func() {
 					factory.AddPlan(buildpackplan.Plan{Name: DotnetSDK, Version: "2.2.0"})
+					factory.AddPlan(buildpackplan.Plan{Name: DotnetSDK, Version: "2.2.0"})
 
 					contributor, willContribute, err := NewContributor(factory.Build)
 					Expect(err).NotTo(HaveOccurred())

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/cloudfoundry/libcfbuildpack/build"
 	"github.com/cloudfoundry/libcfbuildpack/buildpackplan"
@@ -33,7 +34,7 @@ func NewContributor(context build.Build) (Contributor, bool, error) {
 		return Contributor{}, false, nil
 	}
 
-	version := plan.Version
+	version := strings.Split(plan.Version, ",")[0]
 
 	runtimetoSDK, err := GetRuntimetoSDKMap(context)
 	if err != nil {
