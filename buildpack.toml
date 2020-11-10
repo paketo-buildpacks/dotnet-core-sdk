@@ -71,6 +71,10 @@ api = "0.2"
     runtime-version = "3.1.10"
     sdks = ["3.1.404"]
 
+  [[metadata.runtime-to-sdks]]
+    runtime-version = "5.0.0"
+    sdks = ["5.0.100"]
+
 [[stacks]]
   id = "io.buildpacks.stacks.bionic"
 
