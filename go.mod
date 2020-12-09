@@ -13,11 +13,10 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mitchellh/mapstructure v1.4.0
-	github.com/onsi/gomega v1.10.3
+	github.com/onsi/gomega v1.10.4
 	github.com/pilu/miniassert v0.0.0-20140522125902-bee63581261a // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/sclevine/spec v1.4.0
-	golang.org/x/net v0.0.0-20201027133719-8eef5233e2a1 // indirect
 	golang.org/x/sys v0.0.0-20201027140754-0fcbb8f4928c // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 )
