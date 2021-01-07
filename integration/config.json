@@ -1,7 +1,0 @@
-{
-  "builder" : "bionic",
-	"buildpackOrder" : {
-		"bionic": ["icu", "dotnet-core-runtime", "dotnet-core-aspnet", "test-buildpack", "dotnet-execute"],
-		"cflinuxfs3": ["dotnet-core-runtime", "dotnet-core-aspnet", "test-buildpack", "dotnet-execute"]
-	}
-}
