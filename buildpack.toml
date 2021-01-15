@@ -36,16 +36,6 @@ api = "0.2"
   [[metadata.dependencies]]
     id = "dotnet-sdk"
     name = ".NET Core SDK"
-    sha256 = "cc16eeb2bec8d22079310b421031cfc6e0c29a5a732d13b877551ea0e1d37b6b"
-    source = "https://download.visualstudio.microsoft.com/download/pr/fdd9ecec-56b4-40f4-b762-d7efe24fc3cd/ffef51844c92afa6714528e10609a30f/dotnet-sdk-3.1.403-linux-x64.tar.gz"
-    source_sha256 = "a87b3cbc4f1253fb36a879472c1a792d98edd7cad0085aed7855474d121f4c47"
-    stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
-    uri = "https://buildpacks.cloudfoundry.org/dependencies/dotnet-sdk/dotnet-sdk_3.1.403_linux_x64_any-stack_cc16eeb2.tar.xz"
-    version = "3.1.403"
-
-  [[metadata.dependencies]]
-    id = "dotnet-sdk"
-    name = ".NET Core SDK"
     sha256 = "c0b6b74b7c475e37d4bf196c5ce8989b538686e5fc294615f3e39ce37a2e984a"
     source = "https://download.visualstudio.microsoft.com/download/pr/ec187f12-929e-4aa7-8abc-2f52e147af1d/56b0dbb5da1c191bff2c271fcd6e6394/dotnet-sdk-3.1.404-linux-x64.tar.gz"
     source_sha256 = "6b8dd87de54bd855968325feec9cf57e2fb4b0dba745591d48d71eb2b8d7280d"
@@ -56,12 +46,12 @@ api = "0.2"
   [[metadata.dependencies]]
     id = "dotnet-sdk"
     name = ".NET Core SDK"
-    sha256 = "d33b9ac219ede6f126cba02669e2833ee8b804dae5bf5c911de87d7deb5ed632"
-    source = "https://download.visualstudio.microsoft.com/download/pr/820db713-c9a5-466e-b72a-16f2f5ed00e2/628aa2a75f6aa270e77f4a83b3742fb8/dotnet-sdk-5.0.100-linux-x64.tar.gz"
-    source_sha256 = "b8278fd20a7242e711ee46910c23804babf9b38a4c1b97e2a4d9c5155d21cbd2"
+    sha256 = "a60f3aaf910371ec56a1d32b6a1211e2ec8926742e31652acf40e61556b1a711"
+    source = "https://download.visualstudio.microsoft.com/download/pr/5de23f6d-648c-455b-a7a9-d11c9a5bca40/4836262466f2d288e8ad8647944d062f/dotnet-sdk-3.1.405-linux-x64.tar.gz"
+    source_sha256 = "28105c86ae24c12379b09a60c992e2f0daecea58cdd2ffa6a2e541fe26bf0661"
     stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
-    uri = "https://buildpacks.cloudfoundry.org/dependencies/dotnet-sdk/dotnet-sdk_5.0.100_linux_x64_any-stack_d33b9ac2.tar.xz"
-    version = "5.0.100"
+    uri = "https://buildpacks.cloudfoundry.org/dependencies/dotnet-sdk/dotnet-sdk_3.1.405_linux_x64_any-stack_a60f3aaf.tar.xz"
+    version = "3.1.405"
 
   [[metadata.dependencies]]
     id = "dotnet-sdk"
@@ -73,6 +63,16 @@ api = "0.2"
     uri = "https://buildpacks.cloudfoundry.org/dependencies/dotnet-sdk/dotnet-sdk_5.0.101_linux_x64_any-stack_1cc4e57c.tar.xz"
     version = "5.0.101"
 
+  [[metadata.dependencies]]
+    id = "dotnet-sdk"
+    name = ".NET Core SDK"
+    sha256 = "a85dd2bdde1abb544d9c4d32ce0fd2f7fbc8ed21112c49269fa8cd13e99d2b92"
+    source = "https://download.visualstudio.microsoft.com/download/pr/7f736160-9f34-4595-8d72-13630c437aef/b9c4513afb0f8872eb95793c70ac52f6/dotnet-sdk-5.0.102-linux-x64.tar.gz"
+    source_sha256 = "4bb7f951750e87dffdbca5ee21d13b11e2db7f7e37045e84cd6052ff1fadd0aa"
+    stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
+    uri = "https://buildpacks.cloudfoundry.org/dependencies/dotnet-sdk/dotnet-sdk_5.0.102_linux_x64_any-stack_a85dd2bd.tar.xz"
+    version = "5.0.102"
+
   [[metadata.runtime-to-sdks]]
     runtime-version = "2.1.22"
     sdks = ["2.1.810"]
@@ -82,20 +82,20 @@ api = "0.2"
     sdks = ["2.1.811"]
 
   [[metadata.runtime-to-sdks]]
-    runtime-version = "3.1.9"
-    sdks = ["3.1.403"]
-
-  [[metadata.runtime-to-sdks]]
     runtime-version = "3.1.10"
     sdks = ["3.1.404"]
 
   [[metadata.runtime-to-sdks]]
-    runtime-version = "5.0.0"
-    sdks = ["5.0.100"]
+    runtime-version = "3.1.11"
+    sdks = ["3.1.405"]
 
   [[metadata.runtime-to-sdks]]
     runtime-version = "5.0.1"
     sdks = ["5.0.101"]
+
+  [[metadata.runtime-to-sdks]]
+    runtime-version = "5.0.2"
+    sdks = ["5.0.102"]
 
 [[stacks]]
   id = "io.buildpacks.stacks.bionic"
