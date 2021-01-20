@@ -14,7 +14,7 @@ func NewSymlinker() Symlinker {
 }
 
 func (s Symlinker) Link(workingDir, layerPath string) error {
-	dirs := []string{"sdk", "templates", "packs", "host"}
+	dirs := []string{"sdk", "templates", "packs"}
 
 	var err error
 	for _, dir := range dirs {
