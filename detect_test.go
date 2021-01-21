@@ -26,12 +26,20 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 		detect = dotnetcoresdk.Detect(buildpackYMLParser)
 	})
 
-	it("provides the dotnet-sdk as a dependency", func() {
+	it("provides the dotnet-sdk as a dependency and requires dotnet-runtime at build", func() {
 		result, err := detect(packit.DetectContext{
 			WorkingDir: "working-dir",
 		})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(result.Plan).To(Equal(packit.BuildPlan{
+			Requires: []packit.BuildPlanRequirement{
+				{
+					Name: "dotnet-runtime",
+					Metadata: map[string]interface{}{
+						"build": true,
+					},
+				},
+			},
 			Provides: []packit.BuildPlanProvision{
 				{Name: "dotnet-sdk"},
 			},
@@ -53,6 +61,12 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 					{Name: "dotnet-sdk"},
 				},
 				Requires: []packit.BuildPlanRequirement{
+					{
+						Name: "dotnet-runtime",
+						Metadata: map[string]interface{}{
+							"build": true,
+						},
+					},
 					{
 						Name: "dotnet-sdk",
 						Metadata: map[string]interface{}{
