@@ -10,6 +10,14 @@ type BuildpackYMLParser interface {
 func Detect(buildpackYMLParser BuildpackYMLParser) packit.DetectFunc {
 	return func(context packit.DetectContext) (packit.DetectResult, error) {
 		plan := packit.BuildPlan{
+			Requires: []packit.BuildPlanRequirement{
+				{
+					Name: "dotnet-runtime",
+					Metadata: map[string]interface{}{
+						"build": true,
+					},
+				},
+			},
 			Provides: []packit.BuildPlanProvision{
 				{
 					Name: "dotnet-sdk",
@@ -23,15 +31,13 @@ func Detect(buildpackYMLParser BuildpackYMLParser) packit.DetectFunc {
 		}
 
 		if version != "" {
-			plan.Requires = []packit.BuildPlanRequirement{
-				{
-					Name: "dotnet-sdk",
-					Metadata: map[string]interface{}{
-						"version":        version,
-						"version-source": "buildpack.yml",
-					},
+			plan.Requires = append(plan.Requires, packit.BuildPlanRequirement{
+				Name: "dotnet-sdk",
+				Metadata: map[string]interface{}{
+					"version":        version,
+					"version-source": "buildpack.yml",
 				},
-			}
+			})
 		}
 
 		return packit.DetectResult{Plan: plan}, nil
