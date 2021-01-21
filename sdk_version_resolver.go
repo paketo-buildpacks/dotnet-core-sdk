@@ -64,7 +64,7 @@ func (r SDKVersionResolver) Resolve(path string,
 		for _, dependency := range availableDependencies {
 			supportedVersions = append(supportedVersions, dependency.Version)
 		}
-		// panic("requested version not available")
+
 		return postal.Dependency{}, fmt.Errorf(
 			"failed to satisfy %q dependency for stack %q with version constraint %q: no compatible versions. Supported versions are: [%s]",
 			entry.Name,
