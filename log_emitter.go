@@ -3,8 +3,10 @@ package dotnetcoresdk
 import (
 	"io"
 	"strconv"
+	"time"
 
 	"github.com/paketo-buildpacks/packit"
+	"github.com/paketo-buildpacks/packit/postal"
 	"github.com/paketo-buildpacks/packit/scribe"
 )
 
@@ -56,4 +58,9 @@ func (e LogEmitter) Candidates(entries []packit.BuildpackPlanEntry) {
 func (l LogEmitter) Environment(env packit.Environment) {
 	l.Subprocess("%s", scribe.NewFormattedMapFromEnvironment(env))
 	l.Break()
+}
+
+func (l LogEmitter) SelectedDependency(entry packit.BuildpackPlanEntry, dependency postal.Dependency, now time.Time) {
+	dependency.Name = ".NET Core SDK"
+	l.Emitter.SelectedDependency(entry, dependency, now)
 }

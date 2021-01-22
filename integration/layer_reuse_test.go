@@ -101,11 +101,13 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 			Expect(secondImage.Buildpacks[1].Layers).To(HaveKey("dotnet-core-sdk"))
 
 			Expect(logs).To(ContainLines(
+				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.BuildpackInfo.Buildpack.Name)),
 				"  Resolving .NET Core SDK version",
 				"    Candidate version sources (in priority order):",
-				"      <unknown> -> \"*\"",
+				MatchRegexp(`      RUNTIME_VERSION -> "\d+\.\d+\.\d+"`),
+				"      <unknown>       -> \"*\"",
 				"",
-				MatchRegexp(`    Selected .NET Core SDK version \(using <unknown>\): \d+\.\d+\.\d+`),
+				MatchRegexp(`    Selected .NET Core SDK version \(using RUNTIME_VERSION\): \d+\.\d+\.\d+`),
 				"",
 				MatchRegexp(fmt.Sprintf("  Reusing cached layer /layers/%s/dotnet-core-sdk", strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
 				"",
@@ -135,7 +137,7 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 		})
 	})
 
-	context.Focus("when an app is rebuilt with changed requirements", func() {
+	context("when an app is rebuilt with changed requirements", func() {
 		var (
 			firstImage      occam.Image
 			secondImage     occam.Image
@@ -163,7 +165,7 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 			Expect(os.RemoveAll(source)).To(Succeed())
 		})
 
-		it.Pend("does not reuse the cached sdk layer", func() {
+		it("does not reuse the cached sdk layer", func() {
 			var err error
 			source, err = occam.Source(filepath.Join("testdata", "default"))
 			Expect(err).NotTo(HaveOccurred())
@@ -172,7 +174,7 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 			err = ioutil.WriteFile(filepath.Join(source, "buildpack.yml"), []byte(`---
 dotnet-framework:
   version: "2.*"
-			`), os.ModePerm)
+`), os.ModePerm)
 			Expect(err).NotTo(HaveOccurred())
 
 			firstImage, logs, err = pack.WithNoColor().Build.
@@ -195,7 +197,7 @@ dotnet-framework:
 			err = ioutil.WriteFile(filepath.Join(source, "buildpack.yml"), []byte(`---
 dotnet-framework:
   version: "5.*"
-			`), os.ModePerm)
+`), os.ModePerm)
 			Expect(err).NotTo(HaveOccurred())
 
 			secondImage, logs, err = pack.WithNoColor().Build.
@@ -215,11 +217,15 @@ dotnet-framework:
 			Expect(secondImage.Buildpacks[1].Layers).To(HaveKey("dotnet-core-sdk"))
 
 			Expect(logs).To(ContainLines(
+				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.BuildpackInfo.Buildpack.Name)),
 				"  Resolving .NET Core SDK version",
 				"    Candidate version sources (in priority order):",
-				MatchRegexp(`      <unknown> -> "5\.\d+\.\d+", `),
+				MatchRegexp(`      RUNTIME_VERSION -> "\d+\.\d+\.\d+"`),
+				"      <unknown>       -> \"*\"",
 				"",
-				MatchRegexp(`    Selected .NET Core SDK version \(using <unknown>\): \d+\.\d+\.\d+`),
+				MatchRegexp(`    Selected .NET Core SDK version \(using RUNTIME_VERSION\): \d+\.\d+\.\d+`),
+				"",
+				"  Executing build process",
 			))
 
 			Expect(logs).NotTo(ContainSubstring("Reusing cached layer"))

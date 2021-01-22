@@ -14,7 +14,7 @@ func main() {
 	sdkVersionParser := dotnetcoresdk.NewSdkVersionParser()
 	logEmitter := dotnetcoresdk.NewLogEmitter(os.Stdout)
 	entryResolver := dotnetcoresdk.NewPlanEntryResolver(logEmitter)
-	dependencyResolver := dotnetcoresdk.NewSDKVersionResolver(logEmitter)
+	dependencyMapper := dotnetcoresdk.NewSDKVersionMapper(logEmitter)
 	dependencyManager := postal.NewService(cargo.NewTransport())
 	planRefinery := dotnetcoresdk.NewPlanRefinery()
 	symlinker := dotnetcoresdk.NewSymlinker()
@@ -23,7 +23,7 @@ func main() {
 		dotnetcoresdk.Detect(sdkVersionParser),
 		dotnetcoresdk.Build(
 			entryResolver,
-			dependencyResolver,
+			dependencyMapper,
 			planRefinery,
 			dependencyManager,
 			symlinker,
