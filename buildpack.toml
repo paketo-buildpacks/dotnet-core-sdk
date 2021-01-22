@@ -33,7 +33,6 @@ api = "0.2"
 
   [[metadata.dependencies]]
     id = "dotnet-sdk"
-    name = ".NET Core SDK"
     sha256 = "c0b6b74b7c475e37d4bf196c5ce8989b538686e5fc294615f3e39ce37a2e984a"
     source = "https://download.visualstudio.microsoft.com/download/pr/ec187f12-929e-4aa7-8abc-2f52e147af1d/56b0dbb5da1c191bff2c271fcd6e6394/dotnet-sdk-3.1.404-linux-x64.tar.gz"
     source_sha256 = "6b8dd87de54bd855968325feec9cf57e2fb4b0dba745591d48d71eb2b8d7280d"
@@ -52,7 +51,6 @@ api = "0.2"
 
   [[metadata.dependencies]]
     id = "dotnet-sdk"
-    name = ".NET Core SDK"
     sha256 = "1cc4e57c70727149d1772b90be1ace8134c2ac138b210425c909199ca98c9536"
     source = "https://download.visualstudio.microsoft.com/download/pr/a0487784-534a-4912-a4dd-017382083865/be16057043a8f7b6f08c902dc48dd677/dotnet-sdk-5.0.101-linux-x64.tar.gz"
     source_sha256 = "23df1eca7eb1302dfb10f4edce7edf7150e57698576f61b2dcb777c833cbd80c"
