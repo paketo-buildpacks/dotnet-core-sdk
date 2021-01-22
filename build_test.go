@@ -30,11 +30,11 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		timeStamp  time.Time
 		buffer     *bytes.Buffer
 
-		entryResolver      *fakes.EntryResolver
-		dependencyResolver *fakes.DependencyResolver
-		dependencyManager  *fakes.DependencyManager
-		dotnetSymlinker    *fakes.DotnetSymlinker
-		buildPlanRefinery  *fakes.BuildPlanRefinery
+		entryResolver     *fakes.EntryResolver
+		dependencyMapper  *fakes.DependencyMapper
+		dependencyManager *fakes.DependencyManager
+		dotnetSymlinker   *fakes.DotnetSymlinker
+		buildPlanRefinery *fakes.BuildPlanRefinery
 
 		build packit.BuildFunc
 	)
@@ -51,6 +51,9 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		workingDir, err = ioutil.TempDir("", "working-dir")
 		Expect(err).NotTo(HaveOccurred())
 
+		dependencyMapper = &fakes.DependencyMapper{}
+		dependencyMapper.FindCorrespondingVersionCall.Returns.String = "1.2.300"
+
 		entryResolver = &fakes.EntryResolver{}
 		entryResolver.ResolveCall.Returns.BuildpackPlanEntry = packit.BuildpackPlanEntry{
 			Name: "dotnet-sdk",
@@ -62,8 +65,8 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			},
 		}
 
-		dependencyResolver = &fakes.DependencyResolver{}
-		dependencyResolver.ResolveCall.Returns.Dependency = postal.Dependency{
+		dependencyManager = &fakes.DependencyManager{}
+		dependencyManager.ResolveCall.Returns.Dependency = postal.Dependency{
 			ID:      "dotnet-sdk",
 			Version: "some-version",
 			Name:    "Dotnet Core SDK",
@@ -81,7 +84,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			},
 		}
 
-		dependencyManager = &fakes.DependencyManager{}
 		dotnetSymlinker = &fakes.DotnetSymlinker{}
 
 		buffer = bytes.NewBuffer(nil)
@@ -94,7 +96,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 		build = dotnetcoresdk.Build(
 			entryResolver,
-			dependencyResolver,
+			dependencyMapper,
 			buildPlanRefinery,
 			dependencyManager,
 			dotnetSymlinker,
@@ -108,6 +110,91 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		Expect(os.RemoveAll(cnbDir)).To(Succeed())
 		Expect(os.RemoveAll(workingDir)).To(Succeed())
 	})
+
+	context("when RUNTIME_VERSION is set", func() {
+		it.Before(func() {
+			os.Setenv("RUNTIME_VERSION", "1.2.3")
+		})
+
+		it.After(func() {
+			os.Unsetenv("RUNTIME_VERSION")
+		})
+		it("uses the dependency mapper and adds an entry to the build plan", func() {
+			_, err := build(packit.BuildContext{
+				Plan: packit.BuildpackPlan{
+					Entries: []packit.BuildpackPlanEntry{
+						{
+							Name: "dotnet-sdk",
+							Metadata: map[string]interface{}{
+								"version-source": "buildpack.yml",
+								"version":        "2.5.x",
+								"build":          true,
+								"launch":         true,
+							},
+						},
+					},
+				},
+				Layers:     packit.Layers{Path: layersDir},
+				CNBPath:    cnbDir,
+				WorkingDir: workingDir,
+				Stack:      "some-stack",
+			})
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(dependencyMapper.FindCorrespondingVersionCall.CallCount).To(Equal(1))
+			Expect(dependencyMapper.FindCorrespondingVersionCall.Receives.Path).To(Equal(filepath.Join(cnbDir, "buildpack.toml")))
+			Expect(dependencyMapper.FindCorrespondingVersionCall.Receives.VersionKey).To(Equal("1.2.3"))
+
+			Expect(entryResolver.ResolveCall.Receives.Entries).
+				To(Equal([]packit.BuildpackPlanEntry{
+					{
+						Name: "dotnet-sdk",
+						Metadata: map[string]interface{}{
+							"version-source": "buildpack.yml",
+							"version":        "2.5.x",
+							"build":          true,
+							"launch":         true,
+						},
+					},
+					{
+						Name: "dotnet-sdk",
+						Metadata: map[string]interface{}{
+							"version-source": "RUNTIME_VERSION",
+							"version":        "1.2.300",
+						},
+					},
+				}))
+		})
+
+		context("when looking for a compatible SDK version fails", func() {
+			it.Before(func() {
+				dependencyMapper.FindCorrespondingVersionCall.Returns.Error = errors.New("some-mapping-error")
+			})
+			it("returns an error", func() {
+				_, err := build(packit.BuildContext{
+					Plan: packit.BuildpackPlan{
+						Entries: []packit.BuildpackPlanEntry{
+							{
+								Name: "dotnet-sdk",
+								Metadata: map[string]interface{}{
+									"version-source": "buildpack.yml",
+									"version":        "2.5.x",
+									"build":          true,
+									"launch":         true,
+								},
+							},
+						},
+					},
+					Layers:     packit.Layers{Path: layersDir},
+					CNBPath:    cnbDir,
+					WorkingDir: workingDir,
+					Stack:      "some-stack",
+				})
+
+				Expect(err).To(MatchError("some-mapping-error"))
+			})
+		})
+	}, spec.Sequential())
 
 	it("returns a result that installs a version of the SDK into a layer", func() {
 		result, err := build(packit.BuildContext{
@@ -127,6 +214,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			Layers:     packit.Layers{Path: layersDir},
 			CNBPath:    cnbDir,
 			WorkingDir: workingDir,
+			Stack:      "some-stack",
 		})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(result).To(Equal(packit.BuildResult{
@@ -165,6 +253,9 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			},
 		}))
 
+		Expect(dependencyMapper.FindCorrespondingVersionCall.CallCount).To(Equal(0))
+		Expect(os.Getenv("RUNTIME_VERSION")).To(Equal(""))
+
 		Expect(entryResolver.ResolveCall.Receives.Entries).
 			To(Equal([]packit.BuildpackPlanEntry{
 				{
@@ -178,16 +269,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				},
 			}))
 
-		Expect(dependencyResolver.ResolveCall.Receives.Entry).
-			To(Equal(packit.BuildpackPlanEntry{
-				Name: "dotnet-sdk",
-				Metadata: map[string]interface{}{
-					"version-source": "buildpack.yml",
-					"version":        "2.5.x",
-					"build":          true,
-					"launch":         true,
-				},
-			}))
+		Expect(dependencyManager.ResolveCall.Receives.Path).To(Equal(filepath.Join(cnbDir, "buildpack.toml")))
+		Expect(dependencyManager.ResolveCall.Receives.Id).To(Equal("dotnet-sdk"))
+		Expect(dependencyManager.ResolveCall.Receives.Version).To(Equal("2.5.x"))
+		Expect(dependencyManager.ResolveCall.Receives.Stack).To(Equal("some-stack"))
 
 		Expect(buildPlanRefinery.BillOfMaterialCall.Receives.Dependency).
 			To(Equal(postal.Dependency{
@@ -236,6 +321,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				Layers:     packit.Layers{Path: layersDir},
 				CNBPath:    cnbDir,
 				WorkingDir: workingDir,
+				Stack:      "some-stack",
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -252,16 +338,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					},
 				}))
 
-			Expect(dependencyResolver.ResolveCall.Receives.Entry).
-				To(Equal(packit.BuildpackPlanEntry{
-					Name: "dotnet-sdk",
-					Metadata: map[string]interface{}{
-						"version-source": "buildpack.yml",
-						"version":        "2.5.x",
-						"build":          true,
-						"launch":         true,
-					},
-				}))
+			Expect(dependencyManager.ResolveCall.Receives.Path).To(Equal(filepath.Join(cnbDir, "buildpack.toml")))
+			Expect(dependencyManager.ResolveCall.Receives.Id).To(Equal("dotnet-sdk"))
+			Expect(dependencyManager.ResolveCall.Receives.Version).To(Equal("2.5.x"))
+			Expect(dependencyManager.ResolveCall.Receives.Stack).To(Equal("some-stack"))
 
 			Expect(buildPlanRefinery.BillOfMaterialCall.Receives.Dependency).
 				To(Equal(postal.Dependency{
@@ -281,7 +361,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 	context("failure cases", func() {
 		context("when the dependency for the build plan entry cannot be resolved", func() {
 			it.Before(func() {
-				dependencyResolver.ResolveCall.Returns.Error = errors.New("some-resolution-error")
+				dependencyManager.ResolveCall.Returns.Error = errors.New("some-resolution-error")
 			})
 			it("returns an error", func() {
 				_, err := build(packit.BuildContext{
@@ -301,6 +381,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					Layers:     packit.Layers{Path: layersDir},
 					CNBPath:    cnbDir,
 					WorkingDir: workingDir,
+					Stack:      "some-stack",
 				})
 
 				Expect(err).To(MatchError("some-resolution-error"))
@@ -334,6 +415,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					Layers:     packit.Layers{Path: layersDir},
 					CNBPath:    cnbDir,
 					WorkingDir: workingDir,
+					Stack:      "some-stack",
 				})
 
 				Expect(err).To(MatchError(ContainSubstring("permission denied")))
@@ -362,6 +444,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					Layers:     packit.Layers{Path: layersDir},
 					CNBPath:    cnbDir,
 					WorkingDir: workingDir,
+					Stack:      "some-stack",
 				})
 
 				Expect(err).To(MatchError("some-installation-error"))
@@ -390,6 +473,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					Layers:     packit.Layers{Path: layersDir},
 					CNBPath:    cnbDir,
 					WorkingDir: workingDir,
+					Stack:      "some-stack",
 				})
 
 				Expect(err).To(MatchError("some-symlinking-error"))

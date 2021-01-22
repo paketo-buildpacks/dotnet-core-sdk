@@ -24,6 +24,45 @@ func testPlanEntryResolver(t *testing.T, context spec.G, it spec.S) {
 		resolver = dotnetcoresdk.NewPlanEntryResolver(dotnetcoresdk.NewLogEmitter(buffer))
 	})
 
+	context("when buildpack.yml and RUNTIME_VERSION entries are included", func() {
+		it("resolves the best plan entry", func() {
+			entry := resolver.Resolve([]packit.BuildpackPlanEntry{
+				{
+					Name: "dotnet-sdk",
+					Metadata: map[string]interface{}{
+						"version": "other-version",
+					},
+				},
+				{
+					Name: "dotnet-sdk",
+					Metadata: map[string]interface{}{
+						"version-source": "RUNTIME_VERSION",
+						"version":        "runtime-version",
+					},
+				},
+				{
+					Name: "dotnet-sdk",
+					Metadata: map[string]interface{}{
+						"version-source": "buildpack.yml",
+						"version":        "buildpack-yml-version",
+					},
+				},
+			})
+			Expect(entry).To(Equal(packit.BuildpackPlanEntry{
+				Name: "dotnet-sdk",
+				Metadata: map[string]interface{}{
+					"version-source": "RUNTIME_VERSION",
+					"version":        "runtime-version",
+				},
+			}))
+
+			Expect(buffer.String()).To(ContainSubstring("    Candidate version sources (in priority order):"))
+			Expect(buffer.String()).To(ContainSubstring("      RUNTIME_VERSION -> \"runtime-version\""))
+			Expect(buffer.String()).To(ContainSubstring("      buildpack.yml   -> \"buildpack-yml-version\""))
+			Expect(buffer.String()).To(ContainSubstring("      <unknown>       -> \"other-version\""))
+		})
+	})
+
 	context("when a buildpack.yml entry is included", func() {
 		it("resolves the best plan entry", func() {
 			entry := resolver.Resolve([]packit.BuildpackPlanEntry{

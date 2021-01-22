@@ -21,13 +21,14 @@ type BuildPlanRefinery interface {
 	BillOfMaterial(dependency postal.Dependency) packit.BuildpackPlanEntry
 }
 
-//go:generate faux --interface DependencyResolver --output fakes/dependency_resolver.go
-type DependencyResolver interface {
-	Resolve(cnbDir string, entry packit.BuildpackPlanEntry, stack string) (postal.Dependency, error)
+//go:generate faux --interface DependencyMapper --output fakes/dependency_mapper.go
+type DependencyMapper interface {
+	FindCorrespondingVersion(path, versionKey string) (string, error)
 }
 
 //go:generate faux --interface DependencyManager --output fakes/dependency_manager.go
 type DependencyManager interface {
+	Resolve(path, id, version, stack string) (postal.Dependency, error)
 	Install(dependency postal.Dependency, cnbPath, layerPath string) error
 }
 
@@ -37,7 +38,7 @@ type DotnetSymlinker interface {
 }
 
 func Build(entryResolver EntryResolver,
-	dependencyResolver DependencyResolver,
+	dependencyMapper DependencyMapper,
 	buildPlanRefinery BuildPlanRefinery,
 	dependencyManager DependencyManager,
 	dotnetSymlinker DotnetSymlinker,
@@ -48,9 +49,25 @@ func Build(entryResolver EntryResolver,
 		logger.Title("%s %s", context.BuildpackInfo.Name, context.BuildpackInfo.Version)
 		logger.Process("Resolving .NET Core SDK version")
 
-		planEntry := entryResolver.Resolve(context.Plan.Entries)
+		if runtimeVersion, ok := os.LookupEnv("RUNTIME_VERSION"); ok {
+			sdkVersion, err := dependencyMapper.FindCorrespondingVersion(filepath.Join(context.CNBPath, "buildpack.toml"), runtimeVersion)
+			if err != nil {
+				return packit.BuildResult{}, err
+			}
 
-		sdkDependency, err := dependencyResolver.Resolve(filepath.Join(context.CNBPath, "buildpack.toml"), planEntry, context.Stack)
+			context.Plan.Entries = append(context.Plan.Entries, packit.BuildpackPlanEntry{
+				Name: "dotnet-sdk",
+				Metadata: map[string]interface{}{
+					"version-source": "RUNTIME_VERSION",
+					"version":        sdkVersion,
+				},
+			})
+		}
+
+		planEntry := entryResolver.Resolve(context.Plan.Entries)
+		version, _ := planEntry.Metadata["version"].(string)
+
+		sdkDependency, err := dependencyManager.Resolve(filepath.Join(context.CNBPath, "buildpack.toml"), planEntry.Name, version, context.Stack)
 		if err != nil {
 			return packit.BuildResult{}, err
 		}
@@ -87,7 +104,7 @@ func Build(entryResolver EntryResolver,
 			return packit.BuildResult{}, err
 		}
 
-		logger.Subprocess("Installing %s %s", sdkDependency.Name, sdkDependency.Version)
+		logger.Subprocess("Installing %s %s", ".NET Core SDK", sdkDependency.Version)
 		duration, err := clock.Measure(func() error {
 			return dependencyManager.Install(sdkDependency, context.CNBPath, sdkLayer.Path)
 		})

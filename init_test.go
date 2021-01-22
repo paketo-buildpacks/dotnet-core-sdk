@@ -9,13 +9,13 @@ import (
 
 func TestUnitDotnetCoreSDK(t *testing.T) {
 	suite := spec.New("dotnet-core-sdk", spec.Report(report.Terminal{}), spec.Parallel())
-	suite("Detect", testDetect)
 	suite("Build", testBuild)
-	suite("SdkVersionParser", testSdkVersionParser)
-	suite("PlanEntryResolver", testPlanEntryResolver)
+	suite("Detect", testDetect)
 	suite("LogEmitter", testLogEmitter)
+	suite("PlanEntryResolver", testPlanEntryResolver)
 	suite("PlanRefinery", testPlanRefinery)
-	suite("SDKVersionResolver", testSDKVersionResolver)
+	suite("SDKVersionMapper", testSDKVersionMapper)
+	suite("SdkVersionParser", testSdkVersionParser)
 	suite("Symlinker", testSymlinker)
 	suite.Run(t)
 }

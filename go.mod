@@ -4,7 +4,6 @@ go 1.12
 
 require (
 	github.com/BurntSushi/toml v0.3.1
-	github.com/Masterminds/semver v1.5.0
 	github.com/google/go-cmp v0.5.4 // indirect
 	github.com/onsi/gomega v1.10.4
 	github.com/paketo-buildpacks/occam v0.0.23
