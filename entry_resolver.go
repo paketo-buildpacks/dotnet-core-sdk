@@ -23,6 +23,7 @@ func (r PlanEntryResolver) Resolve(entries []packit.BuildpackPlanEntry) packit.B
 			"buildpack.yml":   3,
 			"global.json":     2,
 			"*sproj":          1,
+			"project file":    1,
 			"":                -1,
 		}
 	)
