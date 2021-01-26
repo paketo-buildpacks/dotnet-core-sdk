@@ -250,8 +250,9 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					Name: "dotnet-env-var",
 					Path: filepath.Join(layersDir, "dotnet-env-var"),
 					SharedEnv: packit.Environment{
-						"PATH.prepend": filepath.Join(workingDir, ".dotnet_root"),
-						"PATH.delim":   string(os.PathListSeparator),
+						"PATH.prepend":         filepath.Join(workingDir, ".dotnet_root"),
+						"PATH.delim":           string(os.PathListSeparator),
+						"DOTNET_ROOT.override": filepath.Join(workingDir, ".dotnet_root"),
 					},
 					BuildEnv:  packit.Environment{},
 					LaunchEnv: packit.Environment{},
