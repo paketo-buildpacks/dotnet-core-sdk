@@ -133,6 +133,44 @@ func testPlanEntryResolver(t *testing.T, context spec.G, it spec.S) {
 		})
 	})
 
+	context("when a buildpack.yml and project file are both included", func() {
+		it("resolves the best plan entry", func() {
+			entry := resolver.Resolve([]packit.BuildpackPlanEntry{
+				{
+					Name: "dotnet-sdk",
+					Metadata: map[string]interface{}{
+						"version": "other-version",
+					},
+				},
+				{
+					Name: "dotnet-sdk",
+					Metadata: map[string]interface{}{
+						"version-source": "buildpack.yml",
+						"version":        "buildpack-yml-version",
+					},
+				},
+				{
+					Name: "dotnet-sdk",
+					Metadata: map[string]interface{}{
+						"version-source": "project file",
+						"version":        "project-file-version",
+					},
+				},
+			})
+			Expect(entry).To(Equal(packit.BuildpackPlanEntry{
+				Name: "dotnet-sdk",
+				Metadata: map[string]interface{}{
+					"version-source": "buildpack.yml",
+					"version":        "buildpack-yml-version",
+				},
+			}))
+
+			Expect(buffer.String()).To(ContainSubstring("    Candidate version sources (in priority order):"))
+			Expect(buffer.String()).To(ContainSubstring("      buildpack.yml -> \"buildpack-yml-version\""))
+			Expect(buffer.String()).To(ContainSubstring("      project file  -> \"project-file-version\""))
+			Expect(buffer.String()).To(ContainSubstring("      <unknown>     -> \"other-version\""))
+		})
+	})
 	context("when a buildpack.yml and global.json are both included", func() {
 		it("resolves the best plan entry", func() {
 			entry := resolver.Resolve([]packit.BuildpackPlanEntry{
@@ -210,6 +248,76 @@ func testPlanEntryResolver(t *testing.T, context spec.G, it spec.S) {
 		})
 	})
 
+	context("when a global.json and a project file are both included", func() {
+		it("resolves the best plan entry", func() {
+			entry := resolver.Resolve([]packit.BuildpackPlanEntry{
+				{
+					Name: "dotnet-sdk",
+					Metadata: map[string]interface{}{
+						"version": "other-version",
+					},
+				},
+				{
+					Name: "dotnet-sdk",
+					Metadata: map[string]interface{}{
+						"version-source": "project file",
+						"version":        "project-file-version",
+					},
+				},
+				{
+					Name: "dotnet-sdk",
+					Metadata: map[string]interface{}{
+						"version-source": "global.json",
+						"version":        "globaljson-version",
+					},
+				},
+			})
+			Expect(entry).To(Equal(packit.BuildpackPlanEntry{
+				Name: "dotnet-sdk",
+				Metadata: map[string]interface{}{
+					"version-source": "global.json",
+					"version":        "globaljson-version",
+				},
+			}))
+
+			Expect(buffer.String()).To(ContainSubstring("    Candidate version sources (in priority order):"))
+			Expect(buffer.String()).To(ContainSubstring("      global.json  -> \"globaljson-version\""))
+			Expect(buffer.String()).To(ContainSubstring("      project file -> \"project-file-version\""))
+			Expect(buffer.String()).To(ContainSubstring("      <unknown>    -> \"other-version\""))
+		})
+	})
+
+	context("when a project file and an unknown entry are both included", func() {
+		it("resolves the best plan entry", func() {
+			entry := resolver.Resolve([]packit.BuildpackPlanEntry{
+				{
+					Name: "dotnet-sdk",
+					Metadata: map[string]interface{}{
+						"version-source": "unknown source",
+						"version":        "other-version",
+					},
+				},
+				{
+					Name: "dotnet-sdk",
+					Metadata: map[string]interface{}{
+						"version-source": "project file",
+						"version":        "project-file-version",
+					},
+				},
+			})
+			Expect(entry).To(Equal(packit.BuildpackPlanEntry{
+				Name: "dotnet-sdk",
+				Metadata: map[string]interface{}{
+					"version-source": "project file",
+					"version":        "project-file-version",
+				},
+			}))
+
+			Expect(buffer.String()).To(ContainSubstring("    Candidate version sources (in priority order):"))
+			Expect(buffer.String()).To(ContainSubstring("      project file   -> \"project-file-version\""))
+			Expect(buffer.String()).To(ContainSubstring("      unknown source -> \"other-version\""))
+		})
+	})
 	context("when entry flags differ", func() {
 		context("OR's them together on best plan entry", func() {
 			it("has all flags", func() {
