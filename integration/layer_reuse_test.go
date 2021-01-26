@@ -111,9 +111,13 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 				"",
 				MatchRegexp(fmt.Sprintf("  Reusing cached layer /layers/%s/dotnet-core-sdk", strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
 				"",
+				"  Configuring environment",
+				`    DOTNET_ROOT -> "/workspace/.dotnet_root"`,
+				`    PATH        -> "/workspace/.dotnet_root:$PATH"`,
 			))
+
 			secondContainer, err = docker.Container.Run.
-				WithCommand("ls -al $DOTNET_ROOT && ls -al $DOTNET_ROOT/sdk").
+				WithCommand("ls -al $DOTNET_ROOT").
 				Execute(secondImage.ID)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -126,10 +130,7 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 			}).Should(
 				And(
 					MatchRegexp(`-rwxr-xr-x \d+ cnb cnb \d+ .* dotnet`),
-					MatchRegexp(`lrwxrwxrwx \d+ cnb cnb     \d+ .* packs -> /layers/paketo-buildpacks_dotnet-core-sdk/dotnet-core-sdk/packs`),
-					MatchRegexp(`lrwxrwxrwx \d+ cnb cnb     \d+ .* sdk -> /layers/paketo-buildpacks_dotnet-core-sdk/dotnet-core-sdk/sdk`),
-					MatchRegexp(`lrwxrwxrwx \d+ cnb cnb     \d+ .* templates -> /layers/paketo-buildpacks_dotnet-core-sdk/dotnet-core-sdk/templates`),
-					MatchRegexp(`lrwxrwxrwx \d+ cnb cnb \d+ .* /workspace/.dotnet_root/sdk -> /layers/paketo-buildpacks_dotnet-core-sdk/dotnet-core-sdk/sdk`),
+					MatchRegexp(`lrwxrwxrwx \d+ cnb cnb \s+\d+ .* sdk -> /layers/paketo-buildpacks_dotnet-core-sdk/dotnet-core-sdk/sdk`),
 				),
 			)
 

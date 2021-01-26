@@ -81,6 +81,14 @@ func Build(entryResolver EntryResolver,
 			return packit.BuildResult{}, err
 		}
 
+		envLayer, err := context.Layers.Get("dotnet-env-var")
+		if err != nil {
+			return packit.BuildResult{}, err
+		}
+
+		envLayer.Launch = true
+		envLayer.Build = true
+
 		cachedDependencySHA, ok := sdkLayer.Metadata["dependency-sha"]
 		if ok && cachedDependencySHA == sdkDependency.SHA256 {
 			logger.Process(fmt.Sprintf("Reusing cached layer %s", sdkLayer.Path))
@@ -91,9 +99,20 @@ func Build(entryResolver EntryResolver,
 				return packit.BuildResult{}, err
 			}
 
+			logger.Process("Configuring environment")
+			envLayer.SharedEnv.Prepend("PATH",
+				filepath.Join(context.WorkingDir, ".dotnet_root"),
+				string(os.PathListSeparator))
+
+			envLayer.SharedEnv.Override("DOTNET_ROOT", filepath.Join(context.WorkingDir, ".dotnet_root"))
+			logger.Environment(envLayer.SharedEnv)
+
 			return packit.BuildResult{
-				Plan:   context.Plan,
-				Layers: []packit.Layer{sdkLayer},
+				Plan: context.Plan,
+				Layers: []packit.Layer{
+					sdkLayer,
+					envLayer,
+				},
 			}, nil
 		}
 
@@ -130,12 +149,12 @@ func Build(entryResolver EntryResolver,
 		sdkLayer.Launch = planEntry.Metadata["launch"] == true
 
 		logger.Process("Configuring environment")
-		sdkLayer.SharedEnv.Prepend("PATH",
+		envLayer.SharedEnv.Prepend("PATH",
 			filepath.Join(context.WorkingDir, ".dotnet_root"),
 			string(os.PathListSeparator))
 
-		sdkLayer.SharedEnv.Override("DOTNET_ROOT", filepath.Join(context.WorkingDir, ".dotnet_root"))
-		logger.Environment(sdkLayer.SharedEnv)
+		envLayer.SharedEnv.Override("DOTNET_ROOT", filepath.Join(context.WorkingDir, ".dotnet_root"))
+		logger.Environment(envLayer.SharedEnv)
 
 		return packit.BuildResult{
 			Plan: packit.BuildpackPlan{
@@ -143,6 +162,7 @@ func Build(entryResolver EntryResolver,
 			},
 			Layers: []packit.Layer{
 				sdkLayer,
+				envLayer,
 			},
 		}, nil
 	}
