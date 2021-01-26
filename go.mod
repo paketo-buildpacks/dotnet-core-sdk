@@ -8,10 +8,9 @@ require (
 	github.com/google/go-cmp v0.5.4 // indirect
 	github.com/onsi/gomega v1.10.4
 	github.com/paketo-buildpacks/occam v0.0.24
-	github.com/paketo-buildpacks/packit v0.6.0
+	github.com/paketo-buildpacks/packit v0.6.1
 	github.com/sclevine/spec v1.4.0
 	golang.org/x/net v0.0.0-20201224014010-6772e930b67b // indirect
 	golang.org/x/sys v0.0.0-20210113181707-4bcb84eeeb78 // indirect
-	golang.org/x/text v0.3.4 // indirect
 	gopkg.in/yaml.v2 v2.4.0
 )
