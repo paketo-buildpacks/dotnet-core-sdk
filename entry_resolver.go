@@ -55,6 +55,7 @@ func getPriority(source string) int {
 			"buildpack.yml":          3,
 			"global.json":            2,
 			`.*\.(cs)|(fs)|(vb)proj`: 1, // matches filename.(cs/fs/vb)proj
+			"runtimeconfig.json":     1,
 			"":                       -1,
 		}
 	)
