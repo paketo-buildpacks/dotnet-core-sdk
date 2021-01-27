@@ -233,13 +233,9 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			},
 			Layers: []packit.Layer{
 				{
-					Name: "dotnet-core-sdk",
-					Path: filepath.Join(layersDir, "dotnet-core-sdk"),
-					SharedEnv: packit.Environment{
-						"PATH.prepend":         filepath.Join(workingDir, ".dotnet_root"),
-						"PATH.delim":           string(os.PathListSeparator),
-						"DOTNET_ROOT.override": filepath.Join(workingDir, ".dotnet_root"),
-					},
+					Name:      "dotnet-core-sdk",
+					Path:      filepath.Join(layersDir, "dotnet-core-sdk"),
+					SharedEnv: packit.Environment{},
 					BuildEnv:  packit.Environment{},
 					LaunchEnv: packit.Environment{},
 					Build:     true,
@@ -249,6 +245,19 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 						"dependency-sha": "some-sha",
 						"built_at":       timeStamp.Format(time.RFC3339Nano),
 					},
+				},
+				{
+					Name: "dotnet-env-var",
+					Path: filepath.Join(layersDir, "dotnet-env-var"),
+					SharedEnv: packit.Environment{
+						"PATH.prepend":         filepath.Join(workingDir, ".dotnet_root"),
+						"PATH.delim":           string(os.PathListSeparator),
+						"DOTNET_ROOT.override": filepath.Join(workingDir, ".dotnet_root"),
+					},
+					BuildEnv:  packit.Environment{},
+					LaunchEnv: packit.Environment{},
+					Build:     true,
+					Launch:    true,
 				},
 			},
 		}))

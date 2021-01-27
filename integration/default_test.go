@@ -95,9 +95,9 @@ func testDefault(t *testing.T, context spec.G, it spec.S) {
 					// and its existence in the .dotnet_root directory (which is on the PATH) sufficiently proves
 					// its ability to be called. This may need refactoring if that assumption is proved insufficient.
 					MatchRegexp(`-rwxr-xr-x \d+ cnb cnb \d+ .* dotnet`),
-					MatchRegexp(`lrwxrwxrwx \d+ cnb cnb     \d+ .* packs -> /layers/paketo-buildpacks_dotnet-core-sdk/dotnet-core-sdk/packs`),
-					MatchRegexp(`lrwxrwxrwx \d+ cnb cnb     \d+ .* sdk -> /layers/paketo-buildpacks_dotnet-core-sdk/dotnet-core-sdk/sdk`),
-					MatchRegexp(`lrwxrwxrwx \d+ cnb cnb     \d+ .* templates -> /layers/paketo-buildpacks_dotnet-core-sdk/dotnet-core-sdk/templates`),
+					MatchRegexp(`lrwxrwxrwx \d+ cnb cnb \s+\d+ .* packs -> /layers/paketo-buildpacks_dotnet-core-sdk/dotnet-core-sdk/packs`),
+					MatchRegexp(`lrwxrwxrwx \d+ cnb cnb \s+\d+ .* sdk -> /layers/paketo-buildpacks_dotnet-core-sdk/dotnet-core-sdk/sdk`),
+					MatchRegexp(`lrwxrwxrwx \d+ cnb cnb \s+\d+ .* templates -> /layers/paketo-buildpacks_dotnet-core-sdk/dotnet-core-sdk/templates`),
 					MatchRegexp(`lrwxrwxrwx \d+ cnb cnb \d+ .* /workspace/.dotnet_root/sdk -> /layers/paketo-buildpacks_dotnet-core-sdk/dotnet-core-sdk/sdk`),
 				),
 			)
