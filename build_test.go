@@ -433,6 +433,44 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			})
 		})
 
+		context("when layer cannot be removed", func() {
+			var layerDir string
+			it.Before(func() {
+				layerDir = filepath.Join(layersDir, "dotnet-core-sdk")
+				Expect(os.MkdirAll(filepath.Join(layerDir, "dotnet-core-sdk"), os.ModePerm)).To(Succeed())
+				Expect(os.Chmod(layerDir, 0500)).To(Succeed())
+			})
+
+			it.After(func() {
+				Expect(os.Chmod(layerDir, os.ModePerm)).To(Succeed())
+				Expect(os.RemoveAll(layerDir)).To(Succeed())
+			})
+
+			it("returns an error", func() {
+				_, err := build(packit.BuildContext{
+					Plan: packit.BuildpackPlan{
+						Entries: []packit.BuildpackPlanEntry{
+							{
+								Name: "dotnet-sdk",
+								Metadata: map[string]interface{}{
+									"version-source": "buildpack.yml",
+									"version":        "2.5.x",
+									"build":          true,
+									"launch":         true,
+								},
+							},
+						},
+					},
+					Layers:     packit.Layers{Path: layersDir},
+					CNBPath:    cnbDir,
+					WorkingDir: workingDir,
+					Stack:      "some-stack",
+				})
+
+				Expect(err).To(MatchError(ContainSubstring("permission denied")))
+			})
+		})
+
 		context("when the dependency for the build plan entry cannot be resolved", func() {
 			it.Before(func() {
 				dependencyManager.InstallCall.Returns.Error = errors.New("some-installation-error")
