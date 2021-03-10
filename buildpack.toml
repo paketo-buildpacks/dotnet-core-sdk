@@ -50,21 +50,21 @@ api = "0.2"
 
   [[metadata.dependencies]]
     id = "dotnet-sdk"
-    sha256 = "a85dd2bdde1abb544d9c4d32ce0fd2f7fbc8ed21112c49269fa8cd13e99d2b92"
-    source = "https://download.visualstudio.microsoft.com/download/pr/7f736160-9f34-4595-8d72-13630c437aef/b9c4513afb0f8872eb95793c70ac52f6/dotnet-sdk-5.0.102-linux-x64.tar.gz"
-    source_sha256 = "4bb7f951750e87dffdbca5ee21d13b11e2db7f7e37045e84cd6052ff1fadd0aa"
-    stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
-    uri = "https://buildpacks.cloudfoundry.org/dependencies/dotnet-sdk/dotnet-sdk_5.0.102_linux_x64_any-stack_a85dd2bd.tar.xz"
-    version = "5.0.102"
-
-  [[metadata.dependencies]]
-    id = "dotnet-sdk"
     sha256 = "9ced70354622969af9575943ce31eadc21a61976b94ec5acce306e2834e4188f"
     source = "https://download.visualstudio.microsoft.com/download/pr/64a6b4b9-a92e-4efc-a588-569d138919c6/a97f4be78d7cc237a4f5c306866f7a1c/dotnet-sdk-5.0.200-linux-x64.tar.gz"
     source_sha256 = "fb1ffda1f49f5df846c155e1a5b436c90fe5f83a864093a93340c4fb068828cf"
     stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
     uri = "https://buildpacks.cloudfoundry.org/dependencies/dotnet-sdk/dotnet-sdk_5.0.200_linux_x64_any-stack_9ced7035.tar.xz"
     version = "5.0.200"
+
+  [[metadata.dependencies]]
+    id = "dotnet-sdk"
+    sha256 = "a6fff94eddb789f130b755ad1aff4b427abbc0660ea410c4df90335235bc2423"
+    source = "https://download.visualstudio.microsoft.com/download/pr/73a9cb2a-1acd-4d20-b864-d12797ca3d40/075dbe1dc3bba4aa85ca420167b861b6/dotnet-sdk-5.0.201-linux-x64.tar.gz"
+    source_sha256 = "9ff77087831e8ca32719566ec9ef537e136cfc02c5ff565e53f5509cc6e7b341"
+    stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
+    uri = "https://buildpacks.cloudfoundry.org/dependencies/dotnet-sdk/dotnet-sdk_5.0.201_linux_x64_any-stack_a6fff94e.tar.xz"
+    version = "5.0.201"
 
   [[metadata.runtime-to-sdks]]
     runtime-version = "2.1.25"
@@ -83,12 +83,12 @@ api = "0.2"
     sdks = ["3.1.406"]
 
   [[metadata.runtime-to-sdks]]
-    runtime-version = "5.0.2"
-    sdks = ["5.0.102"]
-
-  [[metadata.runtime-to-sdks]]
     runtime-version = "5.0.3"
     sdks = ["5.0.200"]
+
+  [[metadata.runtime-to-sdks]]
+    runtime-version = "5.0.4"
+    sdks = ["5.0.201"]
 
 [[stacks]]
   id = "io.buildpacks.stacks.bionic"
