@@ -121,6 +121,9 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		})
 		it("uses the dependency mapper and adds an entry to the build plan", func() {
 			_, err := build(packit.BuildContext{
+				BuildpackInfo: packit.BuildpackInfo{
+					Version: "1.2.3",
+				},
 				Plan: packit.BuildpackPlan{
 					Entries: []packit.BuildpackPlanEntry{
 						{
@@ -198,6 +201,9 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 	it("returns a result that installs a version of the SDK into a layer", func() {
 		result, err := build(packit.BuildContext{
+			BuildpackInfo: packit.BuildpackInfo{
+				Version: "1.2.3",
+			},
 			Plan: packit.BuildpackPlan{
 				Entries: []packit.BuildpackPlanEntry{
 					{
@@ -316,6 +322,9 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 		it("reuses the cached version of the SDK dependency", func() {
 			_, err := build(packit.BuildContext{
+				BuildpackInfo: packit.BuildpackInfo{
+					Version: "1.2.3",
+				},
 				Plan: packit.BuildpackPlan{
 					Entries: []packit.BuildpackPlanEntry{
 						{
@@ -369,6 +378,37 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(dotnetSymlinker.LinkCall.Receives.LayerPath).To(Equal(filepath.Join(layersDir, "dotnet-core-sdk")))
 		})
 	})
+
+	context("when the sdk version is set via buildpack.yml", func() {
+		it("logs a deprecation warning", func() {
+			_, err := build(packit.BuildContext{
+				BuildpackInfo: packit.BuildpackInfo{
+					Version: "1.2.3",
+				},
+				Plan: packit.BuildpackPlan{
+					Entries: []packit.BuildpackPlanEntry{
+						{
+							Name: "dotnet-sdk",
+							Metadata: map[string]interface{}{
+								"version-source": "buildpack.yml",
+								"version":        "2.5.x",
+								"build":          true,
+								"launch":         true,
+							},
+						},
+					},
+				},
+				Layers:     packit.Layers{Path: layersDir},
+				CNBPath:    cnbDir,
+				WorkingDir: workingDir,
+				Stack:      "some-stack",
+			})
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(buffer.String()).To(ContainSubstring("WARNING: Setting the .NET Core SDK version through buildpack.yml will be deprecated soon in Dotnet Core SDK Buildpack v2.0.0"))
+		})
+	})
+
 	context("failure cases", func() {
 		context("when the dependency for the build plan entry cannot be resolved", func() {
 			it.Before(func() {
@@ -410,6 +450,9 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 			it("returns an error", func() {
 				_, err := build(packit.BuildContext{
+					BuildpackInfo: packit.BuildpackInfo{
+						Version: "1.2.3",
+					},
 					Plan: packit.BuildpackPlan{
 						Entries: []packit.BuildpackPlanEntry{
 							{
@@ -448,6 +491,9 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 			it("returns an error", func() {
 				_, err := build(packit.BuildContext{
+					BuildpackInfo: packit.BuildpackInfo{
+						Version: "1.2.3",
+					},
 					Plan: packit.BuildpackPlan{
 						Entries: []packit.BuildpackPlanEntry{
 							{
@@ -477,6 +523,9 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			})
 			it("returns an error", func() {
 				_, err := build(packit.BuildContext{
+					BuildpackInfo: packit.BuildpackInfo{
+						Version: "1.2.3",
+					},
 					Plan: packit.BuildpackPlan{
 						Entries: []packit.BuildpackPlanEntry{
 							{
@@ -506,6 +555,9 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			})
 			it("returns an error", func() {
 				_, err := build(packit.BuildContext{
+					BuildpackInfo: packit.BuildpackInfo{
+						Version: "1.2.3",
+					},
 					Plan: packit.BuildpackPlan{
 						Entries: []packit.BuildpackPlanEntry{
 							{
