@@ -58,8 +58,8 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		entryResolver.ResolveCall.Returns.BuildpackPlanEntry = packit.BuildpackPlanEntry{
 			Name: "dotnet-sdk",
 			Metadata: map[string]interface{}{
-				"version-source": "buildpack.yml",
 				"version":        "2.5.x",
+				"version-source": "some-source",
 				"build":          true,
 				"launch":         true,
 			},
@@ -111,99 +111,17 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		Expect(os.RemoveAll(workingDir)).To(Succeed())
 	})
 
-	context("when RUNTIME_VERSION is set", func() {
-		it.Before(func() {
-			os.Setenv("RUNTIME_VERSION", "1.2.3")
-		})
-
-		it.After(func() {
-			os.Unsetenv("RUNTIME_VERSION")
-		})
-		it("uses the dependency mapper and adds an entry to the build plan", func() {
-			_, err := build(packit.BuildContext{
-				Plan: packit.BuildpackPlan{
-					Entries: []packit.BuildpackPlanEntry{
-						{
-							Name: "dotnet-sdk",
-							Metadata: map[string]interface{}{
-								"version-source": "buildpack.yml",
-								"version":        "2.5.x",
-								"build":          true,
-								"launch":         true,
-							},
-						},
-					},
-				},
-				Layers:     packit.Layers{Path: layersDir},
-				CNBPath:    cnbDir,
-				WorkingDir: workingDir,
-				Stack:      "some-stack",
-			})
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(dependencyMapper.FindCorrespondingVersionCall.CallCount).To(Equal(1))
-			Expect(dependencyMapper.FindCorrespondingVersionCall.Receives.Path).To(Equal(filepath.Join(cnbDir, "buildpack.toml")))
-			Expect(dependencyMapper.FindCorrespondingVersionCall.Receives.VersionKey).To(Equal("1.2.3"))
-
-			Expect(entryResolver.ResolveCall.Receives.Entries).
-				To(Equal([]packit.BuildpackPlanEntry{
-					{
-						Name: "dotnet-sdk",
-						Metadata: map[string]interface{}{
-							"version-source": "buildpack.yml",
-							"version":        "2.5.x",
-							"build":          true,
-							"launch":         true,
-						},
-					},
-					{
-						Name: "dotnet-sdk",
-						Metadata: map[string]interface{}{
-							"version-source": "RUNTIME_VERSION",
-							"version":        "1.2.300",
-						},
-					},
-				}))
-		})
-
-		context("when looking for a compatible SDK version fails", func() {
-			it.Before(func() {
-				dependencyMapper.FindCorrespondingVersionCall.Returns.Error = errors.New("some-mapping-error")
-			})
-			it("returns an error", func() {
-				_, err := build(packit.BuildContext{
-					Plan: packit.BuildpackPlan{
-						Entries: []packit.BuildpackPlanEntry{
-							{
-								Name: "dotnet-sdk",
-								Metadata: map[string]interface{}{
-									"version-source": "buildpack.yml",
-									"version":        "2.5.x",
-									"build":          true,
-									"launch":         true,
-								},
-							},
-						},
-					},
-					Layers:     packit.Layers{Path: layersDir},
-					CNBPath:    cnbDir,
-					WorkingDir: workingDir,
-					Stack:      "some-stack",
-				})
-
-				Expect(err).To(MatchError("some-mapping-error"))
-			})
-		})
-	}, spec.Sequential())
-
 	it("returns a result that installs a version of the SDK into a layer", func() {
 		result, err := build(packit.BuildContext{
+			BuildpackInfo: packit.BuildpackInfo{
+				Version: "1.2.3",
+			},
 			Plan: packit.BuildpackPlan{
 				Entries: []packit.BuildpackPlanEntry{
 					{
 						Name: "dotnet-sdk",
 						Metadata: map[string]interface{}{
-							"version-source": "buildpack.yml",
+							"version-source": "some-source",
 							"version":        "2.5.x",
 							"build":          true,
 							"launch":         true,
@@ -272,7 +190,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				{
 					Name: "dotnet-sdk",
 					Metadata: map[string]interface{}{
-						"version-source": "buildpack.yml",
+						"version-source": "some-source",
 						"version":        "2.5.x",
 						"build":          true,
 						"launch":         true,
@@ -307,25 +225,23 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		Expect(dotnetSymlinker.LinkCall.Receives.LayerPath).To(Equal(filepath.Join(layersDir, "dotnet-core-sdk")))
 	})
 
-	context("when there is a dependency cache match", func() {
+	context("when RUNTIME_VERSION is set", func() {
 		it.Before(func() {
-			err := ioutil.WriteFile(filepath.Join(layersDir, "dotnet-core-sdk.toml"),
-				[]byte("[metadata]\ndependency-sha = \"some-sha\"\n"), 0600)
-			Expect(err).NotTo(HaveOccurred())
+			os.Setenv("RUNTIME_VERSION", "1.2.3")
 		})
 
-		it("reuses the cached version of the SDK dependency", func() {
+		it.After(func() {
+			os.Unsetenv("RUNTIME_VERSION")
+		})
+		it("uses the dependency mapper and adds an entry to the build plan", func() {
 			_, err := build(packit.BuildContext{
+				BuildpackInfo: packit.BuildpackInfo{
+					Version: "1.2.3",
+				},
 				Plan: packit.BuildpackPlan{
 					Entries: []packit.BuildpackPlanEntry{
 						{
 							Name: "dotnet-sdk",
-							Metadata: map[string]interface{}{
-								"version-source": "buildpack.yml",
-								"version":        "2.5.x",
-								"build":          true,
-								"launch":         true,
-							},
 						},
 					},
 				},
@@ -336,18 +252,73 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			})
 			Expect(err).NotTo(HaveOccurred())
 
+			Expect(dependencyMapper.FindCorrespondingVersionCall.CallCount).To(Equal(1))
+			Expect(dependencyMapper.FindCorrespondingVersionCall.Receives.Path).To(Equal(filepath.Join(cnbDir, "buildpack.toml")))
+			Expect(dependencyMapper.FindCorrespondingVersionCall.Receives.VersionKey).To(Equal("1.2.3"))
+
 			Expect(entryResolver.ResolveCall.Receives.Entries).
 				To(Equal([]packit.BuildpackPlanEntry{
 					{
 						Name: "dotnet-sdk",
+					},
+					{
+						Name: "dotnet-sdk",
 						Metadata: map[string]interface{}{
-							"version-source": "buildpack.yml",
-							"version":        "2.5.x",
-							"build":          true,
-							"launch":         true,
+							"version-source": "RUNTIME_VERSION",
+							"version":        "1.2.300",
 						},
 					},
 				}))
+		})
+		context("when looking for a compatible SDK version fails", func() {
+			it.Before(func() {
+				dependencyMapper.FindCorrespondingVersionCall.Returns.Error = errors.New("some-mapping-error")
+			})
+			it("returns an error", func() {
+				_, err := build(packit.BuildContext{
+					Plan: packit.BuildpackPlan{
+						Entries: []packit.BuildpackPlanEntry{
+							{
+								Name: "dotnet-sdk",
+							},
+						},
+					},
+					Layers:     packit.Layers{Path: layersDir},
+					CNBPath:    cnbDir,
+					WorkingDir: workingDir,
+					Stack:      "some-stack",
+				})
+
+				Expect(err).To(MatchError("some-mapping-error"))
+			})
+		})
+	})
+
+	context("when there is a dependency cache match", func() {
+		it.Before(func() {
+			err := ioutil.WriteFile(filepath.Join(layersDir, "dotnet-core-sdk.toml"),
+				[]byte("[metadata]\ndependency-sha = \"some-sha\"\n"), 0600)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		it("reuses the cached version of the SDK dependency", func() {
+			_, err := build(packit.BuildContext{
+				BuildpackInfo: packit.BuildpackInfo{
+					Version: "1.2.3",
+				},
+				Plan: packit.BuildpackPlan{
+					Entries: []packit.BuildpackPlanEntry{
+						{
+							Name: "dotnet-sdk",
+						},
+					},
+				},
+				Layers:     packit.Layers{Path: layersDir},
+				CNBPath:    cnbDir,
+				WorkingDir: workingDir,
+				Stack:      "some-stack",
+			})
+			Expect(err).NotTo(HaveOccurred())
 
 			Expect(dependencyManager.ResolveCall.Receives.Path).To(Equal(filepath.Join(cnbDir, "buildpack.toml")))
 			Expect(dependencyManager.ResolveCall.Receives.Id).To(Equal("dotnet-sdk"))
@@ -369,6 +340,43 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(dotnetSymlinker.LinkCall.Receives.LayerPath).To(Equal(filepath.Join(layersDir, "dotnet-core-sdk")))
 		})
 	})
+
+	context("when the sdk version is set via buildpack.yml", func() {
+		it.Before(func() {
+			entryResolver.ResolveCall.Returns.BuildpackPlanEntry = packit.BuildpackPlanEntry{
+				Name: "dotnet-sdk",
+				Metadata: map[string]interface{}{
+					"version":        "2.5.x",
+					"version-source": "buildpack.yml",
+					"build":          true,
+					"launch":         true,
+				},
+			}
+		})
+
+		it("logs a deprecation warning", func() {
+			_, err := build(packit.BuildContext{
+				BuildpackInfo: packit.BuildpackInfo{
+					Version: "1.2.3",
+				},
+				Plan: packit.BuildpackPlan{
+					Entries: []packit.BuildpackPlanEntry{
+						{
+							Name: "dotnet-sdk",
+						},
+					},
+				},
+				Layers:     packit.Layers{Path: layersDir},
+				CNBPath:    cnbDir,
+				WorkingDir: workingDir,
+				Stack:      "some-stack",
+			})
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(buffer.String()).To(ContainSubstring("WARNING: Setting the .NET Core SDK version through buildpack.yml will be deprecated soon in Dotnet Core SDK Buildpack v2.0.0"))
+		})
+	})
+
 	context("failure cases", func() {
 		context("when the dependency for the build plan entry cannot be resolved", func() {
 			it.Before(func() {
@@ -380,12 +388,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 						Entries: []packit.BuildpackPlanEntry{
 							{
 								Name: "dotnet-sdk",
-								Metadata: map[string]interface{}{
-									"version-source": "buildpack.yml",
-									"version":        "2.5.x",
-									"build":          true,
-									"launch":         true,
-								},
 							},
 						},
 					},
@@ -410,16 +412,13 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 			it("returns an error", func() {
 				_, err := build(packit.BuildContext{
+					BuildpackInfo: packit.BuildpackInfo{
+						Version: "1.2.3",
+					},
 					Plan: packit.BuildpackPlan{
 						Entries: []packit.BuildpackPlanEntry{
 							{
 								Name: "dotnet-sdk",
-								Metadata: map[string]interface{}{
-									"version-source": "buildpack.yml",
-									"version":        "2.5.x",
-									"build":          true,
-									"launch":         true,
-								},
 							},
 						},
 					},
@@ -448,16 +447,13 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 			it("returns an error", func() {
 				_, err := build(packit.BuildContext{
+					BuildpackInfo: packit.BuildpackInfo{
+						Version: "1.2.3",
+					},
 					Plan: packit.BuildpackPlan{
 						Entries: []packit.BuildpackPlanEntry{
 							{
 								Name: "dotnet-sdk",
-								Metadata: map[string]interface{}{
-									"version-source": "buildpack.yml",
-									"version":        "2.5.x",
-									"build":          true,
-									"launch":         true,
-								},
 							},
 						},
 					},
@@ -477,16 +473,13 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			})
 			it("returns an error", func() {
 				_, err := build(packit.BuildContext{
+					BuildpackInfo: packit.BuildpackInfo{
+						Version: "1.2.3",
+					},
 					Plan: packit.BuildpackPlan{
 						Entries: []packit.BuildpackPlanEntry{
 							{
 								Name: "dotnet-sdk",
-								Metadata: map[string]interface{}{
-									"version-source": "buildpack.yml",
-									"version":        "2.5.x",
-									"build":          true,
-									"launch":         true,
-								},
 							},
 						},
 					},
@@ -506,16 +499,13 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			})
 			it("returns an error", func() {
 				_, err := build(packit.BuildContext{
+					BuildpackInfo: packit.BuildpackInfo{
+						Version: "1.2.3",
+					},
 					Plan: packit.BuildpackPlan{
 						Entries: []packit.BuildpackPlanEntry{
 							{
 								Name: "dotnet-sdk",
-								Metadata: map[string]interface{}{
-									"version-source": "buildpack.yml",
-									"version":        "2.5.x",
-									"build":          true,
-									"launch":         true,
-								},
 							},
 						},
 					},
