@@ -52,7 +52,7 @@ $ ./scripts/package.sh
 This builds the buildpack's Go source using `GOOS=linux` by default. You can
 supply another value as the first argument to `package.sh`.
 
-## `buildpack.yml` Configurations
+## (Deprecated) `buildpack.yml` Configurations
 
 ```yaml
 dotnet-sdk:
@@ -60,3 +60,11 @@ dotnet-sdk:
   # any valid semver constaints (e.g. 2.* and 2.1.*) are also acceptable
   version: "2.1.804"
 ```
+This configuration option will be deprecated with the next major version
+release of the buildpack. Because the versions of the .NET Core runtime and
+.NET Core SDK are so tightly coupled, most users should instead use the
+`$BP_DOTNET_FRAMEWORK_VERSION` environment variable to specify which version of
+the .NET Core runtime that the [Paketo .NET Core Runtime
+Buildpack](https://github.com/paketo-buildpacks/dotnet-core-runtime) should
+install. This buildpack will automatically select an SDK version to install
+that is compatible with the selected .NET Core runtime version.
