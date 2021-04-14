@@ -8,7 +8,7 @@ import (
 )
 
 func TestUnitDotnetCoreSDK(t *testing.T) {
-	suite := spec.New("dotnet-core-sdk", spec.Report(report.Terminal{}), spec.Parallel())
+	suite := spec.New("dotnet-core-sdk", spec.Report(report.Terminal{}), spec.Sequential())
 	suite("Build", testBuild)
 	suite("Detect", testDetect)
 	suite("LogEmitter", testLogEmitter)
