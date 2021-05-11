@@ -14,21 +14,21 @@ api = "0.2"
 
   [[metadata.dependencies]]
     id = "dotnet-sdk"
-    sha256 = "75f703fdcc9c4701cdc2419c93c72d80a02926f57fbd7e0fd86aab0cad607a13"
-    source = "https://download.visualstudio.microsoft.com/download/pr/b44d40e6-fa23-4f2d-a0a9-4199731f0b1e/5e62077a9e8014d8d4c74aee5406e0c7/dotnet-sdk-2.1.814-linux-x64.tar.gz"
-    source_sha256 = "2c16e62f1b19b32f30d56eeaeeb70b89acb4599b7523a20e159204c3741b46f0"
-    stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
-    uri = "https://buildpacks.cloudfoundry.org/dependencies/dotnet-sdk/dotnet-sdk_2.1.814_linux_x64_any-stack_75f703fd.tar.xz"
-    version = "2.1.814"
-
-  [[metadata.dependencies]]
-    id = "dotnet-sdk"
     sha256 = "8a61800f5eed6c88e0f3addd30dc5d7cb8918500f67c6fa2a842724fe4d950e6"
     source = "https://download.visualstudio.microsoft.com/download/pr/7fba29f6-aac9-4b53-a5f9-9b421bec6288/70ac39be0282331d18b535f64ea5f40a/dotnet-sdk-2.1.815-linux-x64.tar.gz"
     source_sha256 = "72d2630b67c1337aa25285da82d1b0ce5eceb3e6cfabdb12521151fd4508c626"
     stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
     uri = "https://buildpacks.cloudfoundry.org/dependencies/dotnet-sdk/dotnet-sdk_2.1.815_linux_x64_any-stack_8a61800f.tar.xz"
     version = "2.1.815"
+
+  [[metadata.dependencies]]
+    id = "dotnet-sdk"
+    sha256 = "c4973b3fd3d7135a8fe558aca95b49c95da7aa1055193dfee624e47572ac87d1"
+    source = "https://download.visualstudio.microsoft.com/download/pr/745ce65b-e1b7-442d-aebf-8fe18c4fceba/73d02f94e66602d4b6531b0b2003c798/dotnet-sdk-2.1.816-linux-x64.tar.gz"
+    source_sha256 = "ff9969ea81ccef3ac4d721b122e030f7eaaedddcb45e295cc2aa73634f20d45e"
+    stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
+    uri = "https://buildpacks.cloudfoundry.org/dependencies/dotnet-sdk/dotnet-sdk_2.1.816_linux_x64_any-stack_c4973b3f.tar.xz"
+    version = "2.1.816"
 
   [[metadata.dependencies]]
     id = "dotnet-sdk"
@@ -67,12 +67,12 @@ api = "0.2"
     version = "5.0.202"
 
   [[metadata.runtime-to-sdks]]
-    runtime-version = "2.1.26"
-    sdks = ["2.1.814"]
-
-  [[metadata.runtime-to-sdks]]
     runtime-version = "2.1.27"
     sdks = ["2.1.815"]
+
+  [[metadata.runtime-to-sdks]]
+    runtime-version = "2.1.28"
+    sdks = ["2.1.816"]
 
   [[metadata.runtime-to-sdks]]
     runtime-version = "3.1.13"
