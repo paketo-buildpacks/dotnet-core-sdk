@@ -198,7 +198,17 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					},
 				},
 			}))
-		Expect(entryResolver.MergeLayerTypesCall.CallCount).To(Equal(1))
+		Expect(entryResolver.MergeLayerTypesCall.Receives.Entries).To(Equal([]packit.BuildpackPlanEntry{
+			{
+				Name: "dotnet-sdk",
+				Metadata: map[string]interface{}{
+					"version-source": "some-source",
+					"version":        "2.5.x",
+					"build":          true,
+					"launch":         true,
+				},
+			},
+		}))
 
 		Expect(dependencyManager.ResolveCall.Receives.Path).To(Equal(filepath.Join(cnbDir, "buildpack.toml")))
 		Expect(dependencyManager.ResolveCall.Receives.Id).To(Equal("dotnet-sdk"))
