@@ -12,7 +12,6 @@ func TestUnitDotnetCoreSDK(t *testing.T) {
 	suite("Build", testBuild)
 	suite("Detect", testDetect)
 	suite("LogEmitter", testLogEmitter)
-	suite("PlanEntryResolver", testPlanEntryResolver)
 	suite("PlanRefinery", testPlanRefinery)
 	suite("SDKVersionMapper", testSDKVersionMapper)
 	suite("SdkVersionParser", testSdkVersionParser)

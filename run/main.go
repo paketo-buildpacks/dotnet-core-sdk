@@ -7,13 +7,14 @@ import (
 	"github.com/paketo-buildpacks/packit"
 	"github.com/paketo-buildpacks/packit/cargo"
 	"github.com/paketo-buildpacks/packit/chronos"
+	"github.com/paketo-buildpacks/packit/draft"
 	"github.com/paketo-buildpacks/packit/postal"
 )
 
 func main() {
 	sdkVersionParser := dotnetcoresdk.NewSdkVersionParser()
 	logEmitter := dotnetcoresdk.NewLogEmitter(os.Stdout)
-	entryResolver := dotnetcoresdk.NewPlanEntryResolver(logEmitter)
+	entryResolver := draft.NewPlanner()
 	dependencyMapper := dotnetcoresdk.NewSDKVersionMapper(logEmitter)
 	dependencyManager := postal.NewService(cargo.NewTransport())
 	planRefinery := dotnetcoresdk.NewPlanRefinery()

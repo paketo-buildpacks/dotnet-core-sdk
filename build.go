@@ -14,7 +14,8 @@ import (
 
 //go:generate faux --interface EntryResolver --output fakes/entry_resolver.go
 type EntryResolver interface {
-	Resolve(entries []packit.BuildpackPlanEntry) packit.BuildpackPlanEntry
+	Resolve(name string, entries []packit.BuildpackPlanEntry, priorites []interface{}) (packit.BuildpackPlanEntry, []packit.BuildpackPlanEntry)
+	MergeLayerTypes(name string, entries []packit.BuildpackPlanEntry) (launch, build bool)
 }
 
 //go:generate faux --interface BuildPlanRefinery --output fakes/build_plan_refinery.go
@@ -57,7 +58,7 @@ func Build(entryResolver EntryResolver,
 			}
 
 			context.Plan.Entries = append(context.Plan.Entries, packit.BuildpackPlanEntry{
-				Name: "dotnet-sdk",
+				Name: DotnetDependency,
 				Metadata: map[string]interface{}{
 					"version-source": "RUNTIME_VERSION",
 					"version":        sdkVersion,
@@ -65,7 +66,9 @@ func Build(entryResolver EntryResolver,
 			})
 		}
 
-		planEntry := entryResolver.Resolve(context.Plan.Entries)
+		planEntry, entries := entryResolver.Resolve(DotnetDependency, context.Plan.Entries, Priorities)
+		logger.Candidates(entries)
+
 		version, _ := planEntry.Metadata["version"].(string)
 		versionSource, _ := planEntry.Metadata["version-source"].(string)
 
@@ -96,6 +99,16 @@ func Build(entryResolver EntryResolver,
 
 		envLayer.Launch = true
 		envLayer.Build = true
+
+		launch, build := entryResolver.MergeLayerTypes(DotnetDependency, context.Plan.Entries)
+
+		if build {
+			planEntry.Metadata["build"] = true
+		}
+
+		if launch {
+			planEntry.Metadata["launch"] = true
+		}
 
 		cachedDependencySHA, ok := sdkLayer.Metadata["dependency-sha"]
 		if ok && cachedDependencySHA == sdkDependency.SHA256 {
