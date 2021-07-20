@@ -1,10 +1,10 @@
 api = "0.2"
 
 [buildpack]
-  homepage = "https://github.com/paketo-buildpacks/dotnet-core-sdk"
   id = "paketo-buildpacks/dotnet-core-sdk"
   name = "Paketo .NET Core SDK Buildpack"
   version = "{{ .Version }}"
+  homepage = "https://github.com/paketo-buildpacks/dotnet-core-sdk"
 
 [metadata]
   include-files = ["bin/build", "bin/detect", "bin/run", "buildpack.toml"]
@@ -47,6 +47,15 @@ api = "0.2"
     stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
     uri = "https://buildpacks.cloudfoundry.org/dependencies/dotnet-sdk/dotnet-sdk_3.1.410_linux_x64_any-stack_4e29959a.tar.xz"
     version = "3.1.410"
+
+  [[metadata.dependencies]]
+    id = "dotnet-sdk"
+    sha256 = "6c3b91d419e2a6edfcff6cebd30e5e14e6636a4199381fc1ec544247ba1ba9ef"
+    source = "https://download.visualstudio.microsoft.com/download/pr/c7afc344-acf0-4a6c-8e53-4455f2bcfc85/321418f6300e475f6c5d52849efa2e2e/dotnet-sdk-3.1.411-linux-x64.tar.gz"
+    source_sha256 = "8c4604852d44d4e23a9b68c50e8bce050e6119ee0fe5f3fc2cad3578a3992207"
+    stacks = ["io.buildpacks.stacks.bionic", "org.cloudfoundry.stacks.cflinuxfs3"]
+    uri = "https://buildpacks.cloudfoundry.org/dependencies/dotnet-sdk/dotnet-sdk_3.1.411_linux_x64_any-stack_6c3b91d4.tar.xz"
+    version = "3.1.411"
 
   [[metadata.dependencies]]
     id = "dotnet-sdk"
