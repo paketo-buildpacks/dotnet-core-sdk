@@ -71,7 +71,7 @@ func testSDKVersionMapper(t *testing.T, context spec.G, it spec.S) {
 
 			it("returns an error", func() {
 				_, err := versionMapper.FindCorrespondingVersion(filepath.Join(cnbDir, "buildpack.toml"), "1.2.3")
-				Expect(err).To(MatchError(ContainSubstring("bare keys cannot contain")))
+				Expect(err).To(MatchError(ContainSubstring("buildpack.toml could not be parsed")))
 			})
 		})
 
