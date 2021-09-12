@@ -17,7 +17,7 @@ jobs:
       id: parse
       run: |
         versions="$(echo ${{ github.event.pull_request.title }} | cut -d':' -f2-)"
-        echo "::set-output name=parse::${versions}"
+        echo "::set-output name=versions::${versions}"
 
   update:
     name: Update SDK Compatibility Table
