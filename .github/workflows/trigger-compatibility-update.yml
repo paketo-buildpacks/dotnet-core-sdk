@@ -27,6 +27,7 @@ jobs:
     - name: Generate Entry
       id: single-entry
       run: |
+        echo "versions: ${{ steps.versions.outputs.sdk_versions }}"
         IFS=', ' read -r -a versions <<< ${{ steps.versions.outputs.sdk_versions }}
         for index in ${!versions[@]}; do
           echo ${versions[index]}
