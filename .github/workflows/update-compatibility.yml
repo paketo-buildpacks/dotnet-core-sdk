@@ -31,6 +31,9 @@ jobs:
           echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
         fi
 
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+
     - name: Update the table
       id: update
       uses: paketo-buildpacks/github-config/actions/compatibility@sdk-compat
