@@ -31,17 +31,13 @@ jobs:
           echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
         fi
 
-    - name: Get buildpack.toml contents
-      id: cat_toml
-      run: echo "::set-output name=contents::$(cat '/home/runner/work/dotnet-core-sdk/dotnet-core-sdk/buildpack.toml')"
-
     - name: Update the table
       id: update
       uses: paketo-buildpacks/github-config/actions/compatibility@sdk-compat
       with:
-        buildpack_file: '${{ steps.cat_toml.outputs.contents }}'
+        buildpack_file: "/github/workspace/buildpack.toml"
         sdk_version: ${{ env.VERSION }}
-        output_dir: "/github/workspace/buildpack.toml"
+        output_dir: "/github/workspace"
 
     - name: Commit
       id: commit
