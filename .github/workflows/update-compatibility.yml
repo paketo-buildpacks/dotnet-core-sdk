@@ -58,6 +58,6 @@ jobs:
       if: ${{ steps.commit.outputs.commit_sha != '' }}
       uses: paketo-buildpacks/github-config/actions/pull-request/open@main
       with:
-        token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
+        token: ${{ secrets.SOPHIE_TOKEN }}
         title: "Updating buildpack.toml SDK compatibility table"
         branch: automation/dependencies/update
