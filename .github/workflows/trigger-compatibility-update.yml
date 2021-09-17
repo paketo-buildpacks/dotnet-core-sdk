@@ -26,7 +26,7 @@ jobs:
           echo ${versions[index]}
 
           curl -X POST \
-            https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches \
+            https://api.github.com/repos/sophiewigmore/dotnet-core-sdk/dispatches \
             -H "Accept: application/vnd.github.everest-preview+json" \
             -H "Content-Type: application/json" \
             -H "Authorization: token ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}" \
