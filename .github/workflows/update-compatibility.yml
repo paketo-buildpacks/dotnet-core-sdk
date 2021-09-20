@@ -33,7 +33,7 @@ jobs:
 
     - name: Update the table
       id: update
-      uses: paketo-buildpacks/github-config/actions/compatibility@main
+      uses: paketo-buildpacks/dotnet-core-sdk/actions/compatibility@main
       with:
         buildpack_file: "/github/workspace/buildpack.toml"
         sdk_version: ${{ env.VERSION }}
