@@ -174,7 +174,7 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 			var logs fmt.Stringer
 			err = ioutil.WriteFile(filepath.Join(source, "buildpack.yml"), []byte(`---
 dotnet-framework:
-  version: "2.*"
+  version: "3.*"
 `), os.ModePerm)
 			Expect(err).NotTo(HaveOccurred())
 
