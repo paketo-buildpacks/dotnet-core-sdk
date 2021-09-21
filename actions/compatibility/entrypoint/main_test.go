@@ -9,7 +9,7 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 	. "github.com/onsi/gomega"
-	. "github.com/paketo-buildpacks/github-config/actions/compatibility/entrypoint"
+	. "github.com/paketo-buildpacks/dotnet-core-sdk/actions/compatibility/entrypoint"
 	"github.com/paketo-buildpacks/packit/cargo"
 	"github.com/sclevine/spec"
 )
