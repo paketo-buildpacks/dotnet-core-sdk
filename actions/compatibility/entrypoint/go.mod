@@ -1,9 +1,8 @@
-module github.com/paketo-buildpacks/github-config/actions/compatibility/entrypoint
+module github.com/paketo-buildpacks/dotnet-core-sdk/actions/compatibility/entrypoint
 
 go 1.16
 
 require (
-	github.com/BurntSushi/toml v0.4.1
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/onsi/gomega v1.16.0

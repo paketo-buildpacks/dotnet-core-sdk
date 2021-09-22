@@ -6,7 +6,7 @@ The `entrypoint/main.go` and tests are mostly copied from a previous iteration o
 
 To run the code locally:
 
-1. `cd github-config/actions/compatibility/entrypoint`
+1. `cd dotnet-core-sdk/actions/compatibility/entrypoint`
 2. Run:
 ```
 go run main.go --buildpack-toml <path to your buildpack.toml> --sdk-version <new-sdk-version to add> --output-dir <directory to output new buildpack.toml>
