@@ -25,17 +25,17 @@ jobs:
       with:
         token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
 
-    - name: Checkout Branch
-      uses: paketo-buildpacks/github-config/actions/pull-request/checkout-branch@main
-      with:
-        branch: ${{ github.event.client_payload.branch }}
-
     - name: Set Env Vars
       run: |
         if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
           echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
           echo "BRANCH=${{ github.event.inputs.branch }}" >> $GITHUB_ENV
         fi
+
+    - name: Checkout Branch
+      uses: paketo-buildpacks/github-config/actions/pull-request/checkout-branch@main
+      with:
+        branch: ${{ env.BRANCH }}
 
     - name: Update the table
       id: update
@@ -58,12 +58,12 @@ jobs:
       if: ${{ steps.commit.outputs.commit_sha != '' }}
       uses: paketo-buildpacks/github-config/actions/pull-request/push-branch@main
       with:
-        branch: automation/dependencies/update
+        branch: ${{ env.BRANCH }}
 
     - name: Open Pull Request
       if: ${{ steps.commit.outputs.commit_sha != '' }}
       uses: paketo-buildpacks/github-config/actions/pull-request/open@main
       with:
         title: "Updating buildpack.toml SDK compatibility table"
-        branch: automation/dependencies/update
+        branch: ${{ env.BRANCH }}
         token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
