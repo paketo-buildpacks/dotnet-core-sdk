@@ -73,12 +73,12 @@ api = "0.2"
     patches = 2
 
   [[metadata.runtime-to-sdks]]
-    runtime-version = "3.1.17"
-    sdks = ["3.1.411"]
-
-  [[metadata.runtime-to-sdks]]
     runtime-version = "3.1.18"
     sdks = ["3.1.412"]
+
+  [[metadata.runtime-to-sdks]]
+    runtime-version = "3.1.19"
+    sdks = ["3.1.413"]
 
   [[metadata.runtime-to-sdks]]
     runtime-version = "5.0.9"
