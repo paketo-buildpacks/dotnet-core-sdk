@@ -1,0 +1,42 @@
+name: Trigger Compatibility Table Updates
+
+on:
+  pull_request:
+    branches:
+    - main
+
+concurrency: trigger_compatibility_table_update
+
+jobs:
+  versions:
+    name: Get Newly Added Versions
+    if: contains(github.event.pull_request.title, 'Updates buildpack.toml with new dependency versions:')
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Parse SDK Versions
+      id: parse
+      run: |
+        versions="$(echo ${{ github.event.pull_request.title }} | cut -d':' -f2-)"
+        echo "::set-output name=versions::${versions}"
+
+    - name: Trigger SDK Compatibility Table Updates
+      run: |
+        IFS=', ' read -r -a versions <<< ${{ steps.parse.outputs.versions }}
+        for index in ${!versions[@]}; do
+          echo ${versions[index]}
+          curl -X POST \
+            https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches \
+            -H "Accept: application/vnd.github.everest-preview+json" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}" \
+            -d "{ \
+                  \"event_type\": \"compatibility-table-update\", \
+                  \"client_payload\": { \
+                    \"version\": \"${versions[index]}\", \
+                    \"branch\": \"${BRANCH}\" \
+                   } \
+                 }"
+        done
+      env:
+        BRANCH: ${{ github.event.pull_request.head.ref }}
