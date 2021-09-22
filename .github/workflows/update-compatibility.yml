@@ -5,10 +5,15 @@ on:
     inputs:
       VERSION:
         required: true
+      BRANCH:
+        required: true
   repository_dispatch:
     types: [ compatibility-table-update ]
 env:
   VERSION: ${{ github.event.client_payload.version }}
+  BRANCH: ${{ github.event.client_payload.branch }}
+
+concurrency: compatibility_table_update
 
 jobs:
   update:
@@ -23,12 +28,13 @@ jobs:
     - name: Checkout Branch
       uses: paketo-buildpacks/github-config/actions/pull-request/checkout-branch@main
       with:
-        branch: automation/dependencies/update
+        branch: ${{ github.event.client_payload.branch }}
 
     - name: Set Env Vars
       run: |
         if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
           echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          echo "BRANCH=${{ github.event.inputs.branch }}" >> $GITHUB_ENV
         fi
 
     - name: Update the table

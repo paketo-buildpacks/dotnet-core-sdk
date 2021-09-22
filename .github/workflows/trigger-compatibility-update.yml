@@ -5,6 +5,8 @@ on:
     branches:
     - main
 
+concurrency: trigger_compatibility_table_update
+
 jobs:
   versions:
     name: Get Newly Added Versions
@@ -31,7 +33,10 @@ jobs:
             -d "{ \
                   \"event_type\": \"compatibility-table-update\", \
                   \"client_payload\": { \
-                    \"version\": \"${versions[index]}\" \
+                    \"version\": \"${versions[index]}\", \
+                    \"branch\": \"${BRANCH}\" \
                    } \
                  }"
         done
+      env:
+        BRANCH: ${{ github.event.pull_request.head.ref }}
