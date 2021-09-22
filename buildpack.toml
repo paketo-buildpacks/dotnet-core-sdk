@@ -48,6 +48,16 @@ api = "0.2"
     uri = "https://buildpacks.cloudfoundry.org/dependencies/dotnet-sdk/dotnet-sdk_5.0.401_linux_x64_any-stack_26fab11f.tar.xz"
     version = "5.0.401"
 
+  [[metadata.dependency-constraints]]
+    constraint = "3.1.*"
+    id = "dotnet-sdk"
+    patches = 2
+
+  [[metadata.dependency-constraints]]
+    constraint = "5.0.*"
+    id = "dotnet-sdk"
+    patches = 2
+
   [[metadata.runtime-to-sdks]]
     runtime-version = "3.1.17"
     sdks = ["3.1.411"]
