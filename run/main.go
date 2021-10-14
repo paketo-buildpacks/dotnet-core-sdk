@@ -17,7 +17,6 @@ func main() {
 	entryResolver := draft.NewPlanner()
 	dependencyMapper := dotnetcoresdk.NewSDKVersionMapper(logEmitter)
 	dependencyManager := postal.NewService(cargo.NewTransport())
-	planRefinery := dotnetcoresdk.NewPlanRefinery()
 	symlinker := dotnetcoresdk.NewSymlinker()
 
 	packit.Run(
@@ -25,7 +24,6 @@ func main() {
 		dotnetcoresdk.Build(
 			entryResolver,
 			dependencyMapper,
-			planRefinery,
 			dependencyManager,
 			symlinker,
 			logEmitter,

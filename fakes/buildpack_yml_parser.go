@@ -4,7 +4,7 @@ import "sync"
 
 type BuildpackYMLParser struct {
 	ParseCall struct {
-		sync.Mutex
+		mutex     sync.Mutex
 		CallCount int
 		Receives  struct {
 			WorkingDir string
@@ -18,8 +18,8 @@ type BuildpackYMLParser struct {
 }
 
 func (f *BuildpackYMLParser) Parse(param1 string) (string, error) {
-	f.ParseCall.Lock()
-	defer f.ParseCall.Unlock()
+	f.ParseCall.mutex.Lock()
+	defer f.ParseCall.mutex.Unlock()
 	f.ParseCall.CallCount++
 	f.ParseCall.Receives.WorkingDir = param1
 	if f.ParseCall.Stub != nil {

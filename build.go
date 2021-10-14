@@ -18,11 +18,6 @@ type EntryResolver interface {
 	MergeLayerTypes(name string, entries []packit.BuildpackPlanEntry) (launch, build bool)
 }
 
-//go:generate faux --interface BuildPlanRefinery --output fakes/build_plan_refinery.go
-type BuildPlanRefinery interface {
-	BillOfMaterial(dependency postal.Dependency) packit.BuildpackPlanEntry
-}
-
 //go:generate faux --interface DependencyMapper --output fakes/dependency_mapper.go
 type DependencyMapper interface {
 	FindCorrespondingVersion(path, versionKey string) (string, error)
@@ -32,6 +27,7 @@ type DependencyMapper interface {
 type DependencyManager interface {
 	Resolve(path, id, version, stack string) (postal.Dependency, error)
 	Install(dependency postal.Dependency, cnbPath, layerPath string) error
+	GenerateBillOfMaterials(dependencies ...postal.Dependency) []packit.BOMEntry
 }
 
 //go:generate faux --interface DotnetSymlinker --output fakes/dotnet_symlinker.go
@@ -41,7 +37,6 @@ type DotnetSymlinker interface {
 
 func Build(entryResolver EntryResolver,
 	dependencyMapper DependencyMapper,
-	buildPlanRefinery BuildPlanRefinery,
 	dependencyManager DependencyManager,
 	dotnetSymlinker DotnetSymlinker,
 	logger LogEmitter,
@@ -85,8 +80,6 @@ func Build(entryResolver EntryResolver,
 			logger.Subprocess("WARNING: Setting the .NET Core SDK version through buildpack.yml will be deprecated soon in Dotnet Core SDK Buildpack v%s.", nextMajorVersion.String())
 		}
 
-		bom := buildPlanRefinery.BillOfMaterial(sdkDependency)
-
 		sdkLayer, err := context.Layers.Get("dotnet-core-sdk")
 		if err != nil {
 			return packit.BuildResult{}, err
@@ -100,14 +93,17 @@ func Build(entryResolver EntryResolver,
 		envLayer.Launch = true
 		envLayer.Build = true
 
+		bom := dependencyManager.GenerateBillOfMaterials(sdkDependency)
 		launch, build := entryResolver.MergeLayerTypes(DotnetDependency, context.Plan.Entries)
 
+		var buildMetadata packit.BuildMetadata
 		if build {
-			planEntry.Metadata["build"] = true
+			buildMetadata.BOM = bom
 		}
 
+		var launchMetadata packit.LaunchMetadata
 		if launch {
-			planEntry.Metadata["launch"] = true
+			launchMetadata.BOM = bom
 		}
 
 		cachedDependencySHA, ok := sdkLayer.Metadata["dependency-sha"]
@@ -129,11 +125,12 @@ func Build(entryResolver EntryResolver,
 			logger.Environment(envLayer.SharedEnv)
 
 			return packit.BuildResult{
-				Plan: context.Plan,
 				Layers: []packit.Layer{
 					sdkLayer,
 					envLayer,
 				},
+				Build:  buildMetadata,
+				Launch: launchMetadata,
 			}, nil
 		}
 
@@ -165,9 +162,7 @@ func Build(entryResolver EntryResolver,
 			return packit.BuildResult{}, err
 		}
 
-		sdkLayer.Build = planEntry.Metadata["build"] == true
-		sdkLayer.Cache = planEntry.Metadata["build"] == true || planEntry.Metadata["launch"] == true
-		sdkLayer.Launch = planEntry.Metadata["launch"] == true
+		sdkLayer.Build, sdkLayer.Launch, sdkLayer.Cache = build, launch, build || launch
 
 		logger.Process("Configuring environment")
 		envLayer.SharedEnv.Prepend("PATH",
@@ -178,13 +173,12 @@ func Build(entryResolver EntryResolver,
 		logger.Environment(envLayer.SharedEnv)
 
 		return packit.BuildResult{
-			Plan: packit.BuildpackPlan{
-				Entries: []packit.BuildpackPlanEntry{bom},
-			},
 			Layers: []packit.Layer{
 				sdkLayer,
 				envLayer,
 			},
+			Build:  buildMetadata,
+			Launch: launchMetadata,
 		}, nil
 	}
 }
