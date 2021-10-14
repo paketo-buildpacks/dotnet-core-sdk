@@ -34,7 +34,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		dependencyMapper  *fakes.DependencyMapper
 		dependencyManager *fakes.DependencyManager
 		dotnetSymlinker   *fakes.DotnetSymlinker
-		buildPlanRefinery *fakes.BuildPlanRefinery
 
 		build packit.BuildFunc
 	)
@@ -73,15 +72,17 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			Name:    "Dotnet Core SDK",
 			SHA256:  "some-sha",
 		}
-
-		buildPlanRefinery = &fakes.BuildPlanRefinery{}
-		buildPlanRefinery.BillOfMaterialCall.Returns.BuildpackPlanEntry = packit.BuildpackPlanEntry{
-			Name: "dotnet-sdk",
-			Metadata: map[string]interface{}{
-				"version":  "2.5.x",
-				"licenses": []string{},
-				"name":     "dotnet-sdk",
-				"sha256":   "some-sha",
+		dependencyManager.GenerateBillOfMaterialsCall.Returns.BOMEntrySlice = []packit.BOMEntry{
+			{
+				Name: "dotnet-sdk",
+				Metadata: packit.BOMMetadata{
+					Checksum: packit.BOMChecksum{
+						Algorithm: packit.SHA256,
+						Hash:      "dotnet-sdk-dep-sha",
+					},
+					Version: "dotnet-sdk-dep-version",
+					URI:     "dotnet-sdk-dep-uri",
+				},
 			},
 		}
 
@@ -98,7 +99,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		build = dotnetcoresdk.Build(
 			entryResolver,
 			dependencyMapper,
-			buildPlanRefinery,
 			dependencyManager,
 			dotnetSymlinker,
 			logEmitter,
@@ -137,19 +137,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(result).To(Equal(packit.BuildResult{
-			Plan: packit.BuildpackPlan{
-				Entries: []packit.BuildpackPlanEntry{
-					{
-						Name: "dotnet-sdk",
-						Metadata: map[string]interface{}{
-							"version":  "2.5.x",
-							"licenses": []string{},
-							"name":     "dotnet-sdk",
-							"sha256":   "some-sha",
-						},
-					},
-				},
-			},
 			Layers: []packit.Layer{
 				{
 					Name:             "dotnet-core-sdk",
@@ -179,6 +166,36 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					ProcessLaunchEnv: map[string]packit.Environment{},
 					Build:            true,
 					Launch:           true,
+				},
+			},
+			Build: packit.BuildMetadata{
+				BOM: []packit.BOMEntry{
+					{
+						Name: "dotnet-sdk",
+						Metadata: packit.BOMMetadata{
+							Checksum: packit.BOMChecksum{
+								Algorithm: packit.SHA256,
+								Hash:      "dotnet-sdk-dep-sha",
+							},
+							Version: "dotnet-sdk-dep-version",
+							URI:     "dotnet-sdk-dep-uri",
+						},
+					},
+				},
+			},
+			Launch: packit.LaunchMetadata{
+				BOM: []packit.BOMEntry{
+					{
+						Name: "dotnet-sdk",
+						Metadata: packit.BOMMetadata{
+							Checksum: packit.BOMChecksum{
+								Algorithm: packit.SHA256,
+								Hash:      "dotnet-sdk-dep-sha",
+							},
+							Version: "dotnet-sdk-dep-version",
+							URI:     "dotnet-sdk-dep-uri",
+						},
+					},
 				},
 			},
 		}))
@@ -215,13 +232,14 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		Expect(dependencyManager.ResolveCall.Receives.Version).To(Equal("2.5.x"))
 		Expect(dependencyManager.ResolveCall.Receives.Stack).To(Equal("some-stack"))
 
-		Expect(buildPlanRefinery.BillOfMaterialCall.Receives.Dependency).
-			To(Equal(postal.Dependency{
+		Expect(dependencyManager.GenerateBillOfMaterialsCall.Receives.Dependencies).To(Equal([]postal.Dependency{
+			{
 				ID:      "dotnet-sdk",
 				Version: "some-version",
 				Name:    "Dotnet Core SDK",
 				SHA256:  "some-sha",
-			}))
+			},
+		}))
 
 		Expect(dependencyManager.InstallCall.Receives.Dependency).
 			To(Equal(postal.Dependency{
@@ -337,13 +355,14 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(dependencyManager.ResolveCall.Receives.Version).To(Equal("2.5.x"))
 			Expect(dependencyManager.ResolveCall.Receives.Stack).To(Equal("some-stack"))
 
-			Expect(buildPlanRefinery.BillOfMaterialCall.Receives.Dependency).
-				To(Equal(postal.Dependency{
+			Expect(dependencyManager.GenerateBillOfMaterialsCall.Receives.Dependencies).To(Equal([]postal.Dependency{
+				{
 					ID:      "dotnet-sdk",
 					Version: "some-version",
 					Name:    "Dotnet Core SDK",
 					SHA256:  "some-sha",
-				}))
+				},
+			}))
 
 			Expect(dependencyManager.InstallCall.CallCount).To(Equal(0))
 

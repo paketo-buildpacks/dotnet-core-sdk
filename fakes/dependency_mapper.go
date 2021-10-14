@@ -4,7 +4,7 @@ import "sync"
 
 type DependencyMapper struct {
 	FindCorrespondingVersionCall struct {
-		sync.Mutex
+		mutex     sync.Mutex
 		CallCount int
 		Receives  struct {
 			Path       string
@@ -19,8 +19,8 @@ type DependencyMapper struct {
 }
 
 func (f *DependencyMapper) FindCorrespondingVersion(param1 string, param2 string) (string, error) {
-	f.FindCorrespondingVersionCall.Lock()
-	defer f.FindCorrespondingVersionCall.Unlock()
+	f.FindCorrespondingVersionCall.mutex.Lock()
+	defer f.FindCorrespondingVersionCall.mutex.Unlock()
 	f.FindCorrespondingVersionCall.CallCount++
 	f.FindCorrespondingVersionCall.Receives.Path = param1
 	f.FindCorrespondingVersionCall.Receives.VersionKey = param2

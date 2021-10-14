@@ -4,7 +4,7 @@ import "sync"
 
 type DotnetSymlinker struct {
 	LinkCall struct {
-		sync.Mutex
+		mutex     sync.Mutex
 		CallCount int
 		Receives  struct {
 			WorkingDir string
@@ -18,8 +18,8 @@ type DotnetSymlinker struct {
 }
 
 func (f *DotnetSymlinker) Link(param1 string, param2 string) error {
-	f.LinkCall.Lock()
-	defer f.LinkCall.Unlock()
+	f.LinkCall.mutex.Lock()
+	defer f.LinkCall.mutex.Unlock()
 	f.LinkCall.CallCount++
 	f.LinkCall.Receives.WorkingDir = param1
 	f.LinkCall.Receives.LayerPath = param2
