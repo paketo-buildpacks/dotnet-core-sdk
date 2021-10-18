@@ -22,7 +22,7 @@ jobs:
 
     - name: Trigger SDK Compatibility Table Updates
       run: |
-        IFS=', ' read -r -a versions <<< ${{ steps.parse.outputs.versions }}
+        IFS=', ' read -r -a versions <<< "${{ steps.parse.outputs.versions }}"
         for index in ${!versions[@]}; do
           echo ${versions[index]}
           curl -X POST \
