@@ -329,10 +329,13 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			err := ioutil.WriteFile(filepath.Join(layersDir, "dotnet-core-sdk.toml"),
 				[]byte("[metadata]\ndependency-sha = \"some-sha\"\n"), 0600)
 			Expect(err).NotTo(HaveOccurred())
+
+			entryResolver.MergeLayerTypesCall.Returns.Build = true
+			entryResolver.MergeLayerTypesCall.Returns.Launch = false
 		})
 
 		it("reuses the cached version of the SDK dependency", func() {
-			_, err := build(packit.BuildContext{
+			result, err := build(packit.BuildContext{
 				BuildpackInfo: packit.BuildpackInfo{
 					Version: "1.2.3",
 				},
@@ -349,6 +352,53 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				Stack:      "some-stack",
 			})
 			Expect(err).NotTo(HaveOccurred())
+			Expect(result).To(Equal(packit.BuildResult{
+				Layers: []packit.Layer{
+					{
+						Name:             "dotnet-core-sdk",
+						Path:             filepath.Join(layersDir, "dotnet-core-sdk"),
+						SharedEnv:        packit.Environment{},
+						BuildEnv:         packit.Environment{},
+						LaunchEnv:        packit.Environment{},
+						ProcessLaunchEnv: map[string]packit.Environment{},
+						Build:            true,
+						Launch:           false,
+						Cache:            true,
+						Metadata: map[string]interface{}{
+							"dependency-sha": "some-sha",
+						},
+					},
+					{
+						Name: "dotnet-env-var",
+						Path: filepath.Join(layersDir, "dotnet-env-var"),
+						SharedEnv: packit.Environment{
+							"PATH.prepend":         filepath.Join(workingDir, ".dotnet_root"),
+							"PATH.delim":           string(os.PathListSeparator),
+							"DOTNET_ROOT.override": filepath.Join(workingDir, ".dotnet_root"),
+						},
+						BuildEnv:         packit.Environment{},
+						LaunchEnv:        packit.Environment{},
+						ProcessLaunchEnv: map[string]packit.Environment{},
+						Build:            true,
+						Launch:           true,
+					},
+				},
+				Build: packit.BuildMetadata{
+					BOM: []packit.BOMEntry{
+						{
+							Name: "dotnet-sdk",
+							Metadata: packit.BOMMetadata{
+								Checksum: packit.BOMChecksum{
+									Algorithm: packit.SHA256,
+									Hash:      "dotnet-sdk-dep-sha",
+								},
+								Version: "dotnet-sdk-dep-version",
+								URI:     "dotnet-sdk-dep-uri",
+							},
+						},
+					},
+				},
+			}))
 
 			Expect(dependencyManager.ResolveCall.Receives.Path).To(Equal(filepath.Join(cnbDir, "buildpack.toml")))
 			Expect(dependencyManager.ResolveCall.Receives.Id).To(Equal("dotnet-sdk"))

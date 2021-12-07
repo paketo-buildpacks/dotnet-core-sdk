@@ -124,6 +124,8 @@ func Build(entryResolver EntryResolver,
 			envLayer.SharedEnv.Override("DOTNET_ROOT", filepath.Join(context.WorkingDir, ".dotnet_root"))
 			logger.Environment(envLayer.SharedEnv)
 
+			sdkLayer.Build, sdkLayer.Launch, sdkLayer.Cache = build, launch, build || launch
+
 			return packit.BuildResult{
 				Layers: []packit.Layer{
 					sdkLayer,
