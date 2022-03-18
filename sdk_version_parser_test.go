@@ -1,7 +1,6 @@
 package dotnetcoresdk_test
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -23,10 +22,10 @@ func testSdkVersionParser(t *testing.T, context spec.G, it spec.S) {
 
 	it.Before(func() {
 		var err error
-		workingDir, err = ioutil.TempDir("", "working-dir")
+		workingDir, err = os.MkdirTemp("", "working-dir")
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(ioutil.WriteFile(filepath.Join(workingDir, "buildpack.yml"), []byte(`---
+		Expect(os.WriteFile(filepath.Join(workingDir, "buildpack.yml"), []byte(`---
 dotnet-sdk:
   version: some-version
 `), 0600)).To(Succeed())
@@ -58,7 +57,7 @@ dotnet-sdk:
 	context("failure cases", func() {
 		context("when the buildpack.yml is malformed", func() {
 			it.Before(func() {
-				Expect(ioutil.WriteFile(filepath.Join(workingDir, "buildpack.yml"), []byte(`[[[`), 0600)).To(Succeed())
+				Expect(os.WriteFile(filepath.Join(workingDir, "buildpack.yml"), []byte(`[[[`), 0600)).To(Succeed())
 			})
 
 			it("returns the error", func() {

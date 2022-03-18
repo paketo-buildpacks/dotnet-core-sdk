@@ -1,6 +1,6 @@
 package dotnetcoresdk
 
-import "github.com/paketo-buildpacks/packit"
+import "github.com/paketo-buildpacks/packit/v2"
 
 //go:generate faux --interface BuildpackYMLParser --output fakes/buildpack_yml_parser.go
 type BuildpackYMLParser interface {
