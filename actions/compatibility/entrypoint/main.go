@@ -4,14 +4,14 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 
-	"github.com/paketo-buildpacks/packit/cargo"
+	"github.com/paketo-buildpacks/packit/v2/cargo"
 
 	"github.com/blang/semver"
 	"github.com/mitchellh/mapstructure"
@@ -179,12 +179,12 @@ func getReleaseChannel() (Channel, error) {
 			return Channel{}, err
 		}
 
-		releasesJSON, err = ioutil.ReadAll(resp.Body)
+		releasesJSON, err = io.ReadAll(resp.Body)
 		if err != nil {
 			return Channel{}, fmt.Errorf("failed to read releases.json: %w", err)
 		}
 	} else {
-		releasesJSON, err = ioutil.ReadFile(flags.releasesJSONPath)
+		releasesJSON, err = os.ReadFile(flags.releasesJSONPath)
 		if err != nil {
 			return Channel{}, fmt.Errorf("failed to read releases.json: %w", err)
 		}

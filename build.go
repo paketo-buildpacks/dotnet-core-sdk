@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/Masterminds/semver"
-	"github.com/paketo-buildpacks/packit"
-	"github.com/paketo-buildpacks/packit/chronos"
-	"github.com/paketo-buildpacks/packit/postal"
+	"github.com/paketo-buildpacks/packit/v2"
+	"github.com/paketo-buildpacks/packit/v2/chronos"
+	"github.com/paketo-buildpacks/packit/v2/postal"
 )
 
 //go:generate faux --interface EntryResolver --output fakes/entry_resolver.go
@@ -26,7 +26,7 @@ type DependencyMapper interface {
 //go:generate faux --interface DependencyManager --output fakes/dependency_manager.go
 type DependencyManager interface {
 	Resolve(path, id, version, stack string) (postal.Dependency, error)
-	Install(dependency postal.Dependency, cnbPath, layerPath string) error
+	Deliver(dependency postal.Dependency, cnbPath, layerPath, platformPath string) error
 	GenerateBillOfMaterials(dependencies ...postal.Dependency) []packit.BOMEntry
 }
 
@@ -145,7 +145,7 @@ func Build(entryResolver EntryResolver,
 
 		logger.Subprocess("Installing %s %s", ".NET Core SDK", sdkDependency.Version)
 		duration, err := clock.Measure(func() error {
-			return dependencyManager.Install(sdkDependency, context.CNBPath, sdkLayer.Path)
+			return dependencyManager.Deliver(sdkDependency, context.CNBPath, sdkLayer.Path, context.Platform.Path)
 		})
 		if err != nil {
 			return packit.BuildResult{}, err

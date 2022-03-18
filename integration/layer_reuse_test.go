@@ -2,7 +2,6 @@ package integration_test
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -172,7 +171,7 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).NotTo(HaveOccurred())
 
 			var logs fmt.Stringer
-			err = ioutil.WriteFile(filepath.Join(source, "buildpack.yml"), []byte(`---
+			err = os.WriteFile(filepath.Join(source, "buildpack.yml"), []byte(`---
 dotnet-framework:
   version: "3.*"
 `), os.ModePerm)
@@ -195,7 +194,7 @@ dotnet-framework:
 			Expect(firstImage.Buildpacks[1].Layers).To(HaveKey("dotnet-core-sdk"))
 
 			// second pack build
-			err = ioutil.WriteFile(filepath.Join(source, "buildpack.yml"), []byte(`---
+			err = os.WriteFile(filepath.Join(source, "buildpack.yml"), []byte(`---
 dotnet-framework:
   version: "5.*"
 `), os.ModePerm)

@@ -1,7 +1,6 @@
 package dotnetcoresdk_test
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -23,10 +22,10 @@ func testSymlinker(t *testing.T, context spec.G, it spec.S) {
 
 	it.Before(func() {
 		var err error
-		workingDir, err = ioutil.TempDir("", "working-dir")
+		workingDir, err = os.MkdirTemp("", "working-dir")
 		Expect(err).NotTo(HaveOccurred())
 
-		layerPath, err = ioutil.TempDir("", "layer-path")
+		layerPath, err = os.MkdirTemp("", "layer-path")
 		Expect(err).NotTo(HaveOccurred())
 
 		symlinker = dotnetcoresdk.NewSymlinker()
@@ -39,7 +38,7 @@ func testSymlinker(t *testing.T, context spec.G, it spec.S) {
 
 	context("Link", func() {
 		it.Before(func() {
-			Expect(ioutil.WriteFile(filepath.Join(layerPath, "dotnet"), []byte{}, os.ModePerm)).To(Succeed())
+			Expect(os.WriteFile(filepath.Join(layerPath, "dotnet"), []byte{}, os.ModePerm)).To(Succeed())
 		})
 
 		it("creates a .dotnet_root dir in workspace with symlink to layerpath", func() {

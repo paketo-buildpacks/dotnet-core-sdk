@@ -10,7 +10,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	. "github.com/onsi/gomega"
 	. "github.com/paketo-buildpacks/dotnet-core-sdk/actions/compatibility/entrypoint"
-	"github.com/paketo-buildpacks/packit/cargo"
+	"github.com/paketo-buildpacks/packit/v2/cargo"
 	"github.com/sclevine/spec"
 )
 

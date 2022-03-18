@@ -2,7 +2,6 @@ package dotnetcoresdk_test
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -30,10 +29,10 @@ func testSDKVersionMapper(t *testing.T, context spec.G, it spec.S) {
 		logEmitter = dotnetcoresdk.NewLogEmitter(buffer)
 
 		versionMapper = dotnetcoresdk.NewSDKVersionMapper(logEmitter)
-		cnbDir, err = ioutil.TempDir("", "cnb")
+		cnbDir, err = os.MkdirTemp("", "cnb")
 		Expect(err).NotTo(HaveOccurred())
 
-		err = ioutil.WriteFile(filepath.Join(cnbDir, "buildpack.toml"), []byte(`api = "0.2"
+		err = os.WriteFile(filepath.Join(cnbDir, "buildpack.toml"), []byte(`api = "0.2"
  [buildpack]
    id = "org.some-org.some-buildpack"
    name = "Some Buildpack"
@@ -65,7 +64,7 @@ func testSDKVersionMapper(t *testing.T, context spec.G, it spec.S) {
 
 		context("when the buildpack.toml cannot be decoded", func() {
 			it.Before(func() {
-				err := ioutil.WriteFile(filepath.Join(cnbDir, "buildpack.toml"), []byte(`%%%`), 0600)
+				err := os.WriteFile(filepath.Join(cnbDir, "buildpack.toml"), []byte(`%%%`), 0600)
 				Expect(err).ToNot(HaveOccurred())
 			})
 
