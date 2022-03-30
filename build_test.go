@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-	"time"
 
 	dotnetcoresdk "github.com/paketo-buildpacks/dotnet-core-sdk"
 	"github.com/paketo-buildpacks/dotnet-core-sdk/fakes"
@@ -28,8 +27,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		layersDir  string
 		cnbDir     string
 		workingDir string
-		clock      chronos.Clock
-		timeStamp  time.Time
 		buffer     *bytes.Buffer
 
 		entryResolver     *fakes.EntryResolver
@@ -93,18 +90,13 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		buffer = bytes.NewBuffer(nil)
 		logEmitter := dotnetcoresdk.NewLogEmitter(buffer)
 
-		timeStamp = time.Now()
-		clock = chronos.NewClock(func() time.Time {
-			return timeStamp
-		})
-
 		build = dotnetcoresdk.Build(
 			entryResolver,
 			dependencyMapper,
 			dependencyManager,
 			dotnetSymlinker,
 			logEmitter,
-			clock,
+			chronos.DefaultClock,
 		)
 	})
 
@@ -153,7 +145,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					Cache:            true,
 					Metadata: map[string]interface{}{
 						"dependency-sha": "some-sha",
-						"built_at":       timeStamp.Format(time.RFC3339Nano),
 					},
 				},
 				{

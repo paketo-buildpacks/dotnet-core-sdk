@@ -156,7 +156,6 @@ func Build(entryResolver EntryResolver,
 
 		sdkLayer.Metadata = map[string]interface{}{
 			"dependency-sha": sdkDependency.SHA256,
-			"built_at":       clock.Now().Format(time.RFC3339Nano),
 		}
 
 		err = dotnetSymlinker.Link(context.WorkingDir, sdkLayer.Path)
