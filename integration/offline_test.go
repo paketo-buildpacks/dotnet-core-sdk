@@ -72,6 +72,8 @@ func testOffline(t *testing.T, context spec.G, it spec.S) {
 				"      <unknown>       -> \"*\"",
 				"",
 				MatchRegexp(`    Selected .NET Core SDK version \(using RUNTIME_VERSION\): \d+\.\d+\.\d+`),
+				MatchRegexp(`      Version 5\.\d+\.\d+ of .NET Core SDK will be deprecated after 2022-05-08`),
+				"      Migrate your application to a supported version of .NET Core SDK before this time.",
 				"",
 				"  Executing build process",
 				MatchRegexp(`    Installing .NET Core SDK \d+\.\d+\.\d+`),
