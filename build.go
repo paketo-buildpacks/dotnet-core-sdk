@@ -85,14 +85,6 @@ func Build(entryResolver EntryResolver,
 			return packit.BuildResult{}, err
 		}
 
-		envLayer, err := context.Layers.Get("dotnet-env-var")
-		if err != nil {
-			return packit.BuildResult{}, err
-		}
-
-		envLayer.Launch = true
-		envLayer.Build = true
-
 		bom := dependencyManager.GenerateBillOfMaterials(sdkDependency)
 		launch, build := entryResolver.MergeLayerTypes(DotnetDependency, context.Plan.Entries)
 
@@ -111,25 +103,11 @@ func Build(entryResolver EntryResolver,
 			logger.Process(fmt.Sprintf("Reusing cached layer %s", sdkLayer.Path))
 			logger.Break()
 
-			err = dotnetSymlinker.Link(context.WorkingDir, sdkLayer.Path)
-			if err != nil {
-				return packit.BuildResult{}, err
-			}
-
-			logger.Process("Configuring environment")
-			envLayer.SharedEnv.Prepend("PATH",
-				filepath.Join(context.WorkingDir, ".dotnet_root"),
-				string(os.PathListSeparator))
-
-			envLayer.SharedEnv.Override("DOTNET_ROOT", filepath.Join(context.WorkingDir, ".dotnet_root"))
-			logger.Environment(envLayer.SharedEnv)
-
 			sdkLayer.Build, sdkLayer.Launch, sdkLayer.Cache = build, launch, build || launch
 
 			return packit.BuildResult{
 				Layers: []packit.Layer{
 					sdkLayer,
-					envLayer,
 				},
 				Build:  buildMetadata,
 				Launch: launchMetadata,
@@ -158,25 +136,16 @@ func Build(entryResolver EntryResolver,
 			"dependency-sha": sdkDependency.SHA256,
 		}
 
-		err = dotnetSymlinker.Link(context.WorkingDir, sdkLayer.Path)
-		if err != nil {
-			return packit.BuildResult{}, err
-		}
-
 		sdkLayer.Build, sdkLayer.Launch, sdkLayer.Cache = build, launch, build || launch
 
 		logger.Process("Configuring environment")
-		envLayer.SharedEnv.Prepend("PATH",
-			filepath.Join(context.WorkingDir, ".dotnet_root"),
+		sdkLayer.BuildEnv.Prepend("PATH",
+			sdkLayer.Path,
 			string(os.PathListSeparator))
-
-		envLayer.SharedEnv.Override("DOTNET_ROOT", filepath.Join(context.WorkingDir, ".dotnet_root"))
-		logger.Environment(envLayer.SharedEnv)
 
 		return packit.BuildResult{
 			Layers: []packit.Layer{
 				sdkLayer,
-				envLayer,
 			},
 			Build:  buildMetadata,
 			Launch: launchMetadata,
