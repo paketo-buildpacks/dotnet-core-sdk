@@ -117,12 +117,12 @@ api = "0.6"
     sdks = ["3.1.418"]
 
   [[metadata.runtime-to-sdks]]
-    runtime-version = "5.0.14"
-    sdks = ["5.0.405"]
-
-  [[metadata.runtime-to-sdks]]
     runtime-version = "5.0.15"
     sdks = ["5.0.406"]
+
+  [[metadata.runtime-to-sdks]]
+    runtime-version = "5.0.16"
+    sdks = ["5.0.407"]
 
   [[metadata.runtime-to-sdks]]
     runtime-version = "6.0.3"
