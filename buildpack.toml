@@ -13,7 +13,7 @@ api = "0.6"
   include-files = ["bin/build", "bin/detect", "bin/run", "buildpack.toml"]
   pre-package = "./scripts/build.sh"
   [metadata.default-versions]
-    dotnet-sdk = "5.*"
+    dotnet-sdk = "6.*"
 
   [[metadata.dependencies]]
     cpe = "cpe:2.3:a:microsoft:.net_core:3.1.417:*:*:*:*:*:*:*"
@@ -95,11 +95,6 @@ api = "0.6"
 
   [[metadata.dependency-constraints]]
     constraint = "3.1.*"
-    id = "dotnet-sdk"
-    patches = 2
-
-  [[metadata.dependency-constraints]]
-    constraint = "5.0.*"
     id = "dotnet-sdk"
     patches = 2
 
