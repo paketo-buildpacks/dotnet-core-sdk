@@ -107,8 +107,6 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 				"      <unknown>       -> \"*\"",
 				"",
 				MatchRegexp(`    Selected .NET Core SDK version \(using RUNTIME_VERSION\): \d+\.\d+\.\d+`),
-				MatchRegexp(`      Version 5\.\d+\.\d+ of .NET Core SDK will be deprecated after 2022-05-08`),
-				"      Migrate your application to a supported version of .NET Core SDK before this time.",
 				"",
 				MatchRegexp(fmt.Sprintf("  Reusing cached layer /layers/%s/dotnet-core-sdk", strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
 				"",
@@ -198,7 +196,7 @@ dotnet-framework:
 			// second pack build
 			err = os.WriteFile(filepath.Join(source, "buildpack.yml"), []byte(`---
 dotnet-framework:
-  version: "5.*"
+  version: "6.*"
 `), os.ModePerm)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -226,8 +224,6 @@ dotnet-framework:
 				"      <unknown>       -> \"*\"",
 				"",
 				MatchRegexp(`    Selected .NET Core SDK version \(using RUNTIME_VERSION\): \d+\.\d+\.\d+`),
-				MatchRegexp(`      Version 5\.\d+\.\d+ of .NET Core SDK will be deprecated after 2022-05-08`),
-				"      Migrate your application to a supported version of .NET Core SDK before this time.",
 				"",
 				"  Executing build process",
 			))
