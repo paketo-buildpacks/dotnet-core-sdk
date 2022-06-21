@@ -1,14 +1,14 @@
-# Dotnet Core SDK Cloud Native Buildpack
+# .NET Core SDK Cloud Native Buildpack
 
-The Dotnet Core SDK CNB provides a version of the Dotnet Core SDK and a version of the
-Dotnet Core Driver or the `dotnet` binary. It also sets the Dotnet Core SDK on the`$DOTNET_ROOT`
-so that it is available to subsequent buildpacks during their build phase and sets the Dotnet Core
+The .NET Core SDK CNB provides a version of the .NET Core SDK and a version of the
+.NET Core Driver or the `dotnet` binary. It also sets the .NET Core SDK on the`$DOTNET_ROOT`
+so that it is available to subsequent buildpacks during their build phase and sets the .NET Core
 Driver on the `$PATH` so that is available to subsequent buildpacks and in the final running container.
 
 ## Integration
 
-The Dotnet Core SDK CNB provides the dotnet-sdk as a dependency. Downstream buildpacks, like
-[Dotnet Core Build](https://github.com/paketo-buildpacks/dotnet-core-build) can
+The .NET Core SDK CNB provides the dotnet-sdk as a dependency. Downstream buildpacks, like
+[.NET Core Build](https://github.com/paketo-buildpacks/dotnet-core-build) can
 require the dotnet-sdk dependency by generating a [Build Plan
 TOML](https://github.com/buildpacks/spec/blob/master/buildpack.md#build-plan-toml)
 file that looks like the following:
@@ -16,12 +16,12 @@ file that looks like the following:
 ```toml
 [[requires]]
 
-  # The name of the Dotnet Core SDK dependency is "dotnet-sdk". This value is considered
+  # The name of the .NET Core SDK dependency is "dotnet-sdk". This value is considered
   # part of the public API for the buildpack and will not change without a plan
   # for deprecation.
   name = "dotnet-sdk"
 
-  # The version of the Dotnet Core SDK dependency is not required. In the case it
+  # The version of the .NET Core SDK dependency is not required. In the case it
   # is not specified, the buildpack will provide the default version, which can
   # be seen in the buildpack.toml file.
   # If you wish to request a specific version, the buildpack supports
@@ -29,12 +29,12 @@ file that looks like the following:
   # "3.1.100".
   version = "3.1.100"
 
-  # The Dotnet Core SDK buildpack supports some non-required metadata options.
+  # The .NET Core SDK buildpack supports some non-required metadata options.
   [requires.metadata]
 
-    # Setting the build flag to true will ensure that the Dotnet Core SDK
+    # Setting the build flag to true will ensure that the .NET Core SDK
     # depdendency is available in the $DOTNET_ROOT for subsequent buildpacks during
-    # their build phase and ensures that the Dotnet Core Driver dependency is available
+    # their build phase and ensures that the .NET Core Driver dependency is available
     # in the $PATH for subsequent buildpacks. If you are writing a buildpack that needs
     # to use the dotnet sdk & driver during its build process, this flag should be set
     # to true.
