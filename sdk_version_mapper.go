@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/BurntSushi/toml"
+	"github.com/paketo-buildpacks/packit/v2/scribe"
 )
 
 type RuntimeToSdks struct {
@@ -12,10 +13,10 @@ type RuntimeToSdks struct {
 }
 
 type SDKVersionMapper struct {
-	logger LogEmitter
+	logger scribe.Emitter
 }
 
-func NewSDKVersionMapper(logger LogEmitter) SDKVersionMapper {
+func NewSDKVersionMapper(logger scribe.Emitter) SDKVersionMapper {
 	return SDKVersionMapper{logger: logger}
 }
 

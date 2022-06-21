@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	dotnetcoresdk "github.com/paketo-buildpacks/dotnet-core-sdk"
+	"github.com/paketo-buildpacks/packit/v2/scribe"
 	"github.com/sclevine/spec"
 
 	. "github.com/onsi/gomega"
@@ -17,7 +18,7 @@ func testSDKVersionMapper(t *testing.T, context spec.G, it spec.S) {
 		Expect = NewWithT(t).Expect
 
 		buffer        *bytes.Buffer
-		logEmitter    dotnetcoresdk.LogEmitter
+		logEmitter    scribe.Emitter
 		cnbDir        string
 		versionMapper dotnetcoresdk.SDKVersionMapper
 	)
@@ -26,7 +27,7 @@ func testSDKVersionMapper(t *testing.T, context spec.G, it spec.S) {
 		var err error
 
 		buffer = bytes.NewBuffer(nil)
-		logEmitter = dotnetcoresdk.NewLogEmitter(buffer)
+		logEmitter = scribe.NewEmitter(buffer)
 
 		versionMapper = dotnetcoresdk.NewSDKVersionMapper(logEmitter)
 		cnbDir, err = os.MkdirTemp("", "cnb")

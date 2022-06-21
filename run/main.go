@@ -9,11 +9,19 @@ import (
 	"github.com/paketo-buildpacks/packit/v2/chronos"
 	"github.com/paketo-buildpacks/packit/v2/draft"
 	"github.com/paketo-buildpacks/packit/v2/postal"
+	"github.com/paketo-buildpacks/packit/v2/sbom"
+	"github.com/paketo-buildpacks/packit/v2/scribe"
 )
+
+type Generator struct{}
+
+func (f Generator) GenerateFromDependency(dependency postal.Dependency, path string) (sbom.SBOM, error) {
+	return sbom.GenerateFromDependency(dependency, path)
+}
 
 func main() {
 	sdkVersionParser := dotnetcoresdk.NewSdkVersionParser()
-	logEmitter := dotnetcoresdk.NewLogEmitter(os.Stdout)
+	logEmitter := scribe.NewEmitter(os.Stdout)
 	entryResolver := draft.NewPlanner()
 	dependencyMapper := dotnetcoresdk.NewSDKVersionMapper(logEmitter)
 	dependencyManager := postal.NewService(cargo.NewTransport())
@@ -26,6 +34,7 @@ func main() {
 			dependencyMapper,
 			dependencyManager,
 			symlinker,
+			Generator{},
 			logEmitter,
 			chronos.DefaultClock,
 		),

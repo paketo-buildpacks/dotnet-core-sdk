@@ -10,6 +10,8 @@ import (
 	"github.com/paketo-buildpacks/packit/v2"
 	"github.com/paketo-buildpacks/packit/v2/chronos"
 	"github.com/paketo-buildpacks/packit/v2/postal"
+	"github.com/paketo-buildpacks/packit/v2/sbom"
+	"github.com/paketo-buildpacks/packit/v2/scribe"
 )
 
 //go:generate faux --interface EntryResolver --output fakes/entry_resolver.go
@@ -35,11 +37,17 @@ type DotnetSymlinker interface {
 	Link(workingDir, layerPath string) error
 }
 
+//go:generate faux --interface SBOMGenerator --output fakes/sbom_generator.go
+type SBOMGenerator interface {
+	GenerateFromDependency(dependency postal.Dependency, dir string) (sbom.SBOM, error)
+}
+
 func Build(entryResolver EntryResolver,
 	dependencyMapper DependencyMapper,
 	dependencyManager DependencyManager,
 	dotnetSymlinker DotnetSymlinker,
-	logger LogEmitter,
+	sbomGenerator SBOMGenerator,
+	logger scribe.Emitter,
 	clock chronos.Clock,
 ) packit.BuildFunc {
 	return func(context packit.BuildContext) (packit.BuildResult, error) {
@@ -77,7 +85,7 @@ func Build(entryResolver EntryResolver,
 		if versionSource == "buildpack.yml" {
 			nextMajorVersion := semver.MustParse(context.BuildpackInfo.Version).IncMajor()
 			logger.Break()
-			logger.Subprocess("WARNING: Setting the .NET Core SDK version through buildpack.yml will be deprecated soon in Dotnet Core SDK Buildpack v%s.", nextMajorVersion.String())
+			logger.Subprocess("WARNING: Setting the .NET Core SDK version through buildpack.yml will be deprecated soon in .NET Core SDK Buildpack v%s.", nextMajorVersion.String())
 		}
 
 		sdkLayer, err := context.Layers.Get("dotnet-core-sdk")
@@ -116,13 +124,12 @@ func Build(entryResolver EntryResolver,
 				return packit.BuildResult{}, err
 			}
 
-			logger.Process("Configuring environment")
 			envLayer.SharedEnv.Prepend("PATH",
 				filepath.Join(context.WorkingDir, ".dotnet_root"),
 				string(os.PathListSeparator))
 
 			envLayer.SharedEnv.Override("DOTNET_ROOT", filepath.Join(context.WorkingDir, ".dotnet_root"))
-			logger.Environment(envLayer.SharedEnv)
+			logger.EnvironmentVariables(envLayer)
 
 			sdkLayer.Build, sdkLayer.Launch, sdkLayer.Cache = build, launch, build || launch
 
@@ -165,13 +172,31 @@ func Build(entryResolver EntryResolver,
 
 		sdkLayer.Build, sdkLayer.Launch, sdkLayer.Cache = build, launch, build || launch
 
-		logger.Process("Configuring environment")
 		envLayer.SharedEnv.Prepend("PATH",
 			filepath.Join(context.WorkingDir, ".dotnet_root"),
 			string(os.PathListSeparator))
 
 		envLayer.SharedEnv.Override("DOTNET_ROOT", filepath.Join(context.WorkingDir, ".dotnet_root"))
-		logger.Environment(envLayer.SharedEnv)
+		logger.EnvironmentVariables(envLayer)
+
+		logger.GeneratingSBOM(sdkLayer.Path)
+		var sbomContent sbom.SBOM
+		duration, err = clock.Measure(func() error {
+			sbomContent, err = sbomGenerator.GenerateFromDependency(sdkDependency, sdkLayer.Path)
+			return err
+		})
+		if err != nil {
+			return packit.BuildResult{}, err
+		}
+
+		logger.Action("Completed in %s", duration.Round(time.Millisecond))
+		logger.Break()
+
+		logger.FormattingSBOM(context.BuildpackInfo.SBOMFormats...)
+		sdkLayer.SBOM, err = sbomContent.InFormats(context.BuildpackInfo.SBOMFormats...)
+		if err != nil {
+			return packit.BuildResult{}, err
+		}
 
 		return packit.BuildResult{
 			Layers: []packit.Layer{
