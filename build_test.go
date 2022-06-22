@@ -597,5 +597,51 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				Expect(err).To(MatchError("some-symlinking-error"))
 			})
 		})
+
+		context("when generating the SBOM returns an error", func() {
+			it.Before(func() {
+				sbomGenerator.GenerateFromDependencyCall.Returns.Error = errors.New("failed to generate SBOM")
+			})
+
+			it("returns an error", func() {
+				_, err := build(packit.BuildContext{
+					BuildpackInfo: packit.BuildpackInfo{
+						Version: "1.2.3",
+					},
+					Plan: packit.BuildpackPlan{
+						Entries: []packit.BuildpackPlanEntry{
+							{
+								Name: "dotnet-sdk",
+							},
+						},
+					},
+					Layers:     packit.Layers{Path: layersDir},
+					CNBPath:    cnbDir,
+					WorkingDir: workingDir,
+					Stack:      "some-stack",
+				})
+				Expect(err).To(MatchError(ContainSubstring("failed to generate SBOM")))
+			})
+		})
+
+		context("when formatting the SBOM returns an error", func() {
+			it("returns an error", func() {
+				_, err := build(packit.BuildContext{
+					BuildpackInfo: packit.BuildpackInfo{SBOMFormats: []string{"random-format"}},
+					Plan: packit.BuildpackPlan{
+						Entries: []packit.BuildpackPlanEntry{
+							{
+								Name: "dotnet-sdk",
+							},
+						},
+					},
+					Layers:     packit.Layers{Path: layersDir},
+					CNBPath:    cnbDir,
+					WorkingDir: workingDir,
+					Stack:      "some-stack",
+				})
+				Expect(err).To(MatchError("unsupported SBOM format: 'random-format'"))
+			})
+		})
 	})
 }
