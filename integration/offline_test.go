@@ -97,11 +97,11 @@ func testOffline(t *testing.T, context spec.G, it spec.S) {
 				return cLogs.String()
 			}).Should(
 				And(
-					MatchRegexp(`-rwxr-xr-x \d+ cnb cnb \d+ .* dotnet`),
-					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ cnb cnb \s+\d+ .* packs -> /layers/%s/dotnet-core-sdk/packs`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
-					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ cnb cnb \s+\d+ .* sdk -> /layers/%s/dotnet-core-sdk/sdk`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
-					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ cnb cnb \s+\d+ .* templates -> /layers/%s/dotnet-core-sdk/templates`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
-					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ cnb cnb \d+ .* /workspace/.dotnet_root/sdk -> /layers/%s/dotnet-core-sdk/sdk`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
+					MatchRegexp(`-rwxr-xr-x \d+ \w+ cnb \d+ .* dotnet`),
+					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ \w+ cnb \s+\d+ .* packs -> /layers/%s/dotnet-core-sdk/packs`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
+					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ \w+ cnb \s+\d+ .* sdk -> /layers/%s/dotnet-core-sdk/sdk`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
+					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ \w+ cnb \s+\d+ .* templates -> /layers/%s/dotnet-core-sdk/templates`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
+					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ \w+ cnb \d+ .* /workspace/.dotnet_root/sdk -> /layers/%s/dotnet-core-sdk/sdk`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
 				),
 			)
 		})

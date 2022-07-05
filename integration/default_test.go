@@ -108,11 +108,11 @@ func testDefault(t *testing.T, context spec.G, it spec.S) {
 					// Note: The assumption here is that the file permissions for the dotnet CLI below (-rwxr-xr-x)
 					// and its existence in the .dotnet_root directory (which is on the PATH) sufficiently proves
 					// its ability to be called. This may need refactoring if that assumption is proved insufficient.
-					MatchRegexp(`-rwxr-xr-x \d+ cnb cnb \d+ .* dotnet`),
-					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ cnb cnb \s+\d+ .* packs -> /layers/%s/dotnet-core-sdk/packs`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
-					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ cnb cnb \s+\d+ .* sdk -> /layers/%s/dotnet-core-sdk/sdk`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
-					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ cnb cnb \s+\d+ .* templates -> /layers/%s/dotnet-core-sdk/templates`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
-					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ cnb cnb \d+ .* /workspace/.dotnet_root/sdk -> /layers/%s/dotnet-core-sdk/sdk`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
+					MatchRegexp(`-rwxr-xr-x \d+ \w+ cnb \d+ .* dotnet`),
+					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ \w+ cnb \s+\d+ .* packs -> /layers/%s/dotnet-core-sdk/packs`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
+					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ \w+ cnb \s+\d+ .* sdk -> /layers/%s/dotnet-core-sdk/sdk`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
+					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ \w+ cnb \s+\d+ .* templates -> /layers/%s/dotnet-core-sdk/templates`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
+					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ \w+ cnb \d+ .* /workspace/.dotnet_root/sdk -> /layers/%s/dotnet-core-sdk/sdk`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
 				),
 			)
 
