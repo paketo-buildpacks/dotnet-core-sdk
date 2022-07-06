@@ -28,16 +28,11 @@ var settings struct {
 	}
 
 	Config struct {
-		BuildPlan         string `json:"build-plan"`
-		DotnetCoreRuntime string `json:"dotnet-core-runtime"`
+		BuildPlan string `json:"build-plan"`
 	}
 
 	Buildpacks struct {
 		DotnetCoreSDK struct {
-			Online  string
-			Offline string
-		}
-		DotnetCoreRuntime struct {
 			Online  string
 			Offline string
 		}
@@ -77,15 +72,6 @@ func TestIntegration(t *testing.T) {
 		WithOfflineDependencies().
 		WithVersion("1.2.3").
 		Execute(root)
-	Expect(err).NotTo(HaveOccurred())
-
-	settings.Buildpacks.DotnetCoreRuntime.Online, err = buildpackStore.Get.
-		Execute(settings.Config.DotnetCoreRuntime)
-	Expect(err).NotTo(HaveOccurred())
-
-	settings.Buildpacks.DotnetCoreRuntime.Offline, err = buildpackStore.Get.
-		WithOfflineDependencies().
-		Execute(settings.Config.DotnetCoreRuntime)
 	Expect(err).NotTo(HaveOccurred())
 
 	settings.Buildpacks.BuildPlan.Online, err = buildpackStore.Get.

@@ -1,9 +1,12 @@
 package dotnetcoresdk
 
+import "regexp"
+
 var Priorities = []interface{}{
-	"RUNTIME_VERSION",
+	"BP_DOTNET_FRAMEWORK_VERSION",
 	"buildpack.yml",
 	"global.json",
+	regexp.MustCompile(`.*\.(cs)|(fs)|(vb)proj`),
 	"runtimeconfig.json",
 	"",
 }

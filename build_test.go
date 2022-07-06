@@ -32,9 +32,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		buffer     *bytes.Buffer
 
 		entryResolver     *fakes.EntryResolver
-		dependencyMapper  *fakes.DependencyMapper
 		dependencyManager *fakes.DependencyManager
-		dotnetSymlinker   *fakes.DotnetSymlinker
 		sbomGenerator     *fakes.SBOMGenerator
 
 		build packit.BuildFunc
@@ -51,9 +49,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 		workingDir, err = os.MkdirTemp("", "working-dir")
 		Expect(err).NotTo(HaveOccurred())
-
-		dependencyMapper = &fakes.DependencyMapper{}
-		dependencyMapper.FindCorrespondingVersionCall.Returns.String = "1.2.300"
 
 		entryResolver = &fakes.EntryResolver{}
 		entryResolver.ResolveCall.Returns.BuildpackPlanEntry = packit.BuildpackPlanEntry{
@@ -88,8 +83,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			},
 		}
 
-		dotnetSymlinker = &fakes.DotnetSymlinker{}
-
 		sbomGenerator = &fakes.SBOMGenerator{}
 		sbomGenerator.GenerateFromDependencyCall.Returns.SBOM = sbom.SBOM{}
 
@@ -97,9 +90,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 		build = dotnetcoresdk.Build(
 			entryResolver,
-			dependencyMapper,
 			dependencyManager,
-			dotnetSymlinker,
 			sbomGenerator,
 			scribe.NewEmitter(buffer),
 			chronos.DefaultClock,
@@ -139,10 +130,14 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		})
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(result.Layers).To(HaveLen(2))
+		Expect(result.Layers).To(HaveLen(1))
 		SDKLayer := result.Layers[0]
 
 		Expect(SDKLayer.Name).To(Equal("dotnet-core-sdk"))
+		Expect(SDKLayer.SharedEnv).To(Equal(packit.Environment{
+			"PATH.prepend": filepath.Join(layersDir, "dotnet-core-sdk"),
+			"PATH.delim":   string(os.PathListSeparator),
+		}))
 		Expect(SDKLayer.Path).To(Equal(filepath.Join(layersDir, "dotnet-core-sdk")))
 		Expect(SDKLayer.Metadata).To(Equal(map[string]interface{}{
 			"dependency-sha": "some-sha",
@@ -162,18 +157,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				Content:   sbom.NewFormattedReader(sbom.SBOM{}, sbom.SPDXFormat),
 			},
 		}))
-
-		EnvLayer := result.Layers[1]
-		Expect(EnvLayer.Name).To(Equal("dotnet-env-var"))
-		Expect(EnvLayer.Path).To(Equal(filepath.Join(layersDir, "dotnet-env-var")))
-		Expect(EnvLayer.SharedEnv).To(Equal(packit.Environment{
-			"PATH.prepend":         filepath.Join(workingDir, ".dotnet_root"),
-			"PATH.delim":           string(os.PathListSeparator),
-			"DOTNET_ROOT.override": filepath.Join(workingDir, ".dotnet_root"),
-		}))
-		Expect(EnvLayer.Build).To(BeTrue())
-		Expect(EnvLayer.Launch).To(BeTrue())
-		Expect(EnvLayer.Cache).To(BeFalse())
 
 		Expect(result.Build.BOM).To(HaveLen(1))
 		buildBOMEntry := result.Build.BOM[0]
@@ -198,9 +181,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			},
 			URI: "dotnet-sdk-dep-uri",
 		}))
-
-		Expect(dependencyMapper.FindCorrespondingVersionCall.CallCount).To(Equal(0))
-		Expect(os.Getenv("RUNTIME_VERSION")).To(Equal(""))
 
 		Expect(entryResolver.ResolveCall.Receives.Entries).
 			To(Equal([]packit.BuildpackPlanEntry{
@@ -251,9 +231,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		Expect(dependencyManager.DeliverCall.Receives.LayerPath).To(Equal(filepath.Join(layersDir, "dotnet-core-sdk")))
 		Expect(dependencyManager.DeliverCall.Receives.PlatformPath).To(Equal("platform"))
 
-		Expect(dotnetSymlinker.LinkCall.Receives.WorkingDir).To(Equal(workingDir))
-		Expect(dotnetSymlinker.LinkCall.Receives.LayerPath).To(Equal(filepath.Join(layersDir, "dotnet-core-sdk")))
-
 		Expect(sbomGenerator.GenerateFromDependencyCall.Receives.Dependency).To(Equal(postal.Dependency{
 			ID:      "dotnet-sdk",
 			Name:    ".NET Core SDK",
@@ -261,75 +238,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			SHA256:  "some-sha",
 		}))
 		Expect(sbomGenerator.GenerateFromDependencyCall.Receives.Dir).To(Equal(filepath.Join(layersDir, "dotnet-core-sdk")))
-	})
-
-	context("when RUNTIME_VERSION is set", func() {
-		it.Before(func() {
-			os.Setenv("RUNTIME_VERSION", "1.2.3")
-		})
-
-		it.After(func() {
-			os.Unsetenv("RUNTIME_VERSION")
-		})
-		it("uses the dependency mapper and adds an entry to the build plan", func() {
-			_, err := build(packit.BuildContext{
-				BuildpackInfo: packit.BuildpackInfo{
-					Version: "1.2.3",
-				},
-				Plan: packit.BuildpackPlan{
-					Entries: []packit.BuildpackPlanEntry{
-						{
-							Name: "dotnet-sdk",
-						},
-					},
-				},
-				Layers:     packit.Layers{Path: layersDir},
-				CNBPath:    cnbDir,
-				WorkingDir: workingDir,
-				Stack:      "some-stack",
-			})
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(dependencyMapper.FindCorrespondingVersionCall.CallCount).To(Equal(1))
-			Expect(dependencyMapper.FindCorrespondingVersionCall.Receives.Path).To(Equal(filepath.Join(cnbDir, "buildpack.toml")))
-			Expect(dependencyMapper.FindCorrespondingVersionCall.Receives.VersionKey).To(Equal("1.2.3"))
-
-			Expect(entryResolver.ResolveCall.Receives.Entries).
-				To(Equal([]packit.BuildpackPlanEntry{
-					{
-						Name: "dotnet-sdk",
-					},
-					{
-						Name: "dotnet-sdk",
-						Metadata: map[string]interface{}{
-							"version-source": "RUNTIME_VERSION",
-							"version":        "1.2.300",
-						},
-					},
-				}))
-		})
-		context("when looking for a compatible SDK version fails", func() {
-			it.Before(func() {
-				dependencyMapper.FindCorrespondingVersionCall.Returns.Error = errors.New("some-mapping-error")
-			})
-			it("returns an error", func() {
-				_, err := build(packit.BuildContext{
-					Plan: packit.BuildpackPlan{
-						Entries: []packit.BuildpackPlanEntry{
-							{
-								Name: "dotnet-sdk",
-							},
-						},
-					},
-					Layers:     packit.Layers{Path: layersDir},
-					CNBPath:    cnbDir,
-					WorkingDir: workingDir,
-					Stack:      "some-stack",
-				})
-
-				Expect(err).To(MatchError("some-mapping-error"))
-			})
-		})
 	})
 
 	context("when there is a dependency cache match", func() {
@@ -361,10 +269,14 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			})
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(result.Layers).To(HaveLen(2))
+			Expect(result.Layers).To(HaveLen(1))
 			SDKLayer := result.Layers[0]
 
 			Expect(SDKLayer.Name).To(Equal("dotnet-core-sdk"))
+			Expect(SDKLayer.SharedEnv).To(Equal(packit.Environment{
+				"PATH.prepend": filepath.Join(layersDir, "dotnet-core-sdk"),
+				"PATH.delim":   string(os.PathListSeparator),
+			}))
 			Expect(SDKLayer.Path).To(Equal(filepath.Join(layersDir, "dotnet-core-sdk")))
 			Expect(SDKLayer.Metadata).To(Equal(map[string]interface{}{
 				"dependency-sha": "some-sha",
@@ -373,18 +285,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(SDKLayer.Build).To(BeTrue())
 			Expect(SDKLayer.Launch).To(BeFalse())
 			Expect(SDKLayer.Cache).To(BeTrue())
-
-			EnvLayer := result.Layers[1]
-			Expect(EnvLayer.Name).To(Equal("dotnet-env-var"))
-			Expect(EnvLayer.Path).To(Equal(filepath.Join(layersDir, "dotnet-env-var")))
-			Expect(EnvLayer.SharedEnv).To(Equal(packit.Environment{
-				"PATH.prepend":         filepath.Join(workingDir, ".dotnet_root"),
-				"PATH.delim":           string(os.PathListSeparator),
-				"DOTNET_ROOT.override": filepath.Join(workingDir, ".dotnet_root"),
-			}))
-			Expect(EnvLayer.Build).To(BeTrue())
-			Expect(EnvLayer.Launch).To(BeTrue())
-			Expect(EnvLayer.Cache).To(BeFalse())
 
 			Expect(result.Build.BOM).To(HaveLen(1))
 			buildBOMEntry := result.Build.BOM[0]
@@ -413,10 +313,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			}))
 
 			Expect(dependencyManager.DeliverCall.CallCount).To(Equal(0))
-
-			Expect(dotnetSymlinker.LinkCall.CallCount).To(Equal(1))
-			Expect(dotnetSymlinker.LinkCall.Receives.WorkingDir).To(Equal(workingDir))
-			Expect(dotnetSymlinker.LinkCall.Receives.LayerPath).To(Equal(filepath.Join(layersDir, "dotnet-core-sdk")))
 		})
 	})
 
@@ -569,32 +465,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				})
 
 				Expect(err).To(MatchError("some-installation-error"))
-			})
-		})
-
-		context("when symlinking fails", func() {
-			it.Before(func() {
-				dotnetSymlinker.LinkCall.Returns.Error = errors.New("some-symlinking-error")
-			})
-			it("returns an error", func() {
-				_, err := build(packit.BuildContext{
-					BuildpackInfo: packit.BuildpackInfo{
-						Version: "1.2.3",
-					},
-					Plan: packit.BuildpackPlan{
-						Entries: []packit.BuildpackPlanEntry{
-							{
-								Name: "dotnet-sdk",
-							},
-						},
-					},
-					Layers:     packit.Layers{Path: layersDir},
-					CNBPath:    cnbDir,
-					WorkingDir: workingDir,
-					Stack:      "some-stack",
-				})
-
-				Expect(err).To(MatchError("some-symlinking-error"))
 			})
 		})
 

@@ -68,7 +68,6 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 			firstImage, logs, err = pack.WithNoColor().Build.
 				WithPullPolicy("never").
 				WithBuildpacks(
-					settings.Buildpacks.DotnetCoreRuntime.Online,
 					settings.Buildpacks.DotnetCoreSDK.Online,
 					settings.Buildpacks.BuildPlan.Online,
 				).
@@ -77,16 +76,15 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 
 			imageIDs[firstImage.ID] = struct{}{}
 
-			Expect(firstImage.Buildpacks).To(HaveLen(3))
-			Expect(firstImage.Buildpacks[1].Key).To(Equal(settings.BuildpackInfo.Buildpack.ID))
-			Expect(firstImage.Buildpacks[1].Layers).To(HaveKey("dotnet-core-sdk"))
+			Expect(firstImage.Buildpacks).To(HaveLen(2))
+			Expect(firstImage.Buildpacks[0].Key).To(Equal(settings.BuildpackInfo.Buildpack.ID))
+			Expect(firstImage.Buildpacks[0].Layers).To(HaveKey("dotnet-core-sdk"))
 
 			// second pack build
 
 			secondImage, logs, err = pack.WithNoColor().Build.
 				WithPullPolicy("never").
 				WithBuildpacks(
-					settings.Buildpacks.DotnetCoreRuntime.Online,
 					settings.Buildpacks.DotnetCoreSDK.Online,
 					settings.Buildpacks.BuildPlan.Online,
 				).
@@ -95,32 +93,29 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 
 			imageIDs[secondImage.ID] = struct{}{}
 
-			Expect(secondImage.Buildpacks).To(HaveLen(3))
-			Expect(secondImage.Buildpacks[1].Key).To(Equal(settings.BuildpackInfo.Buildpack.ID))
-			Expect(secondImage.Buildpacks[1].Layers).To(HaveKey("dotnet-core-sdk"))
+			Expect(secondImage.Buildpacks).To(HaveLen(2))
+			Expect(secondImage.Buildpacks[0].Key).To(Equal(settings.BuildpackInfo.Buildpack.ID))
+			Expect(secondImage.Buildpacks[0].Layers).To(HaveKey("dotnet-core-sdk"))
 
 			Expect(logs).To(ContainLines(
 				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.BuildpackInfo.Buildpack.Name)),
 				"  Resolving .NET Core SDK version",
 				"    Candidate version sources (in priority order):",
-				MatchRegexp(`      RUNTIME_VERSION -> "\d+\.\d+\.\d+"`),
-				`      <unknown>       -> ""`,
+				"      <unknown> -> \"\"",
 				"",
-				MatchRegexp(`    Selected .NET Core SDK version \(using RUNTIME_VERSION\): \d+\.\d+\.\d+`),
+				MatchRegexp(`    Selected .NET Core SDK version \(using <unknown>\): 6\.0\.\d+`),
 				"",
 				MatchRegexp(fmt.Sprintf("  Reusing cached layer /layers/%s/dotnet-core-sdk", strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
 				"",
 				"  Configuring build environment",
-				`    DOTNET_ROOT -> "/workspace/.dotnet_root"`,
-				`    PATH        -> "/workspace/.dotnet_root:$PATH"`,
+				fmt.Sprintf(`    PATH -> "/layers/%s/dotnet-core-sdk:$PATH"`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_")),
 				"",
 				"  Configuring launch environment",
-				`    DOTNET_ROOT -> "/workspace/.dotnet_root"`,
-				`    PATH        -> "/workspace/.dotnet_root:$PATH"`,
+				fmt.Sprintf(`    PATH -> "/layers/%s/dotnet-core-sdk:$PATH"`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_")),
 			))
 
 			secondContainer, err = docker.Container.Run.
-				WithCommand("ls -al $DOTNET_ROOT").
+				WithCommand(fmt.Sprintf(`ls -al /layers/%s/dotnet-core-sdk`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))).
 				Execute(secondImage.ID)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -133,7 +128,7 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 			}).Should(
 				And(
 					MatchRegexp(`-rwxr-xr-x \d+ \w+ cnb \d+ .* dotnet`),
-					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ \w+ cnb \s+\d+ .* sdk -> /layers/%s/dotnet-core-sdk/sdk`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* sdk`),
 				),
 			)
 
@@ -175,59 +170,52 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).NotTo(HaveOccurred())
 
 			var logs fmt.Stringer
-			err = os.WriteFile(filepath.Join(source, "buildpack.yml"), []byte(`---
-dotnet-framework:
-  version: "3.*"
-`), os.ModePerm)
-			Expect(err).NotTo(HaveOccurred())
 
 			firstImage, logs, err = pack.WithNoColor().Build.
 				WithPullPolicy("never").
 				WithBuildpacks(
-					settings.Buildpacks.DotnetCoreRuntime.Online,
 					settings.Buildpacks.DotnetCoreSDK.Online,
 					settings.Buildpacks.BuildPlan.Online,
 				).
+				WithEnv(map[string]string{
+					"BP_DOTNET_FRAMEWORK_VERSION": "3.1.2",
+				}).
 				Execute(name, source)
 			Expect(err).NotTo(HaveOccurred(), logs.String())
 
 			imageIDs[firstImage.ID] = struct{}{}
 
-			Expect(firstImage.Buildpacks).To(HaveLen(3))
-			Expect(firstImage.Buildpacks[1].Key).To(Equal(settings.BuildpackInfo.Buildpack.ID))
-			Expect(firstImage.Buildpacks[1].Layers).To(HaveKey("dotnet-core-sdk"))
+			Expect(firstImage.Buildpacks).To(HaveLen(2))
+			Expect(firstImage.Buildpacks[0].Key).To(Equal(settings.BuildpackInfo.Buildpack.ID))
+			Expect(firstImage.Buildpacks[0].Layers).To(HaveKey("dotnet-core-sdk"))
 
 			// second pack build
-			err = os.WriteFile(filepath.Join(source, "buildpack.yml"), []byte(`---
-dotnet-framework:
-  version: "6.*"
-`), os.ModePerm)
-			Expect(err).NotTo(HaveOccurred())
-
 			secondImage, logs, err = pack.WithNoColor().Build.
 				WithPullPolicy("never").
 				WithBuildpacks(
-					settings.Buildpacks.DotnetCoreRuntime.Online,
 					settings.Buildpacks.DotnetCoreSDK.Online,
 					settings.Buildpacks.BuildPlan.Online,
 				).
+				WithEnv(map[string]string{
+					"BP_DOTNET_FRAMEWORK_VERSION": "6.0.10",
+				}).
 				Execute(name, source)
 			Expect(err).NotTo(HaveOccurred(), logs.String())
 
 			imageIDs[secondImage.ID] = struct{}{}
 
-			Expect(secondImage.Buildpacks).To(HaveLen(3))
-			Expect(secondImage.Buildpacks[1].Key).To(Equal(settings.BuildpackInfo.Buildpack.ID))
-			Expect(secondImage.Buildpacks[1].Layers).To(HaveKey("dotnet-core-sdk"))
+			Expect(secondImage.Buildpacks).To(HaveLen(2))
+			Expect(secondImage.Buildpacks[0].Key).To(Equal(settings.BuildpackInfo.Buildpack.ID))
+			Expect(secondImage.Buildpacks[0].Layers).To(HaveKey("dotnet-core-sdk"))
 
 			Expect(logs).To(ContainLines(
 				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.BuildpackInfo.Buildpack.Name)),
 				"  Resolving .NET Core SDK version",
 				"    Candidate version sources (in priority order):",
-				MatchRegexp(`      RUNTIME_VERSION -> "\d+\.\d+\.\d+"`),
-				`      <unknown>       -> ""`,
+				MatchRegexp(`      BP_DOTNET_FRAMEWORK_VERSION -> "6\.0\.\*"`),
+				"      <unknown>                   -> \"\"",
 				"",
-				MatchRegexp(`    Selected .NET Core SDK version \(using RUNTIME_VERSION\): \d+\.\d+\.\d+`),
+				MatchRegexp(`    Selected .NET Core SDK version \(using BP_DOTNET_FRAMEWORK_VERSION\): 6\.0\.\d+`),
 				"",
 				"  Executing build process",
 			))
@@ -235,7 +223,9 @@ dotnet-framework:
 			Expect(logs).NotTo(ContainSubstring("Reusing cached layer"))
 
 			secondContainer, err = docker.Container.Run.
-				WithCommand("ls -al $DOTNET_ROOT && ls -al $DOTNET_ROOT/sdk").
+				WithCommand(fmt.Sprintf(`ls -al /layers/%s/dotnet-core-sdk && ls -al /layers/%s/dotnet-core-sdk/sdk`,
+					strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"),
+					strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))).
 				Execute(secondImage.ID)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -248,14 +238,17 @@ dotnet-framework:
 			}).Should(
 				And(
 					MatchRegexp(`-rwxr-xr-x \d+ \w+ cnb \d+ .* dotnet`),
-					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ \w+ cnb \s+\d+ .* packs -> /layers/%s/dotnet-core-sdk/packs`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
-					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ \w+ cnb \s+\d+ .* sdk -> /layers/%s/dotnet-core-sdk/sdk`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
-					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ \w+ cnb \s+\d+ .* templates -> /layers/%s/dotnet-core-sdk/templates`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
-					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ \w+ cnb \d+ .* /workspace/.dotnet_root/sdk -> /layers/%s/dotnet-core-sdk/sdk`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* host`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* packs`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* sdk`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* sdk-manifests`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* shared`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* templates`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb \d+ .* 6\.0\.\d+`),
 				),
 			)
 
-			Expect(secondImage.Buildpacks[1].Layers["dotnet-core-sdk"].SHA).NotTo(Equal(firstImage.Buildpacks[1].Layers["dotnet-core-sdk"].SHA))
+			Expect(secondImage.Buildpacks[0].Layers["dotnet-core-sdk"].SHA).NotTo(Equal(firstImage.Buildpacks[0].Layers["dotnet-core-sdk"].SHA))
 		})
 	})
 }
