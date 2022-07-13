@@ -23,8 +23,6 @@ func Detect(buildpackYMLParser BuildpackYMLParser) packit.DetectFunc {
 			},
 		}
 
-		// check if BP_DOTNET_FRAMEWORK_VERSION is set and use the major.minor for the version
-
 		if frameworkVersion, ok := os.LookupEnv("BP_DOTNET_FRAMEWORK_VERSION"); ok {
 			frameworkSemver, err := semver.NewVersion(frameworkVersion)
 			if err != nil {
