@@ -43,6 +43,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 		layersDir, err = os.MkdirTemp("", "layers")
 		Expect(err).NotTo(HaveOccurred())
+		Expect(os.Chmod(layersDir, os.ModePerm)).To(Succeed())
 
 		cnbDir, err = os.MkdirTemp("", "cnb")
 		Expect(err).NotTo(HaveOccurred())
@@ -69,6 +70,13 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			Name:    ".NET Core SDK",
 			SHA256:  "some-sha",
 		}
+
+		dependencyManager.DeliverCall.Stub = func(postal.Dependency, string, string, string) error {
+			Expect(os.MkdirAll(filepath.Join(layersDir, "dotnet-core-sdk"), os.ModePerm)).To(Succeed())
+			Expect(os.WriteFile(filepath.Join(layersDir, "dotnet-core-sdk", "dotnet"), []byte(`hi`), os.ModePerm)).To(Succeed())
+			return nil
+		}
+
 		dependencyManager.GenerateBillOfMaterialsCall.Returns.BOMEntrySlice = []packit.BOMEntry{
 			{
 				Name: "dotnet-sdk",
@@ -130,12 +138,17 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		})
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(result.Layers).To(HaveLen(1))
-		SDKLayer := result.Layers[0]
+		Expect(result.Layers).To(HaveLen(2))
+		envLayer := result.Layers[0]
+		SDKLayer := result.Layers[1]
 
 		Expect(SDKLayer.Name).To(Equal("dotnet-core-sdk"))
-		Expect(SDKLayer.SharedEnv).To(Equal(packit.Environment{
+		Expect(SDKLayer.BuildEnv).To(Equal(packit.Environment{
 			"PATH.prepend": filepath.Join(layersDir, "dotnet-core-sdk"),
+			"PATH.delim":   string(os.PathListSeparator),
+		}))
+		Expect(envLayer.LaunchEnv).To(Equal(packit.Environment{
+			"PATH.prepend": filepath.Join(workingDir, ".dotnet_root"),
 			"PATH.delim":   string(os.PathListSeparator),
 		}))
 		Expect(SDKLayer.Path).To(Equal(filepath.Join(layersDir, "dotnet-core-sdk")))
@@ -146,6 +159,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		Expect(SDKLayer.Build).To(BeTrue())
 		Expect(SDKLayer.Launch).To(BeTrue())
 		Expect(SDKLayer.Cache).To(BeTrue())
+
+		Expect(envLayer.Build).To(BeFalse())
+		Expect(envLayer.Launch).To(BeTrue())
+		Expect(envLayer.Cache).To(BeFalse())
 
 		Expect(SDKLayer.SBOM.Formats()).To(Equal([]packit.SBOMFormat{
 			{
@@ -246,6 +263,9 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				[]byte("[metadata]\ndependency-sha = \"some-sha\"\n"), 0600)
 			Expect(err).NotTo(HaveOccurred())
 
+			Expect(os.MkdirAll(filepath.Join(layersDir, "dotnet-core-sdk"), os.ModePerm)).To(Succeed())
+			Expect(os.WriteFile(filepath.Join(layersDir, "dotnet-core-sdk", "dotnet"), []byte(`hi`), os.ModePerm)).To(Succeed())
+
 			entryResolver.MergeLayerTypesCall.Returns.Build = true
 			entryResolver.MergeLayerTypesCall.Returns.Launch = false
 		})
@@ -269,12 +289,17 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			})
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(result.Layers).To(HaveLen(1))
-			SDKLayer := result.Layers[0]
+			Expect(result.Layers).To(HaveLen(2))
+			envLayer := result.Layers[0]
+			SDKLayer := result.Layers[1]
 
 			Expect(SDKLayer.Name).To(Equal("dotnet-core-sdk"))
-			Expect(SDKLayer.SharedEnv).To(Equal(packit.Environment{
+			Expect(SDKLayer.BuildEnv).To(Equal(packit.Environment{
 				"PATH.prepend": filepath.Join(layersDir, "dotnet-core-sdk"),
+				"PATH.delim":   string(os.PathListSeparator),
+			}))
+			Expect(envLayer.LaunchEnv).To(Equal(packit.Environment{
+				"PATH.prepend": filepath.Join(workingDir, ".dotnet_root"),
 				"PATH.delim":   string(os.PathListSeparator),
 			}))
 			Expect(SDKLayer.Path).To(Equal(filepath.Join(layersDir, "dotnet-core-sdk")))
@@ -285,6 +310,10 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			Expect(SDKLayer.Build).To(BeTrue())
 			Expect(SDKLayer.Launch).To(BeFalse())
 			Expect(SDKLayer.Cache).To(BeTrue())
+
+			Expect(envLayer.Build).To(BeFalse())
+			Expect(envLayer.Launch).To(BeTrue())
+			Expect(envLayer.Cache).To(BeFalse())
 
 			Expect(result.Build.BOM).To(HaveLen(1))
 			buildBOMEntry := result.Build.BOM[0]
@@ -407,6 +436,64 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			})
 		})
 
+		context("when the dotnet CLI cannot be copied into the workspace/.dotnet_root", func() {
+			it.Before(func() {
+				Expect(os.MkdirAll(filepath.Join(workingDir, ".dotnet_root"), 0000)).To(Succeed())
+			})
+			it.After(func() {
+				Expect(os.Chmod(filepath.Join(workingDir, ".dotnet_root"), os.ModePerm)).To(Succeed())
+			})
+			it("returns an error", func() {
+				_, err := build(packit.BuildContext{
+					BuildpackInfo: packit.BuildpackInfo{
+						Version: "1.2.3",
+					},
+					Plan: packit.BuildpackPlan{
+						Entries: []packit.BuildpackPlanEntry{
+							{
+								Name: "dotnet-sdk",
+							},
+						},
+					},
+					Layers:     packit.Layers{Path: layersDir},
+					CNBPath:    cnbDir,
+					WorkingDir: workingDir,
+					Stack:      "some-stack",
+				})
+
+				Expect(err).To(MatchError(ContainSubstring("permission denied")))
+			})
+		})
+
+		context("when the workspace/.dotnet_root directory cannot be made", func() {
+			it.Before(func() {
+				Expect(os.Chmod(workingDir, 0000)).To(Succeed())
+			})
+			it.After(func() {
+				Expect(os.Chmod(workingDir, os.ModePerm)).To(Succeed())
+			})
+			it("returns an error", func() {
+				_, err := build(packit.BuildContext{
+					BuildpackInfo: packit.BuildpackInfo{
+						Version: "1.2.3",
+					},
+					Plan: packit.BuildpackPlan{
+						Entries: []packit.BuildpackPlanEntry{
+							{
+								Name: "dotnet-sdk",
+							},
+						},
+					},
+					Layers:     packit.Layers{Path: layersDir},
+					CNBPath:    cnbDir,
+					WorkingDir: workingDir,
+					Stack:      "some-stack",
+				})
+
+				Expect(err).To(MatchError(ContainSubstring("permission denied")))
+			})
+		})
+
 		context("when layer cannot be removed", func() {
 			var layerDir string
 			it.Before(func() {
@@ -444,7 +531,9 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 
 		context("when the dependency for the build plan entry cannot be resolved", func() {
 			it.Before(func() {
-				dependencyManager.DeliverCall.Returns.Error = errors.New("some-installation-error")
+				dependencyManager.DeliverCall.Stub = func(postal.Dependency, string, string, string) error {
+					return errors.New("some-installation-error")
+				}
 			})
 			it("returns an error", func() {
 				_, err := build(packit.BuildContext{
