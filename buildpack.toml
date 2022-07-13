@@ -102,5 +102,6 @@ api = "0.8"
 
 [[stacks]]
   id = "io.buildpacks.stacks.bionic"
+
 [[stacks]]
   id = "io.buildpacks.stacks.jammy"
