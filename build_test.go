@@ -255,6 +255,8 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			SHA256:  "some-sha",
 		}))
 		Expect(sbomGenerator.GenerateFromDependencyCall.Receives.Dir).To(Equal(filepath.Join(layersDir, "dotnet-core-sdk")))
+
+		Expect(filepath.Join(workingDir, ".dotnet_root", "dotnet")).To(BeARegularFile())
 	})
 
 	context("when there is a dependency cache match", func() {
@@ -342,6 +344,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			}))
 
 			Expect(dependencyManager.DeliverCall.CallCount).To(Equal(0))
+			Expect(filepath.Join(workingDir, ".dotnet_root", "dotnet")).To(BeARegularFile())
 		})
 	})
 
