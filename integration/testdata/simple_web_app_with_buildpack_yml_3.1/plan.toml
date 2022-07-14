@@ -1,4 +1,0 @@
-[[requires]]
-  name="dotnet-sdk"
-  [requires.metadata]
-    launch=true

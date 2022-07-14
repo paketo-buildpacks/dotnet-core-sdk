@@ -1,4 +1,3 @@
 {
-  "build-plan": "github.com/paketo-community/build-plan",
-  "dotnet-core-runtime": "github.com/paketo-buildpacks/dotnet-core-runtime"
+  "build-plan": "github.com/paketo-community/build-plan"
 }

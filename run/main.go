@@ -23,17 +23,13 @@ func main() {
 	sdkVersionParser := dotnetcoresdk.NewSdkVersionParser()
 	logEmitter := scribe.NewEmitter(os.Stdout)
 	entryResolver := draft.NewPlanner()
-	dependencyMapper := dotnetcoresdk.NewSDKVersionMapper(logEmitter)
 	dependencyManager := postal.NewService(cargo.NewTransport())
-	symlinker := dotnetcoresdk.NewSymlinker()
 
 	packit.Run(
 		dotnetcoresdk.Detect(sdkVersionParser),
 		dotnetcoresdk.Build(
 			entryResolver,
-			dependencyMapper,
 			dependencyManager,
-			symlinker,
 			Generator{},
 			logEmitter,
 			chronos.DefaultClock,

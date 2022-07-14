@@ -9,6 +9,7 @@ import (
 	"github.com/Masterminds/semver"
 	"github.com/paketo-buildpacks/packit/v2"
 	"github.com/paketo-buildpacks/packit/v2/chronos"
+	"github.com/paketo-buildpacks/packit/v2/fs"
 	"github.com/paketo-buildpacks/packit/v2/postal"
 	"github.com/paketo-buildpacks/packit/v2/sbom"
 	"github.com/paketo-buildpacks/packit/v2/scribe"
@@ -20,21 +21,11 @@ type EntryResolver interface {
 	MergeLayerTypes(name string, entries []packit.BuildpackPlanEntry) (launch, build bool)
 }
 
-//go:generate faux --interface DependencyMapper --output fakes/dependency_mapper.go
-type DependencyMapper interface {
-	FindCorrespondingVersion(path, versionKey string) (string, error)
-}
-
 //go:generate faux --interface DependencyManager --output fakes/dependency_manager.go
 type DependencyManager interface {
 	Resolve(path, id, version, stack string) (postal.Dependency, error)
 	Deliver(dependency postal.Dependency, cnbPath, layerPath, platformPath string) error
 	GenerateBillOfMaterials(dependencies ...postal.Dependency) []packit.BOMEntry
-}
-
-//go:generate faux --interface DotnetSymlinker --output fakes/dotnet_symlinker.go
-type DotnetSymlinker interface {
-	Link(workingDir, layerPath string) error
 }
 
 //go:generate faux --interface SBOMGenerator --output fakes/sbom_generator.go
@@ -43,9 +34,7 @@ type SBOMGenerator interface {
 }
 
 func Build(entryResolver EntryResolver,
-	dependencyMapper DependencyMapper,
 	dependencyManager DependencyManager,
-	dotnetSymlinker DotnetSymlinker,
 	sbomGenerator SBOMGenerator,
 	logger scribe.Emitter,
 	clock chronos.Clock,
@@ -53,21 +42,6 @@ func Build(entryResolver EntryResolver,
 	return func(context packit.BuildContext) (packit.BuildResult, error) {
 		logger.Title("%s %s", context.BuildpackInfo.Name, context.BuildpackInfo.Version)
 		logger.Process("Resolving .NET Core SDK version")
-
-		if runtimeVersion, ok := os.LookupEnv("RUNTIME_VERSION"); ok {
-			sdkVersion, err := dependencyMapper.FindCorrespondingVersion(filepath.Join(context.CNBPath, "buildpack.toml"), runtimeVersion)
-			if err != nil {
-				return packit.BuildResult{}, err
-			}
-
-			context.Plan.Entries = append(context.Plan.Entries, packit.BuildpackPlanEntry{
-				Name: DotnetDependency,
-				Metadata: map[string]interface{}{
-					"version-source": "RUNTIME_VERSION",
-					"version":        sdkVersion,
-				},
-			})
-		}
 
 		planEntry, entries := entryResolver.Resolve(DotnetDependency, context.Plan.Entries, Priorities)
 		logger.Candidates(entries)
@@ -97,9 +71,12 @@ func Build(entryResolver EntryResolver,
 		if err != nil {
 			return packit.BuildResult{}, err
 		}
-
 		envLayer.Launch = true
-		envLayer.Build = true
+
+		err = os.MkdirAll(filepath.Join(context.WorkingDir, ".dotnet_root"), os.ModePerm)
+		if err != nil {
+			return packit.BuildResult{}, err
+		}
 
 		bom := dependencyManager.GenerateBillOfMaterials(sdkDependency)
 		launch, build := entryResolver.MergeLayerTypes(DotnetDependency, context.Plan.Entries)
@@ -119,24 +96,22 @@ func Build(entryResolver EntryResolver,
 			logger.Process(fmt.Sprintf("Reusing cached layer %s", sdkLayer.Path))
 			logger.Break()
 
-			err = dotnetSymlinker.Link(context.WorkingDir, sdkLayer.Path)
+			err = fs.Copy(filepath.Join(sdkLayer.Path, "dotnet"), filepath.Join(context.WorkingDir, ".dotnet_root", "dotnet"))
 			if err != nil {
 				return packit.BuildResult{}, err
 			}
 
-			envLayer.SharedEnv.Prepend("PATH",
-				filepath.Join(context.WorkingDir, ".dotnet_root"),
-				string(os.PathListSeparator))
-
-			envLayer.SharedEnv.Override("DOTNET_ROOT", filepath.Join(context.WorkingDir, ".dotnet_root"))
+			sdkLayer.BuildEnv.Prepend("PATH", sdkLayer.Path, string(os.PathListSeparator))
+			logger.EnvironmentVariables(sdkLayer)
+			envLayer.LaunchEnv.Prepend("PATH", filepath.Join(context.WorkingDir, ".dotnet_root"), string(os.PathListSeparator))
 			logger.EnvironmentVariables(envLayer)
 
 			sdkLayer.Build, sdkLayer.Launch, sdkLayer.Cache = build, launch, build || launch
 
 			return packit.BuildResult{
 				Layers: []packit.Layer{
-					sdkLayer,
 					envLayer,
+					sdkLayer,
 				},
 				Build:  buildMetadata,
 				Launch: launchMetadata,
@@ -165,18 +140,16 @@ func Build(entryResolver EntryResolver,
 			"dependency-sha": sdkDependency.SHA256,
 		}
 
-		err = dotnetSymlinker.Link(context.WorkingDir, sdkLayer.Path)
+		err = fs.Copy(filepath.Join(sdkLayer.Path, "dotnet"), filepath.Join(context.WorkingDir, ".dotnet_root", "dotnet"))
 		if err != nil {
 			return packit.BuildResult{}, err
 		}
 
 		sdkLayer.Build, sdkLayer.Launch, sdkLayer.Cache = build, launch, build || launch
 
-		envLayer.SharedEnv.Prepend("PATH",
-			filepath.Join(context.WorkingDir, ".dotnet_root"),
-			string(os.PathListSeparator))
-
-		envLayer.SharedEnv.Override("DOTNET_ROOT", filepath.Join(context.WorkingDir, ".dotnet_root"))
+		sdkLayer.BuildEnv.Prepend("PATH", sdkLayer.Path, string(os.PathListSeparator))
+		logger.EnvironmentVariables(sdkLayer)
+		envLayer.LaunchEnv.Prepend("PATH", filepath.Join(context.WorkingDir, ".dotnet_root"), string(os.PathListSeparator))
 		logger.EnvironmentVariables(envLayer)
 
 		logger.GeneratingSBOM(sdkLayer.Path)
@@ -200,8 +173,8 @@ func Build(entryResolver EntryResolver,
 
 		return packit.BuildResult{
 			Layers: []packit.Layer{
-				sdkLayer,
 				envLayer,
+				sdkLayer,
 			},
 			Build:  buildMetadata,
 			Launch: launchMetadata,

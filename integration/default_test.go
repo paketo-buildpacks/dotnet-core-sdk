@@ -65,7 +65,6 @@ func testDefault(t *testing.T, context spec.G, it spec.S) {
 			image, logs, err = pack.WithNoColor().Build.
 				WithPullPolicy("never").
 				WithBuildpacks(
-					settings.Buildpacks.DotnetCoreRuntime.Online,
 					settings.Buildpacks.DotnetCoreSDK.Online,
 					settings.Buildpacks.BuildPlan.Online,
 				).
@@ -77,26 +76,25 @@ func testDefault(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.BuildpackInfo.Buildpack.Name)),
 				"  Resolving .NET Core SDK version",
 				"    Candidate version sources (in priority order):",
-				MatchRegexp(`      RUNTIME_VERSION -> "\d+\.\d+\.\d+"`),
-				`      <unknown>       -> ""`,
+				"      <unknown> -> \"\"",
 				"",
-				MatchRegexp(`    Selected .NET Core SDK version \(using RUNTIME_VERSION\): \d+\.\d+\.\d+`),
+				MatchRegexp(`    Selected .NET Core SDK version \(using <unknown>\): 6\.0\.\d+`),
 				"",
 				"  Executing build process",
 				MatchRegexp(`    Installing .NET Core SDK \d+\.\d+\.\d+`),
 				MatchRegexp(`      Completed in ([0-9]*(\.[0-9]*)?[a-z]+)+`),
 				"",
 				"  Configuring build environment",
-				`    DOTNET_ROOT -> "/workspace/.dotnet_root"`,
-				`    PATH        -> "/workspace/.dotnet_root:$PATH"`,
+				fmt.Sprintf(`    PATH -> "/layers/%s/dotnet-core-sdk:$PATH"`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_")),
 				"",
 				"  Configuring launch environment",
-				`    DOTNET_ROOT -> "/workspace/.dotnet_root"`,
-				`    PATH        -> "/workspace/.dotnet_root:$PATH"`,
+				`    PATH -> "/workspace/.dotnet_root:$PATH"`,
 			))
 
 			container, err = docker.Container.Run.
-				WithCommand(`ls -al $DOTNET_ROOT && ls -al $DOTNET_ROOT/sdk`).
+				WithCommand(fmt.Sprintf(`ls -al /layers/%s/dotnet-core-sdk && ls -al /layers/%s/dotnet-core-sdk/sdk`,
+					strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"),
+					strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))).
 				Execute(image.ID)
 			Expect(err).NotTo(HaveOccurred())
 			Eventually(func() string {
@@ -109,10 +107,13 @@ func testDefault(t *testing.T, context spec.G, it spec.S) {
 					// and its existence in the .dotnet_root directory (which is on the PATH) sufficiently proves
 					// its ability to be called. This may need refactoring if that assumption is proved insufficient.
 					MatchRegexp(`-rwxr-xr-x \d+ \w+ cnb \d+ .* dotnet`),
-					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ \w+ cnb \s+\d+ .* packs -> /layers/%s/dotnet-core-sdk/packs`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
-					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ \w+ cnb \s+\d+ .* sdk -> /layers/%s/dotnet-core-sdk/sdk`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
-					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ \w+ cnb \s+\d+ .* templates -> /layers/%s/dotnet-core-sdk/templates`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
-					MatchRegexp(fmt.Sprintf(`lrwxrwxrwx \d+ \w+ cnb \d+ .* /workspace/.dotnet_root/sdk -> /layers/%s/dotnet-core-sdk/sdk`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* host`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* packs`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* sdk`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* sdk-manifests`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* shared`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* templates`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb \d+ .* 6\.0\.\d+`),
 				),
 			)
 
