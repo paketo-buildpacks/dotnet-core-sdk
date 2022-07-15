@@ -18,7 +18,6 @@ api = "0.8"
   [metadata.default-versions]
     dotnet-sdk = "6.*"
 
-
   [[metadata.dependencies]]
     cpe = "cpe:2.3:a:microsoft:.net_core:3.1.421:*:*:*:*:*:*:*"
     deprecation_date = "2022-12-13T00:00:00Z"
