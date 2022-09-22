@@ -68,7 +68,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			ID:      "dotnet-sdk",
 			Version: "some-version",
 			Name:    ".NET Core SDK",
-			SHA256:  "some-sha",
+			SHA256:  "some-sha", //nolint:staticcheck
 		}
 
 		dependencyManager.DeliverCall.Stub = func(postal.Dependency, string, string, string) error {
@@ -233,7 +233,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				ID:      "dotnet-sdk",
 				Version: "some-version",
 				Name:    ".NET Core SDK",
-				SHA256:  "some-sha",
+				SHA256:  "some-sha", //nolint:staticcheck
 			},
 		}))
 
@@ -242,7 +242,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				ID:      "dotnet-sdk",
 				Name:    ".NET Core SDK",
 				Version: "some-version",
-				SHA256:  "some-sha",
+				SHA256:  "some-sha", //nolint:staticcheck
 			}))
 		Expect(dependencyManager.DeliverCall.Receives.CnbPath).To(Equal(cnbDir))
 		Expect(dependencyManager.DeliverCall.Receives.LayerPath).To(Equal(filepath.Join(layersDir, "dotnet-core-sdk")))
@@ -252,7 +252,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			ID:      "dotnet-sdk",
 			Name:    ".NET Core SDK",
 			Version: "some-version",
-			SHA256:  "some-sha",
+			SHA256:  "some-sha", //nolint:staticcheck
 		}))
 		Expect(sbomGenerator.GenerateFromDependencyCall.Receives.Dir).To(Equal(filepath.Join(layersDir, "dotnet-core-sdk")))
 
@@ -339,7 +339,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					ID:      "dotnet-sdk",
 					Version: "some-version",
 					Name:    ".NET Core SDK",
-					SHA256:  "some-sha",
+					SHA256:  "some-sha", //nolint:staticcheck
 				},
 			}))
 

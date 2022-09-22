@@ -92,7 +92,7 @@ func Build(entryResolver EntryResolver,
 		}
 
 		cachedDependencySHA, ok := sdkLayer.Metadata["dependency-sha"]
-		if ok && cachedDependencySHA == sdkDependency.SHA256 {
+		if ok && cachedDependencySHA == sdkDependency.SHA256 { //nolint:staticcheck
 			logger.Process(fmt.Sprintf("Reusing cached layer %s", sdkLayer.Path))
 			logger.Break()
 
@@ -137,7 +137,7 @@ func Build(entryResolver EntryResolver,
 		logger.Break()
 
 		sdkLayer.Metadata = map[string]interface{}{
-			"dependency-sha": sdkDependency.SHA256,
+			"dependency-sha": sdkDependency.SHA256, //nolint:staticcheck
 		}
 
 		err = fs.Copy(filepath.Join(sdkLayer.Path, "dotnet"), filepath.Join(context.WorkingDir, ".dotnet_root", "dotnet"))
