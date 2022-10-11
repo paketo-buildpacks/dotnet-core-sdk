@@ -19,32 +19,32 @@ api = "0.8"
     dotnet-sdk = "6.*"
 
   [[metadata.dependencies]]
-    cpe = "cpe:2.3:a:microsoft:.net_core:3.1.423:*:*:*:*:*:*:*"
+    cpe = "cpe:2.3:a:microsoft:.net_core:3.1.424:*:*:*:*:*:*:*"
     deprecation_date = "2022-12-13T00:00:00Z"
     id = "dotnet-sdk"
     licenses = ["MIT", "MIT-0"]
     name = ".NET Core SDK"
-    purl = "pkg:generic/dotnet-sdk@3.1.423?checksum=3d1c01f0db78b9c7ea928b7069a235737e0272b259f135454a8919f1686767f9&download_url=https://download.visualstudio.microsoft.com/download/pr/e137cdac-0e15-46ec-bd60-14fe6ad50c41/30c102677cc4bd0f117cc026781ec5e8/dotnet-sdk-3.1.423-linux-x64.tar.gz"
-    sha256 = "3d1c01f0db78b9c7ea928b7069a235737e0272b259f135454a8919f1686767f9"
-    source = "https://download.visualstudio.microsoft.com/download/pr/e137cdac-0e15-46ec-bd60-14fe6ad50c41/30c102677cc4bd0f117cc026781ec5e8/dotnet-sdk-3.1.423-linux-x64.tar.gz"
-    source_sha256 = "3d1c01f0db78b9c7ea928b7069a235737e0272b259f135454a8919f1686767f9"
+    purl = "pkg:generic/dotnet-sdk@3.1.424?checksum=c53f38880dc66a863d252abcd93e5830a6b94f6aca4cda1178ac8f609d621a6c&download_url=https://download.visualstudio.microsoft.com/download/pr/28fd6fc0-f484-43d0-90cf-5e297a784e44/09c0612bb1cc46378546dfbdfd83014e/dotnet-sdk-3.1.424-linux-x64.tar.gz"
+    sha256 = "c53f38880dc66a863d252abcd93e5830a6b94f6aca4cda1178ac8f609d621a6c"
+    source = "https://download.visualstudio.microsoft.com/download/pr/28fd6fc0-f484-43d0-90cf-5e297a784e44/09c0612bb1cc46378546dfbdfd83014e/dotnet-sdk-3.1.424-linux-x64.tar.gz"
+    source_sha256 = "c53f38880dc66a863d252abcd93e5830a6b94f6aca4cda1178ac8f609d621a6c"
     stacks = ["io.buildpacks.stacks.bionic"]
-    uri = "https://download.visualstudio.microsoft.com/download/pr/e137cdac-0e15-46ec-bd60-14fe6ad50c41/30c102677cc4bd0f117cc026781ec5e8/dotnet-sdk-3.1.423-linux-x64.tar.gz"
-    version = "3.1.423"
+    uri = "https://download.visualstudio.microsoft.com/download/pr/28fd6fc0-f484-43d0-90cf-5e297a784e44/09c0612bb1cc46378546dfbdfd83014e/dotnet-sdk-3.1.424-linux-x64.tar.gz"
+    version = "3.1.424"
 
   [[metadata.dependencies]]
-    cpe = "cpe:2.3:a:microsoft:.net:6.0.401:*:*:*:*:*:*:*"
+    cpe = "cpe:2.3:a:microsoft:.net:6.0.402:*:*:*:*:*:*:*"
     deprecation_date = "2024-11-12T00:00:00Z"
     id = "dotnet-sdk"
     licenses = ["MIT", "MIT-0"]
     name = ".NET Core SDK"
-    purl = "pkg:generic/dotnet-sdk@6.0.401?checksum=90613d213d6100566a3be1c3e4d940f9dc4fb94d9bfd7e6346c429e61c31d917&download_url=https://download.visualstudio.microsoft.com/download/pr/8159607a-e686-4ead-ac99-b4c97290a5fd/ec6070b1b2cc0651ebe57cf1bd411315/dotnet-sdk-6.0.401-linux-x64.tar.gz"
-    sha256 = "90613d213d6100566a3be1c3e4d940f9dc4fb94d9bfd7e6346c429e61c31d917"
-    source = "https://download.visualstudio.microsoft.com/download/pr/8159607a-e686-4ead-ac99-b4c97290a5fd/ec6070b1b2cc0651ebe57cf1bd411315/dotnet-sdk-6.0.401-linux-x64.tar.gz"
-    source_sha256 = "90613d213d6100566a3be1c3e4d940f9dc4fb94d9bfd7e6346c429e61c31d917"
+    purl = "pkg:generic/dotnet-sdk@6.0.402?checksum=635f25082b1074f76dc6617062f339201908bb523d7fa6eba46795d6bca3ee85&download_url=https://download.visualstudio.microsoft.com/download/pr/d3e46476-4494-41b7-a628-c517794c5a6a/6066215f6c0a18b070e8e6e8b715de0b/dotnet-sdk-6.0.402-linux-x64.tar.gz"
+    sha256 = "635f25082b1074f76dc6617062f339201908bb523d7fa6eba46795d6bca3ee85"
+    source = "https://download.visualstudio.microsoft.com/download/pr/d3e46476-4494-41b7-a628-c517794c5a6a/6066215f6c0a18b070e8e6e8b715de0b/dotnet-sdk-6.0.402-linux-x64.tar.gz"
+    source_sha256 = "635f25082b1074f76dc6617062f339201908bb523d7fa6eba46795d6bca3ee85"
     stacks = ["io.buildpacks.stacks.bionic", "io.buildpacks.stacks.jammy"]
-    uri = "https://download.visualstudio.microsoft.com/download/pr/8159607a-e686-4ead-ac99-b4c97290a5fd/ec6070b1b2cc0651ebe57cf1bd411315/dotnet-sdk-6.0.401-linux-x64.tar.gz"
-    version = "6.0.401"
+    uri = "https://download.visualstudio.microsoft.com/download/pr/d3e46476-4494-41b7-a628-c517794c5a6a/6066215f6c0a18b070e8e6e8b715de0b/dotnet-sdk-6.0.402-linux-x64.tar.gz"
+    version = "6.0.402"
 
   [[metadata.dependency-constraints]]
     constraint = "3.1.*"
