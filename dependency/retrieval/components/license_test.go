@@ -56,23 +56,6 @@ func testLicense(t *testing.T, context spec.G, it spec.S) {
 					_, err := w.Write([]byte("\x66\x4C\x61\x43\x00\x00\x00\x22"))
 					Expect(err).NotTo(HaveOccurred())
 
-				case "/no-license":
-					w.WriteHeader(http.StatusOK)
-					buffer = bytes.NewBuffer(nil)
-					gw = gzip.NewWriter(buffer)
-					tw = tar.NewWriter(gw)
-
-					licenseFile = "./NO-LICENSE.txt"
-					Expect(tw.WriteHeader(&tar.Header{Name: licenseFile, Mode: 0755, Size: int64(len(`some-content`))})).To(Succeed())
-					_, err = tw.Write([]byte(`some-content`))
-					Expect(err).NotTo(HaveOccurred())
-
-					Expect(tw.Close()).To(Succeed())
-					Expect(gw.Close()).To(Succeed())
-
-					_, err = w.Write(buffer.Bytes())
-					Expect(err).NotTo(HaveOccurred())
-
 				default:
 					t.Fatalf("unknown path: %s", req.URL.Path)
 				}
