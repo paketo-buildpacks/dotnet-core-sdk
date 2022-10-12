@@ -48,7 +48,7 @@ func main() {
 		}
 	}
 
-	err = components.WriteOutput(outputPath, dependencies, "banana")
+	err = components.WriteOutput(outputPath, dependencies, "")
 	if err != nil {
 		log.Fatal(err)
 	}

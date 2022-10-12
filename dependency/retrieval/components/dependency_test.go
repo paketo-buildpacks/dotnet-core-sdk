@@ -81,21 +81,9 @@ func testDependency(t *testing.T, context spec.G, it spec.S) {
 					_, err := w.Write(buffer.Bytes())
 					Expect(err).NotTo(HaveOccurred())
 
-				case "/no-license":
+				case "/bad-archive":
 					w.WriteHeader(http.StatusOK)
-					buffer = bytes.NewBuffer(nil)
-					gw = gzip.NewWriter(buffer)
-					tw = tar.NewWriter(gw)
-
-					licenseFile = "./NO-LICENSE.txt"
-					Expect(tw.WriteHeader(&tar.Header{Name: licenseFile, Mode: 0755, Size: int64(len(`some-content`))})).To(Succeed())
-					_, err = tw.Write([]byte(`some-content`))
-					Expect(err).NotTo(HaveOccurred())
-
-					Expect(tw.Close()).To(Succeed())
-					Expect(gw.Close()).To(Succeed())
-
-					_, err = w.Write(buffer.Bytes())
+					_, err := w.Write([]byte("\x66\x4C\x61\x43\x00\x00\x00\x22"))
 					Expect(err).NotTo(HaveOccurred())
 
 				default:
@@ -201,7 +189,7 @@ func testDependency(t *testing.T, context spec.G, it spec.S) {
 				})
 			})
 
-			context("when license generation fails", func() {
+			context("when the artifact is not a supported archive type", func() {
 				it("returns an error", func() {
 					_, err := components.ConvertReleaseToDependency(components.Release{
 						SemVer:  semver.MustParse("3.1.423"),
@@ -211,13 +199,13 @@ func testDependency(t *testing.T, context spec.G, it spec.S) {
 							{
 								Name: "dotnet-sdk-linux-x64.tar.gz",
 								Rid:  "linux-x64",
-								URL:  fmt.Sprintf("%s/no-license", server.URL),
+								URL:  fmt.Sprintf("%s/bad-archive", server.URL),
 								Hash: "365237c83e7b0b836d933618bb8be9cee018e905b2c01156ef0ae1162cffbdc003ae4082ea9bb85d39f667e875882804c00d90a4280be4486ec81edb2fb64ad6",
 							},
 						},
 					},
 					)
-					Expect(err).To(MatchError(ContainSubstring("no license file was found")))
+					Expect(err).To(MatchError(ContainSubstring("unsupported archive type")))
 				})
 			})
 

@@ -101,13 +101,6 @@ func testLicense(t *testing.T, context spec.G, it spec.S) {
 					Expect(err).To(MatchError(ContainSubstring("unsupported archive type")))
 				})
 			})
-
-			context("when a license file cannot be found", func() {
-				it("returns an error", func() {
-					_, err := components.GenerateLicenseInformation(fmt.Sprintf("%s/no-license", server.URL))
-					Expect(err).To(MatchError(ContainSubstring("no license file was found")))
-				})
-			})
 		})
 	})
 }

@@ -1,6 +1,7 @@
 package components
 
 import (
+	"errors"
 	"net/http"
 	"os"
 	"sort"
@@ -35,7 +36,11 @@ func GenerateLicenseInformation(url string) ([]interface{}, error) {
 
 	ls, err := licensedb.Detect(f)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, licensedb.ErrNoLicenseFound) {
+			return nil, nil
+		} else {
+			return nil, err
+		}
 	}
 
 	var licenseIDs []string
