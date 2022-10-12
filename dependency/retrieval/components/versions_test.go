@@ -27,10 +27,10 @@ func testVersions(t *testing.T, context spec.G, it spec.S) {
 [metadata]
 
   [[metadata.dependencies]]
-    version = "1.2.1"
+    version = "1.2.0"
 
   [[metadata.dependencies]]
-    version = "1.2.2"
+    version = "1.2.1"
 
   [[metadata.dependencies]]
     version = "2.3.4"
@@ -63,7 +63,7 @@ func testVersions(t *testing.T, context spec.G, it spec.S) {
 			newVersions, err := components.FindNewVersions(buildpackTOMLPath, []string{"1.2.2", "1.2.3", "1.2.4", "2.3.4", "2.3.5", "2.3.6", "9.9.9"})
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(newVersions).To(Equal([]string{"1.2.3", "1.2.4", "2.3.6"}))
+			Expect(newVersions).To(Equal([]string{"1.2.4", "1.2.3", "2.3.6"}))
 		})
 	})
 
