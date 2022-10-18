@@ -66,7 +66,7 @@ func ConvertReleaseToDependency(release Release) (cargo.ConfigMetadataDependency
 	}
 
 	return cargo.ConfigMetadataDependency{
-		ID:              "dotnet-core-sdk",
+		ID:              "dotnet-sdk",
 		Name:            ".NET Core SDK",
 		Version:         release.SemVer.String(),
 		Stacks:          stacks,
