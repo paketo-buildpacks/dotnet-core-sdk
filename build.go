@@ -8,6 +8,7 @@ import (
 
 	"github.com/Masterminds/semver"
 	"github.com/paketo-buildpacks/packit/v2"
+	"github.com/paketo-buildpacks/packit/v2/cargo"
 	"github.com/paketo-buildpacks/packit/v2/chronos"
 	"github.com/paketo-buildpacks/packit/v2/fs"
 	"github.com/paketo-buildpacks/packit/v2/postal"
@@ -91,8 +92,14 @@ func Build(entryResolver EntryResolver,
 			launchMetadata.BOM = bom
 		}
 
-		cachedDependencySHA, ok := sdkLayer.Metadata["dependency-sha"]
-		if ok && cachedDependencySHA == sdkDependency.SHA256 { //nolint:staticcheck
+		dependencyChecksum := sdkDependency.Checksum
+		if sdkDependency.SHA256 != "" {
+			dependencyChecksum = sdkDependency.SHA256
+		}
+
+		cachedChecksum, ok := sdkLayer.Metadata["dependency-checksum"].(string)
+
+		if ok && cargo.Checksum(dependencyChecksum).MatchString(cachedChecksum) {
 			logger.Process(fmt.Sprintf("Reusing cached layer %s", sdkLayer.Path))
 			logger.Break()
 
@@ -137,7 +144,7 @@ func Build(entryResolver EntryResolver,
 		logger.Break()
 
 		sdkLayer.Metadata = map[string]interface{}{
-			"dependency-sha": sdkDependency.SHA256, //nolint:staticcheck
+			"dependency-checksum": dependencyChecksum,
 		}
 
 		err = fs.Copy(filepath.Join(sdkLayer.Path, "dotnet"), filepath.Join(context.WorkingDir, ".dotnet_root", "dotnet"))
