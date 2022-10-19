@@ -100,6 +100,12 @@ func testDependency(t *testing.T, context spec.G, it spec.S) {
 				Version: "6.0.401",
 				Files: []components.ReleaseFile{
 					{
+						Name: "dotnet-sdk-linux-x64.zip",
+						Rid:  "linux-x64",
+						URL:  "zip-file",
+						Hash: "365237c83e7b0b836d933618bb8be9cee018e905b2c01156ef0ae1162cffbdc003ae4082ea9bb85d39f667e875882804c00d90a4280be4486ec81edb2fb64ad6",
+					},
+					{
 						Name: "dotnet-sdk-linux-x64.tar.gz",
 						Rid:  "linux-x64",
 						URL:  server.URL,
@@ -148,6 +154,12 @@ func testDependency(t *testing.T, context spec.G, it spec.S) {
 							Name: "dotnet-sdk-linux-x64.tar.gz",
 							Rid:  "linux-x64",
 							URL:  server.URL,
+							Hash: "365237c83e7b0b836d933618bb8be9cee018e905b2c01156ef0ae1162cffbdc003ae4082ea9bb85d39f667e875882804c00d90a4280be4486ec81edb2fb64ad6",
+						},
+						{
+							Name: "dotnet-sdk-linux-x64.tar.gz",
+							Rid:  "linux-x64",
+							URL:  "zip-file",
 							Hash: "365237c83e7b0b836d933618bb8be9cee018e905b2c01156ef0ae1162cffbdc003ae4082ea9bb85d39f667e875882804c00d90a4280be4486ec81edb2fb64ad6",
 						},
 					},
