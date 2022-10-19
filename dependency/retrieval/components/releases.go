@@ -88,6 +88,12 @@ func (f Fetcher) Get() ([]Release, error) {
 		for _, r := range releasePage.Releases {
 			release := r.Release
 
+			// There are some 2.1 releases that have no data attached these are
+			// elminated with this check.
+			if release.Version == "" {
+				continue
+			}
+
 			release.EOLDate = releasePage.EOLDate
 			release.SemVer, err = semver.NewVersion(release.Version)
 			if err != nil {
