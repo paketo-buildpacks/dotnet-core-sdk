@@ -3,6 +3,7 @@ package components
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Masterminds/semver/v3"
@@ -12,8 +13,9 @@ import (
 func ConvertReleaseToDependency(release Release) (cargo.ConfigMetadataDependency, error) {
 	var archive ReleaseFile
 	for _, file := range release.Files {
-		if file.Rid == "linux-x64" {
+		if file.Rid == "linux-x64" && strings.HasSuffix(file.Name, ".tar.gz") {
 			archive = file
+			break
 		}
 	}
 
