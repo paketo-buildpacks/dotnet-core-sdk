@@ -21,7 +21,7 @@ func (f Generator) GenerateFromDependency(dependency postal.Dependency, path str
 
 func main() {
 	sdkVersionParser := dotnetcoresdk.NewSdkVersionParser()
-	logEmitter := scribe.NewEmitter(os.Stdout)
+	logEmitter := scribe.NewEmitter(os.Stdout).WithLevel(os.Getenv("BP_LOG_LEVEL"))
 	entryResolver := draft.NewPlanner()
 	dependencyManager := postal.NewService(cargo.NewTransport())
 
