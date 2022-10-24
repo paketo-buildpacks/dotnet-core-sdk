@@ -3,7 +3,7 @@ module github.com/paketo-buildpacks/dotnet-core-sdk
 go 1.18
 
 require (
-	github.com/BurntSushi/toml v1.2.0
+	github.com/BurntSushi/toml v1.2.1
 	github.com/Masterminds/semver v1.5.0
 	github.com/Masterminds/semver/v3 v3.1.1
 	github.com/anchore/packageurl-go v0.1.1-0.20220428202044-a072fa3cb6d7
