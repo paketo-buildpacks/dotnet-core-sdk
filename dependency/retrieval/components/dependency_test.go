@@ -133,9 +133,7 @@ func testDependency(t *testing.T, context spec.G, it spec.S) {
 				SourceSHA256:    "",
 				Stacks: []string{
 					"io.buildpacks.stacks.bionic",
-					"io.paketo.stacks.tiny",
 					"io.buildpacks.stacks.jammy",
-					"io.buildpacks.stacks.jammy.tiny",
 				},
 				StripComponents: 0,
 				URI:             server.URL,
@@ -184,7 +182,6 @@ func testDependency(t *testing.T, context spec.G, it spec.S) {
 					SourceSHA256:    "",
 					Stacks: []string{
 						"io.buildpacks.stacks.bionic",
-						"io.paketo.stacks.tiny",
 					},
 					StripComponents: 0,
 					URI:             server.URL,
