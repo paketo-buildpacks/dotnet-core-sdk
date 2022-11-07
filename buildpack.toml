@@ -56,6 +56,11 @@ api = "0.8"
     id = "dotnet-sdk"
     patches = 1
 
+  [[metadata.dependency-constraints]]
+    constraint = "7.0.*"
+    id = "dotnet-sdk"
+    patches = 1
+
 [[stacks]]
   id = "io.buildpacks.stacks.bionic"
 
