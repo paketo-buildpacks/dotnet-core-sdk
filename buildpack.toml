@@ -19,20 +19,6 @@ api = "0.8"
     dotnet-sdk = "6.*"
 
   [[metadata.dependencies]]
-    checksum = "sha512:3d31c6bb578f668111d0f124db6a1222b5d186450380bfd4f42bc8030f156055b025697eabc8c2672791c96e247f6fc499ff0281388e452fcc16fbd1f8a36de1"
-    cpe = "cpe:2.3:a:microsoft:.net_core:3.1.425:*:*:*:*:*:*:*"
-    deprecation_date = "2022-12-13T00:00:00Z"
-    id = "dotnet-sdk"
-    licenses = ["MIT", "MIT-0"]
-    name = ".NET Core SDK"
-    purl = "pkg:generic/dotnet-core-sdk@3.1.425?checksum=3d31c6bb578f668111d0f124db6a1222b5d186450380bfd4f42bc8030f156055b025697eabc8c2672791c96e247f6fc499ff0281388e452fcc16fbd1f8a36de1&download_url=https://download.visualstudio.microsoft.com/download/pr/c2574deb-9c23-4851-89bd-211243ecd85b/046fc7e68a8e7e6e5854fc0b3b56e59c/dotnet-sdk-3.1.425-linux-x64.tar.gz"
-    source = "https://download.visualstudio.microsoft.com/download/pr/c2574deb-9c23-4851-89bd-211243ecd85b/046fc7e68a8e7e6e5854fc0b3b56e59c/dotnet-sdk-3.1.425-linux-x64.tar.gz"
-    source-checksum = "sha512:3d31c6bb578f668111d0f124db6a1222b5d186450380bfd4f42bc8030f156055b025697eabc8c2672791c96e247f6fc499ff0281388e452fcc16fbd1f8a36de1"
-    stacks = ["io.buildpacks.stacks.bionic"]
-    uri = "https://download.visualstudio.microsoft.com/download/pr/c2574deb-9c23-4851-89bd-211243ecd85b/046fc7e68a8e7e6e5854fc0b3b56e59c/dotnet-sdk-3.1.425-linux-x64.tar.gz"
-    version = "3.1.425"
-
-  [[metadata.dependencies]]
     checksum = "sha512:779b3e24a889dbb517e5ff5359dab45dd3296160e4cb5592e6e41ea15cbf87279f08405febf07517aa02351f953b603e59648550a096eefcb0a20fdaf03fadde"
     cpe = "cpe:2.3:a:microsoft:.net:6.0.403:*:*:*:*:*:*:*"
     deprecation_date = "2024-11-12T00:00:00Z"
@@ -59,11 +45,6 @@ api = "0.8"
     stacks = ["io.buildpacks.stacks.bionic", "io.buildpacks.stacks.jammy"]
     uri = "https://download.visualstudio.microsoft.com/download/pr/253e5af8-41aa-48c6-86f1-39a51b44afdc/5bb2cb9380c5b1a7f0153e0a2775727b/dotnet-sdk-7.0.100-linux-x64.tar.gz"
     version = "7.0.100"
-
-  [[metadata.dependency-constraints]]
-    constraint = "3.1.*"
-    id = "dotnet-sdk"
-    patches = 1
 
   [[metadata.dependency-constraints]]
     constraint = "6.0.*"
