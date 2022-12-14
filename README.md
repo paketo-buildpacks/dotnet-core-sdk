@@ -25,9 +25,9 @@ file that looks like the following:
   # is not specified, the buildpack will provide the default version, which can
   # be seen in the buildpack.toml file.
   # If you wish to request a specific version, the buildpack supports
-  # specifying a semver constraint in the form of "3.*", "3.1.*", or even
-  # "3.1.100".
-  version = "3.1.100"
+  # specifying a semver constraint in the form of "6.*", "6.0.*", or even
+  # "6.0.1".
+  version = "6.0.1"
 
   # The .NET Core SDK buildpack supports some non-required metadata options.
   [requires.metadata]
@@ -57,8 +57,8 @@ supply another value as the first argument to `package.sh`.
 ```yaml
 dotnet-sdk:
   # this allows you to specify a version constaint for the dotnet-sdk dependency
-  # any valid semver constaints (e.g. 2.* and 2.1.*) are also acceptable
-  version: "2.1.804"
+  # any valid semver constaints (e.g. 6.* and 6.0.*) are also acceptable
+  version: "6.0.1"
 ```
 This configuration option will be deprecated with the next major version
 release of the buildpack. Because the versions of the .NET Core runtime and
