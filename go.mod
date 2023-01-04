@@ -23,7 +23,6 @@ require (
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/sprig/v3 v3.2.3 // indirect
 	github.com/Microsoft/go-winio v0.6.0 // indirect
-	github.com/Microsoft/hcsshim v0.9.6 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20221026131551-cf6655e29de4 // indirect
 	github.com/acobaugh/osrelease v0.1.0 // indirect
 	github.com/acomagu/bufpipe v1.0.3 // indirect
@@ -36,7 +35,6 @@ require (
 	github.com/bmatcuk/doublestar/v4 v4.4.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.0 // indirect
 	github.com/cloudflare/circl v1.3.1 // indirect
-	github.com/containerd/cgroups v1.0.4 // indirect
 	github.com/containerd/containerd v1.6.14 // indirect
 	github.com/containerd/stargz-snapshotter/estargz v0.13.0 // indirect
 	github.com/dgryski/go-minhash v0.0.0-20190315135803-ad340ca03076 // indirect
@@ -57,7 +55,6 @@ require (
 	github.com/go-git/go-git/v5 v5.5.1 // indirect
 	github.com/go-restruct/restruct v1.2.0-alpha // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
@@ -86,8 +83,8 @@ require (
 	github.com/mitchellh/hashstructure/v2 v2.0.2 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
-	github.com/moby/sys/mount v0.3.3 // indirect
-	github.com/moby/sys/mountinfo v0.6.2 // indirect
+	github.com/moby/patternmatcher v0.5.0 // indirect
+	github.com/moby/sys/sequential v0.5.0 // indirect
 	github.com/moby/term v0.0.0-20221205130635-1aeaba878587 // indirect
 	github.com/montanaflynn/stats v0.6.6 // indirect
 	github.com/morikuni/aec v1.0.0 // indirect
@@ -126,7 +123,6 @@ require (
 	github.com/wagoodman/go-progress v0.0.0-20220614130704-4b1c25a33c7c // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
-	go.opencensus.io v0.24.0 // indirect
 	golang.org/x/crypto v0.4.0 // indirect
 	golang.org/x/exp v0.0.0-20221230185412-738e83a70c30 // indirect
 	golang.org/x/mod v0.7.0 // indirect
@@ -155,4 +151,8 @@ require (
 	modernc.org/token v1.1.0 // indirect
 )
 
-replace github.com/CycloneDX/cyclonedx-go => github.com/CycloneDX/cyclonedx-go v0.6.0
+replace (
+	github.com/CycloneDX/cyclonedx-go => github.com/CycloneDX/cyclonedx-go v0.6.0
+	// Per https://golang.testcontainers.org/quickstart/#2-install-testcontainers-for-go, this is needed until Docker 2.06 is out
+	github.com/docker/docker => github.com/docker/docker v20.10.3-0.20221013203545-33ab36d6b304+incompatible // 22.06 branch
+)
