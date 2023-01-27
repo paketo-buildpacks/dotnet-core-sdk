@@ -10,7 +10,6 @@ import (
 	"github.com/paketo-buildpacks/packit/v2"
 	"github.com/paketo-buildpacks/packit/v2/cargo"
 	"github.com/paketo-buildpacks/packit/v2/chronos"
-	"github.com/paketo-buildpacks/packit/v2/fs"
 	"github.com/paketo-buildpacks/packit/v2/postal"
 	"github.com/paketo-buildpacks/packit/v2/sbom"
 	"github.com/paketo-buildpacks/packit/v2/scribe"
@@ -68,17 +67,6 @@ func Build(entryResolver EntryResolver,
 			return packit.BuildResult{}, err
 		}
 
-		envLayer, err := context.Layers.Get("dotnet-env-var")
-		if err != nil {
-			return packit.BuildResult{}, err
-		}
-		envLayer.Launch = true
-
-		err = os.MkdirAll(filepath.Join(context.WorkingDir, ".dotnet_root"), os.ModePerm)
-		if err != nil {
-			return packit.BuildResult{}, err
-		}
-
 		bom := dependencyManager.GenerateBillOfMaterials(sdkDependency)
 		launch, build := entryResolver.MergeLayerTypes(DotnetDependency, context.Plan.Entries)
 
@@ -103,21 +91,10 @@ func Build(entryResolver EntryResolver,
 			logger.Process(fmt.Sprintf("Reusing cached layer %s", sdkLayer.Path))
 			logger.Break()
 
-			err = fs.Copy(filepath.Join(sdkLayer.Path, "dotnet"), filepath.Join(context.WorkingDir, ".dotnet_root", "dotnet"))
-			if err != nil {
-				return packit.BuildResult{}, err
-			}
-
-			sdkLayer.BuildEnv.Prepend("PATH", sdkLayer.Path, string(os.PathListSeparator))
-			logger.EnvironmentVariables(sdkLayer)
-			envLayer.LaunchEnv.Prepend("PATH", filepath.Join(context.WorkingDir, ".dotnet_root"), string(os.PathListSeparator))
-			logger.EnvironmentVariables(envLayer)
-
 			sdkLayer.Build, sdkLayer.Launch, sdkLayer.Cache = build, launch, build || launch
 
 			return packit.BuildResult{
 				Layers: []packit.Layer{
-					envLayer,
 					sdkLayer,
 				},
 				Build:  buildMetadata,
@@ -147,17 +124,10 @@ func Build(entryResolver EntryResolver,
 			"dependency-checksum": dependencyChecksum,
 		}
 
-		err = fs.Copy(filepath.Join(sdkLayer.Path, "dotnet"), filepath.Join(context.WorkingDir, ".dotnet_root", "dotnet"))
-		if err != nil {
-			return packit.BuildResult{}, err
-		}
-
 		sdkLayer.Build, sdkLayer.Launch, sdkLayer.Cache = build, launch, build || launch
 
 		sdkLayer.BuildEnv.Prepend("PATH", sdkLayer.Path, string(os.PathListSeparator))
 		logger.EnvironmentVariables(sdkLayer)
-		envLayer.LaunchEnv.Prepend("PATH", filepath.Join(context.WorkingDir, ".dotnet_root"), string(os.PathListSeparator))
-		logger.EnvironmentVariables(envLayer)
 
 		logger.GeneratingSBOM(sdkLayer.Path)
 		var sbomContent sbom.SBOM
@@ -180,7 +150,6 @@ func Build(entryResolver EntryResolver,
 
 		return packit.BuildResult{
 			Layers: []packit.Layer{
-				envLayer,
 				sdkLayer,
 			},
 			Build:  buildMetadata,
