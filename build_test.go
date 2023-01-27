@@ -138,17 +138,12 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		})
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(result.Layers).To(HaveLen(2))
-		envLayer := result.Layers[0]
-		SDKLayer := result.Layers[1]
+		Expect(result.Layers).To(HaveLen(1))
+		SDKLayer := result.Layers[0]
 
 		Expect(SDKLayer.Name).To(Equal("dotnet-core-sdk"))
 		Expect(SDKLayer.BuildEnv).To(Equal(packit.Environment{
 			"PATH.prepend": filepath.Join(layersDir, "dotnet-core-sdk"),
-			"PATH.delim":   string(os.PathListSeparator),
-		}))
-		Expect(envLayer.LaunchEnv).To(Equal(packit.Environment{
-			"PATH.prepend": filepath.Join(workingDir, ".dotnet_root"),
 			"PATH.delim":   string(os.PathListSeparator),
 		}))
 		Expect(SDKLayer.Path).To(Equal(filepath.Join(layersDir, "dotnet-core-sdk")))
@@ -159,10 +154,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		Expect(SDKLayer.Build).To(BeTrue())
 		Expect(SDKLayer.Launch).To(BeTrue())
 		Expect(SDKLayer.Cache).To(BeTrue())
-
-		Expect(envLayer.Build).To(BeFalse())
-		Expect(envLayer.Launch).To(BeTrue())
-		Expect(envLayer.Cache).To(BeFalse())
 
 		Expect(SDKLayer.SBOM.Formats()).To(Equal([]packit.SBOMFormat{
 			{
@@ -255,8 +246,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			Checksum: "sha256:some-sha",
 		}))
 		Expect(sbomGenerator.GenerateFromDependencyCall.Receives.Dir).To(Equal(filepath.Join(layersDir, "dotnet-core-sdk")))
-
-		Expect(filepath.Join(workingDir, ".dotnet_root", "dotnet")).To(BeARegularFile())
 	})
 
 	context("when there is a dependency cache match", func() {
@@ -265,15 +254,12 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				[]byte("[metadata]\ndependency-checksum = \"sha256:some-sha\"\n"), 0600)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(os.MkdirAll(filepath.Join(layersDir, "dotnet-core-sdk"), os.ModePerm)).To(Succeed())
-			Expect(os.WriteFile(filepath.Join(layersDir, "dotnet-core-sdk", "dotnet"), []byte(`hi`), os.ModePerm)).To(Succeed())
-
 			entryResolver.MergeLayerTypesCall.Returns.Build = true
 			entryResolver.MergeLayerTypesCall.Returns.Launch = false
 		})
 
 		it("reuses the cached version of the SDK dependency", func() {
-			result, err := build(packit.BuildContext{
+			_, err := build(packit.BuildContext{
 				BuildpackInfo: packit.BuildpackInfo{
 					Version: "1.2.3",
 				},
@@ -290,44 +276,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				Stack:      "some-stack",
 			})
 			Expect(err).NotTo(HaveOccurred())
-
-			Expect(result.Layers).To(HaveLen(2))
-			envLayer := result.Layers[0]
-			SDKLayer := result.Layers[1]
-
-			Expect(SDKLayer.Name).To(Equal("dotnet-core-sdk"))
-			Expect(SDKLayer.BuildEnv).To(Equal(packit.Environment{
-				"PATH.prepend": filepath.Join(layersDir, "dotnet-core-sdk"),
-				"PATH.delim":   string(os.PathListSeparator),
-			}))
-			Expect(envLayer.LaunchEnv).To(Equal(packit.Environment{
-				"PATH.prepend": filepath.Join(workingDir, ".dotnet_root"),
-				"PATH.delim":   string(os.PathListSeparator),
-			}))
-			Expect(SDKLayer.Path).To(Equal(filepath.Join(layersDir, "dotnet-core-sdk")))
-			Expect(SDKLayer.Metadata).To(Equal(map[string]interface{}{
-				"dependency-checksum": "sha256:some-sha",
-			}))
-
-			Expect(SDKLayer.Build).To(BeTrue())
-			Expect(SDKLayer.Launch).To(BeFalse())
-			Expect(SDKLayer.Cache).To(BeTrue())
-
-			Expect(envLayer.Build).To(BeFalse())
-			Expect(envLayer.Launch).To(BeTrue())
-			Expect(envLayer.Cache).To(BeFalse())
-
-			Expect(result.Build.BOM).To(HaveLen(1))
-			buildBOMEntry := result.Build.BOM[0]
-			Expect(buildBOMEntry.Name).To(Equal("dotnet-sdk"))
-			Expect(buildBOMEntry.Metadata).To(Equal(paketosbom.BOMMetadata{
-				Version: "dotnet-sdk-dep-version",
-				Checksum: paketosbom.BOMChecksum{
-					Algorithm: paketosbom.SHA256,
-					Hash:      "dotnet-sdk-dep-sha",
-				},
-				URI: "dotnet-sdk-dep-uri",
-			}))
 
 			Expect(dependencyManager.ResolveCall.Receives.Path).To(Equal(filepath.Join(cnbDir, "buildpack.toml")))
 			Expect(dependencyManager.ResolveCall.Receives.Id).To(Equal("dotnet-sdk"))
@@ -344,72 +292,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			}))
 
 			Expect(dependencyManager.DeliverCall.CallCount).To(Equal(0))
-			Expect(filepath.Join(workingDir, ".dotnet_root", "dotnet")).To(BeARegularFile())
-		})
-	})
-
-	context("when there is a dependency cache match but its a SHA256 instead of checksum", func() {
-		it.Before(func() {
-			// Cached dependency has a SHA256 value instead of checksum (hash:algorithm)
-			err := os.WriteFile(filepath.Join(layersDir, "dotnet-core-sdk.toml"),
-				[]byte("[metadata]\ndependency-checksum = \"some-sha\"\n"), 0600)
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(os.MkdirAll(filepath.Join(layersDir, "dotnet-core-sdk"), os.ModePerm)).To(Succeed())
-			Expect(os.WriteFile(filepath.Join(layersDir, "dotnet-core-sdk", "dotnet"), []byte(`hi`), os.ModePerm)).To(Succeed())
-
-			entryResolver.MergeLayerTypesCall.Returns.Build = true
-			entryResolver.MergeLayerTypesCall.Returns.Launch = false
-		})
-
-		it("reuses the cached version of the SDK dependency", func() {
-			result, err := build(packit.BuildContext{
-				BuildpackInfo: packit.BuildpackInfo{
-					Version: "1.2.3",
-				},
-				Plan: packit.BuildpackPlan{
-					Entries: []packit.BuildpackPlanEntry{
-						{
-							Name: "dotnet-sdk",
-						},
-					},
-				},
-				Layers:     packit.Layers{Path: layersDir},
-				CNBPath:    cnbDir,
-				WorkingDir: workingDir,
-				Stack:      "some-stack",
-			})
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(result.Layers).To(HaveLen(2))
-			envLayer := result.Layers[0]
-			SDKLayer := result.Layers[1]
-
-			Expect(SDKLayer.Name).To(Equal("dotnet-core-sdk"))
-			Expect(SDKLayer.BuildEnv).To(Equal(packit.Environment{
-				"PATH.prepend": filepath.Join(layersDir, "dotnet-core-sdk"),
-				"PATH.delim":   string(os.PathListSeparator),
-			}))
-			Expect(envLayer.LaunchEnv).To(Equal(packit.Environment{
-				"PATH.prepend": filepath.Join(workingDir, ".dotnet_root"),
-				"PATH.delim":   string(os.PathListSeparator),
-			}))
-			Expect(SDKLayer.Path).To(Equal(filepath.Join(layersDir, "dotnet-core-sdk")))
-			Expect(SDKLayer.Metadata).To(Equal(map[string]interface{}{
-				"dependency-checksum": "some-sha",
-			}))
-
-			Expect(dependencyManager.GenerateBillOfMaterialsCall.Receives.Dependencies).To(Equal([]postal.Dependency{
-				{
-					ID:       "dotnet-sdk",
-					Version:  "some-version",
-					Name:     ".NET Core SDK",
-					Checksum: "sha256:some-sha",
-				},
-			}))
-
-			Expect(dependencyManager.DeliverCall.CallCount).To(Equal(0))
-			Expect(filepath.Join(workingDir, ".dotnet_root", "dotnet")).To(BeARegularFile())
 		})
 	})
 
@@ -482,64 +364,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				Expect(os.Chmod(layersDir, 0600)).To(Succeed())
 			})
 
-			it("returns an error", func() {
-				_, err := build(packit.BuildContext{
-					BuildpackInfo: packit.BuildpackInfo{
-						Version: "1.2.3",
-					},
-					Plan: packit.BuildpackPlan{
-						Entries: []packit.BuildpackPlanEntry{
-							{
-								Name: "dotnet-sdk",
-							},
-						},
-					},
-					Layers:     packit.Layers{Path: layersDir},
-					CNBPath:    cnbDir,
-					WorkingDir: workingDir,
-					Stack:      "some-stack",
-				})
-
-				Expect(err).To(MatchError(ContainSubstring("permission denied")))
-			})
-		})
-
-		context("when the dotnet CLI cannot be copied into the workspace/.dotnet_root", func() {
-			it.Before(func() {
-				Expect(os.MkdirAll(filepath.Join(workingDir, ".dotnet_root"), 0000)).To(Succeed())
-			})
-			it.After(func() {
-				Expect(os.Chmod(filepath.Join(workingDir, ".dotnet_root"), os.ModePerm)).To(Succeed())
-			})
-			it("returns an error", func() {
-				_, err := build(packit.BuildContext{
-					BuildpackInfo: packit.BuildpackInfo{
-						Version: "1.2.3",
-					},
-					Plan: packit.BuildpackPlan{
-						Entries: []packit.BuildpackPlanEntry{
-							{
-								Name: "dotnet-sdk",
-							},
-						},
-					},
-					Layers:     packit.Layers{Path: layersDir},
-					CNBPath:    cnbDir,
-					WorkingDir: workingDir,
-					Stack:      "some-stack",
-				})
-
-				Expect(err).To(MatchError(ContainSubstring("permission denied")))
-			})
-		})
-
-		context("when the workspace/.dotnet_root directory cannot be made", func() {
-			it.Before(func() {
-				Expect(os.Chmod(workingDir, 0000)).To(Succeed())
-			})
-			it.After(func() {
-				Expect(os.Chmod(workingDir, os.ModePerm)).To(Succeed())
-			})
 			it("returns an error", func() {
 				_, err := build(packit.BuildContext{
 					BuildpackInfo: packit.BuildpackInfo{

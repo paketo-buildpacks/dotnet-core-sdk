@@ -86,9 +86,6 @@ func testDefault(t *testing.T, context spec.G, it spec.S) {
 				"",
 				"  Configuring build environment",
 				fmt.Sprintf(`    PATH -> "/layers/%s/dotnet-core-sdk:$PATH"`, strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_")),
-				"",
-				"  Configuring launch environment",
-				`    PATH -> "/workspace/.dotnet_root:$PATH"`,
 			))
 
 			container, err = docker.Container.Run.
