@@ -81,6 +81,7 @@ func Build(entryResolver EntryResolver,
 		}
 
 		dependencyChecksum := sdkDependency.Checksum
+		//nolint Ignore SA1019, informed usage of deprecated field
 		if sdkDependency.SHA256 != "" {
 			dependencyChecksum = sdkDependency.SHA256
 		}
