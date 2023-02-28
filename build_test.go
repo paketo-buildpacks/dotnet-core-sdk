@@ -3,6 +3,7 @@ package dotnetcoresdk_test
 import (
 	"bytes"
 	"errors"
+	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -139,32 +140,70 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(result.Layers).To(HaveLen(1))
-		SDKLayer := result.Layers[0]
+		layer := result.Layers[0]
 
-		Expect(SDKLayer.Name).To(Equal("dotnet-core-sdk"))
-		Expect(SDKLayer.BuildEnv).To(Equal(packit.Environment{
+		Expect(layer.Name).To(Equal("dotnet-core-sdk"))
+		Expect(layer.BuildEnv).To(Equal(packit.Environment{
 			"PATH.prepend": filepath.Join(layersDir, "dotnet-core-sdk"),
 			"PATH.delim":   string(os.PathListSeparator),
 		}))
-		Expect(SDKLayer.Path).To(Equal(filepath.Join(layersDir, "dotnet-core-sdk")))
-		Expect(SDKLayer.Metadata).To(Equal(map[string]interface{}{
+		Expect(layer.Path).To(Equal(filepath.Join(layersDir, "dotnet-core-sdk")))
+		Expect(layer.Metadata).To(Equal(map[string]interface{}{
 			"dependency-checksum": "sha256:some-sha",
 		}))
 
-		Expect(SDKLayer.Build).To(BeTrue())
-		Expect(SDKLayer.Launch).To(BeTrue())
-		Expect(SDKLayer.Cache).To(BeTrue())
+		Expect(layer.Build).To(BeTrue())
+		Expect(layer.Launch).To(BeTrue())
+		Expect(layer.Cache).To(BeTrue())
 
-		Expect(SDKLayer.SBOM.Formats()).To(Equal([]packit.SBOMFormat{
-			{
-				Extension: sbom.Format(sbom.CycloneDXFormat).Extension(),
-				Content:   sbom.NewFormattedReader(sbom.SBOM{}, sbom.CycloneDXFormat),
+		Expect(layer.SBOM.Formats()).To(HaveLen(2))
+		cdx := layer.SBOM.Formats()[0]
+		spdx := layer.SBOM.Formats()[1]
+
+		Expect(cdx.Extension).To(Equal("cdx.json"))
+		content, err := io.ReadAll(cdx.Content)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(string(content)).To(MatchJSON(`{
+			"bomFormat": "CycloneDX",
+			"components": [],
+			"metadata": {
+				"tools": [
+					{
+						"name": "syft",
+						"vendor": "anchore",
+						"version": "[not provided]"
+					}
+				]
 			},
-			{
-				Extension: sbom.Format(sbom.SPDXFormat).Extension(),
-				Content:   sbom.NewFormattedReader(sbom.SBOM{}, sbom.SPDXFormat),
+			"specVersion": "1.3",
+			"version": 1
+		}`))
+
+		Expect(spdx.Extension).To(Equal("spdx.json"))
+		content, err = io.ReadAll(spdx.Content)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(string(content)).To(MatchJSON(`{
+			"SPDXID": "SPDXRef-DOCUMENT",
+			"creationInfo": {
+				"created": "0001-01-01T00:00:00Z",
+				"creators": [
+					"Organization: Anchore, Inc",
+					"Tool: syft-"
+				],
+				"licenseListVersion": "3.16"
 			},
-		}))
+			"dataLicense": "CC0-1.0",
+			"documentNamespace": "https://paketo.io/packit/unknown-source-type/unknown-88cfa225-65e0-5755-895f-c1c8f10fde76",
+			"name": "unknown",
+			"relationships": [
+				{
+					"relatedSpdxElement": "SPDXRef-DOCUMENT",
+					"relationshipType": "DESCRIBES",
+					"spdxElementId": "SPDXRef-DOCUMENT"
+				}
+			],
+			"spdxVersion": "SPDX-2.2"
+		}`))
 
 		Expect(result.Build.BOM).To(HaveLen(1))
 		buildBOMEntry := result.Build.BOM[0]
