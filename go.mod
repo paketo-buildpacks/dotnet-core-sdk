@@ -144,3 +144,5 @@ require (
 	modernc.org/libc v1.22.3 // indirect
 	modernc.org/sqlite v1.21.0 // indirect
 )
+
+replace github.com/ekzhu/minhash-lsh v0.0.0-20190924033628-faac2c6342f8 => github.com/ekzhu/minhash-lsh v0.0.0-20171225071031-5c06ee8586a1
