@@ -10,7 +10,7 @@ require (
 	github.com/go-enry/go-license-detector/v4 v4.3.0
 	github.com/onsi/gomega v1.27.6
 	github.com/paketo-buildpacks/occam v0.16.0
-	github.com/paketo-buildpacks/packit/v2 v2.9.1
+	github.com/paketo-buildpacks/packit/v2 v2.10.0
 	github.com/sclevine/spec v1.4.0
 	gopkg.in/yaml.v2 v2.4.0
 )
