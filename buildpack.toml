@@ -19,46 +19,46 @@ api = "0.8"
     dotnet-sdk = "6.*"
 
   [[metadata.dependencies]]
-    checksum = "sha512:53d6e688d0aee8f73edf3ec8e58ed34eca0873a28f0700b71936b9d7cb351864eff8ca593db7fd77659b1710fa421d2f4137da5f98746a85125dc2a49fbffc56"
-    cpe = "cpe:2.3:a:microsoft:.net:6.0.420:*:*:*:*:*:*:*"
+    checksum = "sha512:aa2c1fdc06c477acbb8ca938895f22373a96e96bb75028b496ddf3d433a1e347f3f765b414e8e09fbf1da1cc50f575e28572e701693bad2a33f9b92437a7d3fc"
+    cpe = "cpe:2.3:a:microsoft:.net:6.0.421:*:*:*:*:*:*:*"
     deprecation_date = "2024-11-12T00:00:00Z"
     id = "dotnet-sdk"
     licenses = ["JSON", "MIT", "MIT-0", "MIT-advertising", "MIT-feh", "X11-distribute-modifications-variant"]
     name = ".NET Core SDK"
-    purl = "pkg:generic/dotnet-core-sdk@6.0.420?checksum=53d6e688d0aee8f73edf3ec8e58ed34eca0873a28f0700b71936b9d7cb351864eff8ca593db7fd77659b1710fa421d2f4137da5f98746a85125dc2a49fbffc56&download_url=https://download.visualstudio.microsoft.com/download/pr/b521d7d2-108b-43d9-861a-58b2505a125a/0023553690a68328b33bc30a38f151db/dotnet-sdk-6.0.420-linux-x64.tar.gz"
-    source = "https://download.visualstudio.microsoft.com/download/pr/b521d7d2-108b-43d9-861a-58b2505a125a/0023553690a68328b33bc30a38f151db/dotnet-sdk-6.0.420-linux-x64.tar.gz"
-    source-checksum = "sha512:53d6e688d0aee8f73edf3ec8e58ed34eca0873a28f0700b71936b9d7cb351864eff8ca593db7fd77659b1710fa421d2f4137da5f98746a85125dc2a49fbffc56"
+    purl = "pkg:generic/dotnet-core-sdk@6.0.421?checksum=aa2c1fdc06c477acbb8ca938895f22373a96e96bb75028b496ddf3d433a1e347f3f765b414e8e09fbf1da1cc50f575e28572e701693bad2a33f9b92437a7d3fc&download_url=https://download.visualstudio.microsoft.com/download/pr/19144d78-6f95-4810-a9f6-3bf86035a244/23f4654fc5352e049b517937f94be839/dotnet-sdk-6.0.421-linux-x64.tar.gz"
+    source = "https://download.visualstudio.microsoft.com/download/pr/19144d78-6f95-4810-a9f6-3bf86035a244/23f4654fc5352e049b517937f94be839/dotnet-sdk-6.0.421-linux-x64.tar.gz"
+    source-checksum = "sha512:aa2c1fdc06c477acbb8ca938895f22373a96e96bb75028b496ddf3d433a1e347f3f765b414e8e09fbf1da1cc50f575e28572e701693bad2a33f9b92437a7d3fc"
     stacks = ["io.buildpacks.stacks.bionic", "io.buildpacks.stacks.jammy"]
-    uri = "https://download.visualstudio.microsoft.com/download/pr/b521d7d2-108b-43d9-861a-58b2505a125a/0023553690a68328b33bc30a38f151db/dotnet-sdk-6.0.420-linux-x64.tar.gz"
-    version = "6.0.420"
+    uri = "https://download.visualstudio.microsoft.com/download/pr/19144d78-6f95-4810-a9f6-3bf86035a244/23f4654fc5352e049b517937f94be839/dotnet-sdk-6.0.421-linux-x64.tar.gz"
+    version = "6.0.421"
 
   [[metadata.dependencies]]
-    checksum = "sha512:82e659aee7d3ab6595bfc141f24eda13551f5c5bd9048aad53ebe3963b8e25836ca07eb3d1d39d6adae145db399aab44ed57db27d34119e836202eb3af93c9e3"
-    cpe = "cpe:2.3:a:microsoft:.net:7.0.407:*:*:*:*:*:*:*"
+    checksum = "sha512:89d39601a27cbbc74a5dbbfc6dda6661220e76b73f7387fec6558222aa144734b44db5788bcb888c7f49d4659c8b0ea60794f93ad1223c86ceafdddf6e6b70e2"
+    cpe = "cpe:2.3:a:microsoft:.net:7.0.408:*:*:*:*:*:*:*"
     deprecation_date = "2024-05-14T00:00:00Z"
     id = "dotnet-sdk"
     licenses = ["JSON", "MIT", "MIT-0", "MIT-advertising", "MIT-feh", "X11-distribute-modifications-variant"]
     name = ".NET Core SDK"
-    purl = "pkg:generic/dotnet-core-sdk@7.0.407?checksum=82e659aee7d3ab6595bfc141f24eda13551f5c5bd9048aad53ebe3963b8e25836ca07eb3d1d39d6adae145db399aab44ed57db27d34119e836202eb3af93c9e3&download_url=https://download.visualstudio.microsoft.com/download/pr/bd9f066f-c0cf-495f-95bc-c3b96c9cf06e/ec93222e82bca1aa14590beb8a73625c/dotnet-sdk-7.0.407-linux-x64.tar.gz"
-    source = "https://download.visualstudio.microsoft.com/download/pr/bd9f066f-c0cf-495f-95bc-c3b96c9cf06e/ec93222e82bca1aa14590beb8a73625c/dotnet-sdk-7.0.407-linux-x64.tar.gz"
-    source-checksum = "sha512:82e659aee7d3ab6595bfc141f24eda13551f5c5bd9048aad53ebe3963b8e25836ca07eb3d1d39d6adae145db399aab44ed57db27d34119e836202eb3af93c9e3"
+    purl = "pkg:generic/dotnet-core-sdk@7.0.408?checksum=89d39601a27cbbc74a5dbbfc6dda6661220e76b73f7387fec6558222aa144734b44db5788bcb888c7f49d4659c8b0ea60794f93ad1223c86ceafdddf6e6b70e2&download_url=https://download.visualstudio.microsoft.com/download/pr/a256265b-0ec6-4b63-b943-bc27bcfc98c0/47c8bbd54d7f6dbfe0ca4985c410282e/dotnet-sdk-7.0.408-linux-x64.tar.gz"
+    source = "https://download.visualstudio.microsoft.com/download/pr/a256265b-0ec6-4b63-b943-bc27bcfc98c0/47c8bbd54d7f6dbfe0ca4985c410282e/dotnet-sdk-7.0.408-linux-x64.tar.gz"
+    source-checksum = "sha512:89d39601a27cbbc74a5dbbfc6dda6661220e76b73f7387fec6558222aa144734b44db5788bcb888c7f49d4659c8b0ea60794f93ad1223c86ceafdddf6e6b70e2"
     stacks = ["io.buildpacks.stacks.bionic", "io.buildpacks.stacks.jammy"]
-    uri = "https://download.visualstudio.microsoft.com/download/pr/bd9f066f-c0cf-495f-95bc-c3b96c9cf06e/ec93222e82bca1aa14590beb8a73625c/dotnet-sdk-7.0.407-linux-x64.tar.gz"
-    version = "7.0.407"
+    uri = "https://download.visualstudio.microsoft.com/download/pr/a256265b-0ec6-4b63-b943-bc27bcfc98c0/47c8bbd54d7f6dbfe0ca4985c410282e/dotnet-sdk-7.0.408-linux-x64.tar.gz"
+    version = "7.0.408"
 
   [[metadata.dependencies]]
-    checksum = "sha512:78b1913b54a1a4c9f13cc2864a11540b5fd3bdf4ebb49837483e19c0906a1890f2dfcf173635a1c89714bf735cbcaa01db0f7ae90add5295da69a0638ed5e60e"
-    cpe = "cpe:2.3:a:microsoft:.net:8.0.203:*:*:*:*:*:*:*"
+    checksum = "sha512:b45d3e3bc039d50764bfbe393b26cc929d93b22d69da74af6d35d4038ebcbc2f8410b047cdd0425c954d245e2594755c9f293c09f1ded3c97d33aebfaf878b5f"
+    cpe = "cpe:2.3:a:microsoft:.net:8.0.204:*:*:*:*:*:*:*"
     deprecation_date = "2026-11-10T00:00:00Z"
     id = "dotnet-sdk"
     licenses = ["JSON", "MIT", "MIT-0", "MIT-advertising", "MIT-feh", "X11-distribute-modifications-variant"]
     name = ".NET Core SDK"
-    purl = "pkg:generic/dotnet-core-sdk@8.0.203?checksum=78b1913b54a1a4c9f13cc2864a11540b5fd3bdf4ebb49837483e19c0906a1890f2dfcf173635a1c89714bf735cbcaa01db0f7ae90add5295da69a0638ed5e60e&download_url=https://download.visualstudio.microsoft.com/download/pr/656a3402-6889-400f-927f-7f956856e58b/93750973d6eedd17c6d963658e7ec214/dotnet-sdk-8.0.203-linux-x64.tar.gz"
-    source = "https://download.visualstudio.microsoft.com/download/pr/656a3402-6889-400f-927f-7f956856e58b/93750973d6eedd17c6d963658e7ec214/dotnet-sdk-8.0.203-linux-x64.tar.gz"
-    source-checksum = "sha512:78b1913b54a1a4c9f13cc2864a11540b5fd3bdf4ebb49837483e19c0906a1890f2dfcf173635a1c89714bf735cbcaa01db0f7ae90add5295da69a0638ed5e60e"
+    purl = "pkg:generic/dotnet-core-sdk@8.0.204?checksum=b45d3e3bc039d50764bfbe393b26cc929d93b22d69da74af6d35d4038ebcbc2f8410b047cdd0425c954d245e2594755c9f293c09f1ded3c97d33aebfaf878b5f&download_url=https://download.visualstudio.microsoft.com/download/pr/0a1b3cbd-b4af-4d0d-9ed7-0054f0e200b4/4bcc533c66379caaa91770236667aacb/dotnet-sdk-8.0.204-linux-x64.tar.gz"
+    source = "https://download.visualstudio.microsoft.com/download/pr/0a1b3cbd-b4af-4d0d-9ed7-0054f0e200b4/4bcc533c66379caaa91770236667aacb/dotnet-sdk-8.0.204-linux-x64.tar.gz"
+    source-checksum = "sha512:b45d3e3bc039d50764bfbe393b26cc929d93b22d69da74af6d35d4038ebcbc2f8410b047cdd0425c954d245e2594755c9f293c09f1ded3c97d33aebfaf878b5f"
     stacks = ["io.buildpacks.stacks.bionic", "io.buildpacks.stacks.jammy"]
-    uri = "https://download.visualstudio.microsoft.com/download/pr/656a3402-6889-400f-927f-7f956856e58b/93750973d6eedd17c6d963658e7ec214/dotnet-sdk-8.0.203-linux-x64.tar.gz"
-    version = "8.0.203"
+    uri = "https://download.visualstudio.microsoft.com/download/pr/0a1b3cbd-b4af-4d0d-9ed7-0054f0e200b4/4bcc533c66379caaa91770236667aacb/dotnet-sdk-8.0.204-linux-x64.tar.gz"
+    version = "8.0.204"
 
   [[metadata.dependency-constraints]]
     constraint = "6.0.*"
