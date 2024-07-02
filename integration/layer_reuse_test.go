@@ -172,7 +172,7 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 					settings.Buildpacks.BuildPlan.Online,
 				).
 				WithEnv(map[string]string{
-					"BP_DOTNET_FRAMEWORK_VERSION": "7.0.0",
+					"BP_DOTNET_FRAMEWORK_VERSION": "8.0.0",
 				}).
 				Execute(name, source)
 			Expect(err).NotTo(HaveOccurred(), logs.String())
