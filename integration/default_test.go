@@ -79,7 +79,8 @@ func testDefault(t *testing.T, context spec.G, it spec.S) {
 				"      <unknown> -> \"\"",
 				"",
 				MatchRegexp(`    Selected .NET Core SDK version \(using <unknown>\): 6\.0\.\d+`),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				"  Executing build process",
 				MatchRegexp(`    Installing .NET Core SDK \d+\.\d+\.\d+`),
 				MatchRegexp(`      Completed in ([0-9]*(\.[0-9]*)?[a-z]+)+`),
