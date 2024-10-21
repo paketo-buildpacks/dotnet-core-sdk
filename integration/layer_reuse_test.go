@@ -104,7 +104,8 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 				"      <unknown> -> \"\"",
 				"",
 				MatchRegexp(`    Selected .NET Core SDK version \(using <unknown>\): 6\.0\.\d+`),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				MatchRegexp(fmt.Sprintf("  Reusing cached layer /layers/%s/dotnet-core-sdk", strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
 			))
 
@@ -210,7 +211,8 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 				"      <unknown>                   -> \"\"",
 				"",
 				MatchRegexp(`    Selected .NET Core SDK version \(using BP_DOTNET_FRAMEWORK_VERSION\): 6\.0\.\d+`),
-				"",
+			))
+			Expect(logs).To(ContainLines(
 				"  Executing build process",
 			))
 
