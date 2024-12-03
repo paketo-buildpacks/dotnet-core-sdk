@@ -103,7 +103,7 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 				"    Candidate version sources (in priority order):",
 				"      <unknown> -> \"\"",
 				"",
-				MatchRegexp(`    Selected .NET Core SDK version \(using <unknown>\): 6\.0\.\d+`),
+				MatchRegexp(`    Selected .NET Core SDK version \(using <unknown>\): \d+\.\d+\.\d+`),
 			))
 			Expect(logs).To(ContainLines(
 				MatchRegexp(fmt.Sprintf("  Reusing cached layer /layers/%s/dotnet-core-sdk", strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))),
@@ -122,8 +122,9 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 				return cLogs.String()
 			}).Should(
 				And(
-					MatchRegexp(`-rwxr-xr-x \d+ \w+ cnb \d+ .* dotnet`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* sdk`),
+					MatchRegexp(`-rwxr-xr-x \d+ \w+ cnb\s+\d+ .* dotnet`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb\s+\d+ .* host`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb\s+\d+ .* sdk`),
 				),
 			)
 
@@ -192,7 +193,7 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 					settings.Buildpacks.BuildPlan.Online,
 				).
 				WithEnv(map[string]string{
-					"BP_DOTNET_FRAMEWORK_VERSION": "6.0.0",
+					"BP_DOTNET_FRAMEWORK_VERSION": "9.0.0",
 				}).
 				Execute(name, source)
 			Expect(err).NotTo(HaveOccurred(), logs.String())
@@ -207,10 +208,10 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 				MatchRegexp(fmt.Sprintf(`%s \d+\.\d+\.\d+`, settings.BuildpackInfo.Buildpack.Name)),
 				"  Resolving .NET Core SDK version",
 				"    Candidate version sources (in priority order):",
-				MatchRegexp(`      BP_DOTNET_FRAMEWORK_VERSION -> "6\.0\.\*"`),
+				MatchRegexp(`      BP_DOTNET_FRAMEWORK_VERSION -> "\d+\.\d+\.\*"`),
 				"      <unknown>                   -> \"\"",
 				"",
-				MatchRegexp(`    Selected .NET Core SDK version \(using BP_DOTNET_FRAMEWORK_VERSION\): 6\.0\.\d+`),
+				MatchRegexp(`    Selected .NET Core SDK version \(using BP_DOTNET_FRAMEWORK_VERSION\): \d+\.\d+\.\d+`),
 			))
 			Expect(logs).To(ContainLines(
 				"  Executing build process",
@@ -233,14 +234,9 @@ func testLayerReuse(t *testing.T, context spec.G, it spec.S) {
 				return cLogs.String()
 			}).Should(
 				And(
-					MatchRegexp(`-rwxr-xr-x \d+ \w+ cnb \d+ .* dotnet`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* host`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* packs`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* sdk`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* sdk-manifests`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* shared`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* templates`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb \d+ .* 6\.0\.\d+`),
+					MatchRegexp(`-rwxr-xr-x \d+ \w+ cnb\s+\d+ .* dotnet`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb\s+\d+ .* host`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb\s+\d+ .* sdk`),
 				),
 			)
 

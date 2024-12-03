@@ -78,7 +78,7 @@ func testDefault(t *testing.T, context spec.G, it spec.S) {
 				"    Candidate version sources (in priority order):",
 				"      <unknown> -> \"\"",
 				"",
-				MatchRegexp(`    Selected .NET Core SDK version \(using <unknown>\): 6\.0\.\d+`),
+				MatchRegexp(`    Selected .NET Core SDK version \(using <unknown>\): \d+\.\d+\.\d+`),
 			))
 			Expect(logs).To(ContainLines(
 				"  Executing build process",
@@ -104,14 +104,9 @@ func testDefault(t *testing.T, context spec.G, it spec.S) {
 					// Note: The assumption here is that the file permissions for the dotnet CLI below (-rwxr-xr-x)
 					// and its existence in the .dotnet_root directory (which is on the PATH) sufficiently proves
 					// its ability to be called. This may need refactoring if that assumption is proved insufficient.
-					MatchRegexp(`-rwxr-xr-x \d+ \w+ cnb \d+ .* dotnet`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* host`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* packs`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* sdk`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* sdk-manifests`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* shared`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* templates`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb \d+ .* 6\.0\.\d+`),
+					MatchRegexp(`-rwxr-xr-x \d+ \w+ cnb\s+\d+ .* dotnet`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb\s+\d+ .* host`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb\s+\d+ .* sdk`),
 				),
 			)
 

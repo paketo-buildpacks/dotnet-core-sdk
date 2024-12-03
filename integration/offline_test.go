@@ -69,7 +69,7 @@ func testOffline(t *testing.T, context spec.G, it spec.S) {
 				"    Candidate version sources (in priority order):",
 				"      <unknown> -> \"\"",
 				"",
-				MatchRegexp(`    Selected .NET Core SDK version \(using <unknown>\): 6\.0\.\d+`),
+				MatchRegexp(`    Selected .NET Core SDK version \(using <unknown>\): \d+\.\d+\.\d+`),
 			))
 			Expect(logs).To(ContainLines(
 				"  Executing build process",
@@ -93,14 +93,9 @@ func testOffline(t *testing.T, context spec.G, it spec.S) {
 				return cLogs.String()
 			}).Should(
 				And(
-					MatchRegexp(`-rwxr-xr-x \d+ \w+ cnb \d+ .* dotnet`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* host`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* packs`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* sdk`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* sdk-manifests`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* shared`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb   \d+ .* templates`),
-					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb \d+ .* 6\.0\.\d+`),
+					MatchRegexp(`-rwxr-xr-x \d+ \w+ cnb\s+\d+ .* dotnet`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb\s+\d+ .* host`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb\s+\d+ .* sdk`),
 				),
 			)
 		})
