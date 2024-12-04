@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/Masterminds/semver"
 	"github.com/paketo-buildpacks/packit/v2"
 	"github.com/paketo-buildpacks/packit/v2/cargo"
 	"github.com/paketo-buildpacks/packit/v2/chronos"
@@ -47,7 +46,6 @@ func Build(entryResolver EntryResolver,
 		logger.Candidates(entries)
 
 		version, _ := planEntry.Metadata["version"].(string)
-		versionSource, _ := planEntry.Metadata["version-source"].(string)
 
 		sdkDependency, err := dependencyManager.Resolve(filepath.Join(context.CNBPath, "buildpack.toml"), planEntry.Name, version, context.Stack)
 		if err != nil {
@@ -55,12 +53,6 @@ func Build(entryResolver EntryResolver,
 		}
 
 		logger.SelectedDependency(planEntry, sdkDependency, clock.Now())
-
-		if versionSource == "buildpack.yml" {
-			nextMajorVersion := semver.MustParse(context.BuildpackInfo.Version).IncMajor()
-			logger.Break()
-			logger.Subprocess("WARNING: Setting the .NET Core SDK version through buildpack.yml will be deprecated soon in .NET Core SDK Buildpack v%s.", nextMajorVersion.String())
-		}
 
 		sdkLayer, err := context.Layers.Get("dotnet-core-sdk")
 		if err != nil {

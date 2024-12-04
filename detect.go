@@ -8,12 +8,7 @@ import (
 	"github.com/paketo-buildpacks/packit/v2"
 )
 
-//go:generate faux --interface BuildpackYMLParser --output fakes/buildpack_yml_parser.go
-type BuildpackYMLParser interface {
-	Parse(workingDir string) (string, error)
-}
-
-func Detect(buildpackYMLParser BuildpackYMLParser) packit.DetectFunc {
+func Detect() packit.DetectFunc {
 	return func(context packit.DetectContext) (packit.DetectResult, error) {
 		plan := packit.BuildPlan{
 			Provides: []packit.BuildPlanProvision{
@@ -33,21 +28,6 @@ func Detect(buildpackYMLParser BuildpackYMLParser) packit.DetectFunc {
 				Metadata: map[string]interface{}{
 					"version-source": "BP_DOTNET_FRAMEWORK_VERSION",
 					"version":        fmt.Sprintf("%d.%d.*", frameworkSemver.Major(), frameworkSemver.Minor()),
-				},
-			})
-		}
-
-		version, err := buildpackYMLParser.Parse(context.WorkingDir)
-		if err != nil {
-			return packit.DetectResult{}, err
-		}
-
-		if version != "" {
-			plan.Requires = append(plan.Requires, packit.BuildPlanRequirement{
-				Name: "dotnet-sdk",
-				Metadata: map[string]interface{}{
-					"version":        version,
-					"version-source": "buildpack.yml",
 				},
 			})
 		}
