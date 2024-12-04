@@ -11,6 +11,5 @@ func TestUnitDotnetCoreSDK(t *testing.T) {
 	suite := spec.New("dotnet-core-sdk", spec.Report(report.Terminal{}), spec.Sequential())
 	suite("Build", testBuild)
 	suite("Detect", testDetect)
-	suite("SdkVersionParser", testSdkVersionParser)
 	suite.Run(t)
 }

@@ -334,42 +334,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		})
 	})
 
-	context("when the sdk version is set via buildpack.yml", func() {
-		it.Before(func() {
-			entryResolver.ResolveCall.Returns.BuildpackPlanEntry = packit.BuildpackPlanEntry{
-				Name: "dotnet-sdk",
-				Metadata: map[string]interface{}{
-					"version":        "2.5.x",
-					"version-source": "buildpack.yml",
-					"build":          true,
-					"launch":         true,
-				},
-			}
-		})
-
-		it("logs a deprecation warning", func() {
-			_, err := build(packit.BuildContext{
-				BuildpackInfo: packit.BuildpackInfo{
-					Version: "1.2.3",
-				},
-				Plan: packit.BuildpackPlan{
-					Entries: []packit.BuildpackPlanEntry{
-						{
-							Name: "dotnet-sdk",
-						},
-					},
-				},
-				Layers:     packit.Layers{Path: layersDir},
-				CNBPath:    cnbDir,
-				WorkingDir: workingDir,
-				Stack:      "some-stack",
-			})
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(buffer.String()).To(ContainSubstring("WARNING: Setting the .NET Core SDK version through buildpack.yml will be deprecated soon in .NET Core SDK Buildpack v2.0.0"))
-		})
-	})
-
 	context("failure cases", func() {
 		context("when the dependency for the build plan entry cannot be resolved", func() {
 			it.Before(func() {

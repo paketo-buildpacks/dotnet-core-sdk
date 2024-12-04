@@ -41,6 +41,35 @@ file that looks like the following:
     build = true
 ```
 
+## Configuration
+
+### `BP_DOTNET_FRAMEWORK_VERSION`
+The `BP_DOTNET_FRAMEWORK_VERSION` variable allows you to specify the version of
+ASP.NET Core Runtime that is installed. The environment variable can be
+set at build-time either directly  (ex. `pack build my-app --env
+BP_ENVIRONMENT_VARIABLE=some-value`) or through a [`project.toml`
+file](https://github.com/buildpacks/spec/blob/main/extensions/project-descriptor.md)
+
+```shell
+BP_DOTNET_FRAMEWORK_VERSION=6.0.5
+```
+
+### `BP_LOG_LEVEL`
+The `BP_LOG_LEVEL` variable allows you to configure the level of log output
+from the **buildpack itself**.  The environment variable can be set at build
+time either directly (ex. `pack build my-app --env BP_LOG_LEVEL=DEBUG`) or
+through a [`project.toml`
+file](https://github.com/buildpacks/spec/blob/main/extensions/project-descriptor.md)
+If no value is set, the default value of `INFO` will be used.
+
+The options for this setting are:
+- `INFO`: (Default) log information about the progress of the build process
+- `DEBUG`: log debugging information about the progress of the build process
+
+```shell
+BP_LOG_LEVEL="DEBUG"
+```
+
 ## Usage
 
 To package this buildpack for consumption:
@@ -51,20 +80,3 @@ $ ./scripts/package.sh
 
 This builds the buildpack's Go source using `GOOS=linux` by default. You can
 supply another value as the first argument to `package.sh`.
-
-## (Deprecated) `buildpack.yml` Configurations
-
-```yaml
-dotnet-sdk:
-  # this allows you to specify a version constaint for the dotnet-sdk dependency
-  # any valid semver constaints (e.g. 6.* and 6.0.*) are also acceptable
-  version: "6.0.1"
-```
-This configuration option will be deprecated with the next major version
-release of the buildpack. Because the versions of the .NET Core runtime and
-.NET Core SDK are so tightly coupled, most users should instead use the
-`$BP_DOTNET_FRAMEWORK_VERSION` environment variable to specify which version of
-the .NET Core runtime that the [Paketo .NET Core Runtime
-Buildpack](https://github.com/paketo-buildpacks/dotnet-core-runtime) should
-install. This buildpack will automatically select an SDK version to install
-that is compatible with the selected .NET Core runtime version.
