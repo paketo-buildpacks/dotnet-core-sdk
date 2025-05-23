@@ -19,18 +19,18 @@ api = "0.8"
     dotnet-sdk = "8.*"
 
   [[metadata.dependencies]]
-    checksum = "sha512:fb855ff04db010594bb7da884e3a86da94e26a43cc5d858724cc0d3d8ee31f6d64eb09558bad3dba540a25082219ba41aa7feb40d1c4f3468c3720ea4c552fda"
-    cpe = "cpe:2.3:a:microsoft:.net:8.0.409:*:*:*:*:*:*:*"
+    checksum = "sha512:757879ef16bf8dc0677e0222ed2fd87b6126aa5ef6370120fb6ee8dfb42a194a796d105d388320cc623548a2eebbd349b1badf3e53631d9f059edeafea1b83bf"
+    cpe = "cpe:2.3:a:microsoft:.net:8.0.410:*:*:*:*:*:*:*"
     deprecation_date = "2026-11-10T00:00:00Z"
     id = "dotnet-sdk"
     licenses = ["JSON", "MIT", "MIT-0", "MIT-advertising", "MIT-feh", "X11-distribute-modifications-variant"]
     name = ".NET Core SDK"
-    purl = "pkg:generic/dotnet-core-sdk@8.0.409?checksum=fb855ff04db010594bb7da884e3a86da94e26a43cc5d858724cc0d3d8ee31f6d64eb09558bad3dba540a25082219ba41aa7feb40d1c4f3468c3720ea4c552fda&download_url=https://builds.dotnet.microsoft.com/dotnet/Sdk/8.0.409/dotnet-sdk-8.0.409-linux-x64.tar.gz"
-    source = "https://builds.dotnet.microsoft.com/dotnet/Sdk/8.0.409/dotnet-sdk-8.0.409-linux-x64.tar.gz"
-    source-checksum = "sha512:fb855ff04db010594bb7da884e3a86da94e26a43cc5d858724cc0d3d8ee31f6d64eb09558bad3dba540a25082219ba41aa7feb40d1c4f3468c3720ea4c552fda"
+    purl = "pkg:generic/dotnet-core-sdk@8.0.410?checksum=757879ef16bf8dc0677e0222ed2fd87b6126aa5ef6370120fb6ee8dfb42a194a796d105d388320cc623548a2eebbd349b1badf3e53631d9f059edeafea1b83bf&download_url=https://builds.dotnet.microsoft.com/dotnet/Sdk/8.0.410/dotnet-sdk-8.0.410-linux-x64.tar.gz"
+    source = "https://builds.dotnet.microsoft.com/dotnet/Sdk/8.0.410/dotnet-sdk-8.0.410-linux-x64.tar.gz"
+    source-checksum = "sha512:757879ef16bf8dc0677e0222ed2fd87b6126aa5ef6370120fb6ee8dfb42a194a796d105d388320cc623548a2eebbd349b1badf3e53631d9f059edeafea1b83bf"
     stacks = ["io.buildpacks.stacks.bionic", "io.buildpacks.stacks.jammy"]
-    uri = "https://builds.dotnet.microsoft.com/dotnet/Sdk/8.0.409/dotnet-sdk-8.0.409-linux-x64.tar.gz"
-    version = "8.0.409"
+    uri = "https://builds.dotnet.microsoft.com/dotnet/Sdk/8.0.410/dotnet-sdk-8.0.410-linux-x64.tar.gz"
+    version = "8.0.410"
 
   [[metadata.dependencies]]
     checksum = "sha512:dcab6daef3164390d09edc169d4bf8ec3480af1288e9766c07d20d3c7b70517d263083c3900381fda59c3a7f0aef3fd75ee4f604173c889e8222d6449091d843"
