@@ -56,9 +56,12 @@ func ConvertReleaseToDependency(release Release) (cargo.ConfigMetadataDependency
 		stacks = append(stacks, "io.buildpacks.stacks.jammy")
 	}
 
-	depDate, err := time.ParseInLocation("2006-01-02", release.EOLDate, time.UTC)
-	if err != nil {
-		return cargo.ConfigMetadataDependency{}, err
+	var depDate time.Time
+	if release.EOLDate != "" {
+		depDate, err = time.ParseInLocation("2006-01-02", release.EOLDate, time.UTC)
+		if err != nil {
+			return cargo.ConfigMetadataDependency{}, err
+		}
 	}
 
 	productName := ".net"

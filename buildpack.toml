@@ -71,7 +71,7 @@ api = "0.8"
     patches = 1
 
   [[metadata.dependency-constraints]]
-    constraint = "10.0.*"
+    constraint = "~10.0.0-0"
     id = "dotnet-sdk"
     patches = 1
 
