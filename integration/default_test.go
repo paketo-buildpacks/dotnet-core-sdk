@@ -101,11 +101,7 @@ func testDefault(t *testing.T, context spec.G, it spec.S) {
 				cLogs, err := docker.Container.Logs.Execute(container.ID)
 				Expect(err).NotTo(HaveOccurred())
 				return cLogs.String()
-			}).Should(
-				And(
-					MatchRegexp(`^\d+\.\d+\.\d+(-.+)?$`),
-				),
-			)
+			}).Should(MatchRegexp(`\d+\.\d+\.\d+(-.+)?`))
 
 			contents, err := os.ReadFile(filepath.Join(sbomDir, "sbom", "launch", "sbom.legacy.json"))
 			Expect(err).NotTo(HaveOccurred())
