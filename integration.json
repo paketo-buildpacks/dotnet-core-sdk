@@ -3,5 +3,5 @@
     "index.docker.io/paketobuildpacks/builder-jammy-buildpackless-base:latest",
     "index.docker.io/paketobuildpacks/ubuntu-noble-builder-buildpackless:latest"
   ],
-  "build-plan": "index.docker.io/github.com/paketo-community/build-plan:latest"
+  "build-plan": "github.com/paketo-community/build-plan"
 }
