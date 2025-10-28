@@ -56,12 +56,13 @@ func ConvertReleaseToDependency(release Release) (cargo.ConfigMetadataDependency
 		stacks = append(stacks, "io.buildpacks.stacks.jammy")
 	}
 
-	var depDate time.Time
+	var depDate *time.Time
 	if release.EOLDate != "" {
-		depDate, err = time.ParseInLocation("2006-01-02", release.EOLDate, time.UTC)
+		t, err := time.ParseInLocation("2006-01-02", release.EOLDate, time.UTC)
 		if err != nil {
 			return cargo.ConfigMetadataDependency{}, err
 		}
+		depDate = &t
 	}
 
 	productName := ".net"
@@ -74,7 +75,7 @@ func ConvertReleaseToDependency(release Release) (cargo.ConfigMetadataDependency
 		Name:            ".NET Core SDK",
 		Version:         release.SemVer.String(),
 		Stacks:          stacks,
-		DeprecationDate: &depDate,
+		DeprecationDate: depDate,
 		URI:             archive.URL,
 		Checksum:        fmt.Sprintf("sha512:%s", archive.Hash),
 		Source:          archive.URL,
