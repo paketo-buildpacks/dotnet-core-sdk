@@ -48,12 +48,7 @@ func ConvertReleaseToDependency(release Release) (cargo.ConfigMetadataDependency
 	}
 
 	stacks := []string{
-		"io.buildpacks.stacks.bionic",
-	}
-
-	c, _ := semver.NewConstraint("3.1.*")
-	if !(c.Check(release.SemVer)) {
-		stacks = append(stacks, "io.buildpacks.stacks.jammy")
+		"*",
 	}
 
 	depDate, err := time.ParseInLocation("2006-01-02", release.EOLDate, time.UTC)

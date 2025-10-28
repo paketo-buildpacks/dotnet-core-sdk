@@ -132,8 +132,7 @@ func testDependency(t *testing.T, context spec.G, it spec.S) {
 				SourceChecksum:  "sha512:365237c83e7b0b836d933618bb8be9cee018e905b2c01156ef0ae1162cffbdc003ae4082ea9bb85d39f667e875882804c00d90a4280be4486ec81edb2fb64ad6",
 				SourceSHA256:    "",
 				Stacks: []string{
-					"io.buildpacks.stacks.bionic",
-					"io.buildpacks.stacks.jammy",
+					"*",
 				},
 				StripComponents: 0,
 				URI:             server.URL,
