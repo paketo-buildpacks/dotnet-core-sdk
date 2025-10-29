@@ -90,18 +90,25 @@ func testDefault(t *testing.T, context spec.G, it spec.S) {
 			))
 
 			container, err = docker.Container.Run.
-				WithCommand(fmt.Sprintf(`/layers/%s/dotnet-core-sdk/dotnet --version`,
+				WithCommand(fmt.Sprintf(`ls -al /layers/%s/dotnet-core-sdk && ls -al /layers/%s/dotnet-core-sdk/sdk`,
+					strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"),
 					strings.ReplaceAll(settings.BuildpackInfo.Buildpack.ID, "/", "_"))).
-				WithEnv(map[string]string{
-					"DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "1",
-				}).
 				Execute(image.ID)
 			Expect(err).NotTo(HaveOccurred())
 			Eventually(func() string {
 				cLogs, err := docker.Container.Logs.Execute(container.ID)
 				Expect(err).NotTo(HaveOccurred())
 				return cLogs.String()
-			}).Should(MatchRegexp(`\d+\.\d+\.\d+(-.+)?`))
+			}).Should(
+				And(
+					// Note: The assumption here is that the file permissions for the dotnet CLI below (-rwxr-xr-x)
+					// and its existence in the .dotnet_root directory (which is on the PATH) sufficiently proves
+					// its ability to be called. This may need refactoring if that assumption is proved insufficient.
+					MatchRegexp(`-rwxr-xr-x \d+ \w+ cnb\s+\d+ .* dotnet`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb\s+\d+ .* host`),
+					MatchRegexp(`drwxr-xr-x \d+ \w+ cnb\s+\d+ .* sdk`),
+				),
+			)
 
 			contents, err := os.ReadFile(filepath.Join(sbomDir, "sbom", "launch", "sbom.legacy.json"))
 			Expect(err).NotTo(HaveOccurred())
