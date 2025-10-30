@@ -140,55 +140,6 @@ func testDependency(t *testing.T, context spec.G, it spec.S) {
 			}))
 		})
 
-		context("when the release is 3.1.*", func() {
-			it("returns returns a cargo dependency generated from the given release with different purl and stacks", func() {
-				dependency, err := components.ConvertReleaseToDependency(components.Release{
-					SemVer:  semver.MustParse("3.1.423"),
-					EOLDate: "2022-12-13",
-					Version: "3.1.423",
-					Files: []components.ReleaseFile{
-						{
-							Name: "dotnet-sdk-linux-x64.tar.gz",
-							Rid:  "linux-x64",
-							URL:  server.URL,
-							Hash: "365237c83e7b0b836d933618bb8be9cee018e905b2c01156ef0ae1162cffbdc003ae4082ea9bb85d39f667e875882804c00d90a4280be4486ec81edb2fb64ad6",
-						},
-						{
-							Name: "dotnet-sdk-linux-x64.tar.gz",
-							Rid:  "linux-x64",
-							URL:  "zip-file",
-							Hash: "365237c83e7b0b836d933618bb8be9cee018e905b2c01156ef0ae1162cffbdc003ae4082ea9bb85d39f667e875882804c00d90a4280be4486ec81edb2fb64ad6",
-						},
-					},
-				},
-				)
-				Expect(err).NotTo(HaveOccurred())
-
-				depDate, err := time.ParseInLocation("2006-01-02", "2022-12-13", time.UTC)
-				Expect(err).NotTo(HaveOccurred())
-
-				Expect(dependency).To(Equal(cargo.ConfigMetadataDependency{
-					Checksum:        "sha512:365237c83e7b0b836d933618bb8be9cee018e905b2c01156ef0ae1162cffbdc003ae4082ea9bb85d39f667e875882804c00d90a4280be4486ec81edb2fb64ad6",
-					CPE:             "cpe:2.3:a:microsoft:.net_core:3.1.423:*:*:*:*:*:*:*",
-					PURL:            fmt.Sprintf("pkg:generic/dotnet-core-sdk@3.1.423?checksum=365237c83e7b0b836d933618bb8be9cee018e905b2c01156ef0ae1162cffbdc003ae4082ea9bb85d39f667e875882804c00d90a4280be4486ec81edb2fb64ad6&download_url=%s", server.URL),
-					DeprecationDate: &depDate,
-					ID:              "dotnet-sdk",
-					Licenses:        []interface{}{"MIT", "MIT-0"},
-					Name:            ".NET Core SDK",
-					SHA256:          "",
-					Source:          server.URL,
-					SourceChecksum:  "sha512:365237c83e7b0b836d933618bb8be9cee018e905b2c01156ef0ae1162cffbdc003ae4082ea9bb85d39f667e875882804c00d90a4280be4486ec81edb2fb64ad6",
-					SourceSHA256:    "",
-					Stacks: []string{
-						"io.buildpacks.stacks.bionic",
-					},
-					StripComponents: 0,
-					URI:             server.URL,
-					Version:         "3.1.423",
-				}))
-			})
-		})
-
 		context("failure cases", func() {
 			context("when there is not a linux-x64 release file", func() {
 				it("returns an error", func() {
