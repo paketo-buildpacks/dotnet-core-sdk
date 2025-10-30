@@ -47,10 +47,6 @@ func ConvertReleaseToDependency(release Release) (cargo.ConfigMetadataDependency
 		return cargo.ConfigMetadataDependency{}, fmt.Errorf("the given checksum of the artifact does not match with downloaded artifact")
 	}
 
-	stacks := []string{
-		"*",
-	}
-
 	depDate, err := time.ParseInLocation("2006-01-02", release.EOLDate, time.UTC)
 	if err != nil {
 		return cargo.ConfigMetadataDependency{}, err
@@ -65,7 +61,7 @@ func ConvertReleaseToDependency(release Release) (cargo.ConfigMetadataDependency
 		ID:              "dotnet-sdk",
 		Name:            ".NET Core SDK",
 		Version:         release.SemVer.String(),
-		Stacks:          stacks,
+		Stacks:          []string{"*"},
 		DeprecationDate: &depDate,
 		URI:             archive.URL,
 		Checksum:        fmt.Sprintf("sha512:%s", archive.Hash),
