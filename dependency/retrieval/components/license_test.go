@@ -67,7 +67,7 @@ func testLicense(t *testing.T, context spec.G, it spec.S) {
 			licenses, err := components.GenerateLicenseInformation(server.URL)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(licenses).To(Equal([]interface{}{"MIT", "MIT-0"}))
+			Expect(licenses).To(Equal([]interface{}{"JSON", "MIT", "MIT-0", "MIT-feh"}))
 		})
 
 		context("failure cases", func() {

@@ -47,15 +47,6 @@ func ConvertReleaseToDependency(release Release) (cargo.ConfigMetadataDependency
 		return cargo.ConfigMetadataDependency{}, fmt.Errorf("the given checksum of the artifact does not match with downloaded artifact")
 	}
 
-	stacks := []string{
-		"io.buildpacks.stacks.bionic",
-	}
-
-	c, _ := semver.NewConstraint("3.1.*")
-	if !(c.Check(release.SemVer)) {
-		stacks = append(stacks, "io.buildpacks.stacks.jammy")
-	}
-
 	var depDate *time.Time
 	if release.EOLDate != "" {
 		t, err := time.ParseInLocation("2006-01-02", release.EOLDate, time.UTC)
@@ -74,7 +65,7 @@ func ConvertReleaseToDependency(release Release) (cargo.ConfigMetadataDependency
 		ID:              "dotnet-sdk",
 		Name:            ".NET Core SDK",
 		Version:         release.SemVer.String(),
-		Stacks:          stacks,
+		Stacks:          []string{"*"},
 		DeprecationDate: depDate,
 		URI:             archive.URL,
 		Checksum:        fmt.Sprintf("sha512:%s", archive.Hash),
