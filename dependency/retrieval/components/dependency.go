@@ -25,11 +25,6 @@ func ConvertReleaseToDependency(release Release) (cargo.ConfigMetadataDependency
 
 	purl := GeneratePURL("dotnet-core-sdk", release.Version, archive.Hash, archive.URL)
 
-	licenses, err := GenerateLicenseInformation(archive.URL)
-	if err != nil {
-		return cargo.ConfigMetadataDependency{}, err
-	}
-
 	// Validate the artifact
 	response, err := http.Get(archive.URL)
 	if err != nil {
@@ -73,6 +68,6 @@ func ConvertReleaseToDependency(release Release) (cargo.ConfigMetadataDependency
 		SourceChecksum:  fmt.Sprintf("sha512:%s", archive.Hash),
 		CPE:             fmt.Sprintf("cpe:2.3:a:microsoft:%s:%s:*:*:*:*:*:*:*", productName, release.Version),
 		PURL:            purl,
-		Licenses:        licenses,
+		Licenses:        []interface{}{"MIT", "MIT-0"},
 	}, nil
 }

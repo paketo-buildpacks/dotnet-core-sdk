@@ -81,11 +81,6 @@ func testDependency(t *testing.T, context spec.G, it spec.S) {
 					_, err := w.Write(buffer.Bytes())
 					Expect(err).NotTo(HaveOccurred())
 
-				case "/bad-archive":
-					w.WriteHeader(http.StatusOK)
-					_, err := w.Write([]byte("\x66\x4C\x61\x43\x00\x00\x00\x22"))
-					Expect(err).NotTo(HaveOccurred())
-
 				default:
 					t.Fatalf("unknown path: %s", req.URL.Path)
 				}
@@ -125,7 +120,7 @@ func testDependency(t *testing.T, context spec.G, it spec.S) {
 				PURL:            fmt.Sprintf("pkg:generic/dotnet-core-sdk@6.0.401?checksum=365237c83e7b0b836d933618bb8be9cee018e905b2c01156ef0ae1162cffbdc003ae4082ea9bb85d39f667e875882804c00d90a4280be4486ec81edb2fb64ad6&download_url=%s", server.URL),
 				DeprecationDate: &depDate,
 				ID:              "dotnet-sdk",
-				Licenses:        []interface{}{"JSON", "MIT", "MIT-0", "MIT-feh"},
+				Licenses:        []interface{}{"MIT", "MIT-0"},
 				Name:            ".NET Core SDK",
 				SHA256:          "",
 				Source:          server.URL,
@@ -145,26 +140,6 @@ func testDependency(t *testing.T, context spec.G, it spec.S) {
 				it("returns an error", func() {
 					_, err := components.ConvertReleaseToDependency(components.Release{})
 					Expect(err).To(MatchError("could not find release file for linux/x64"))
-				})
-			})
-
-			context("when the artifact is not a supported archive type", func() {
-				it("returns an error", func() {
-					_, err := components.ConvertReleaseToDependency(components.Release{
-						SemVer:  semver.MustParse("3.1.423"),
-						EOLDate: "2022-12-13",
-						Version: "3.1.423",
-						Files: []components.ReleaseFile{
-							{
-								Name: "dotnet-sdk-linux-x64.tar.gz",
-								Rid:  "linux-x64",
-								URL:  fmt.Sprintf("%s/bad-archive", server.URL),
-								Hash: "365237c83e7b0b836d933618bb8be9cee018e905b2c01156ef0ae1162cffbdc003ae4082ea9bb85d39f667e875882804c00d90a4280be4486ec81edb2fb64ad6",
-							},
-						},
-					},
-					)
-					Expect(err).To(MatchError(ContainSubstring("unsupported archive type")))
 				})
 			})
 

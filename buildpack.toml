@@ -23,7 +23,7 @@ api = "0.8"
     cpe = "cpe:2.3:a:microsoft:.net:8.0.415:*:*:*:*:*:*:*"
     deprecation_date = "2026-11-10T00:00:00Z"
     id = "dotnet-sdk"
-    licenses = ["JSON", "MIT", "MIT-0", "MIT-advertising", "MIT-feh", "X11-distribute-modifications-variant"]
+    licenses = ["MIT", "MIT-0"]
     name = ".NET Core SDK"
     purl = "pkg:generic/dotnet-core-sdk@8.0.415?checksum=0fc0499a857f161f7c35775bb3f50ac6f0333f02f5df21d21147d538eb26a9a87282d4ba3707181c46f3c09d22cdc984e77820a5953a773525d6f7b332deb7f2&download_url=https://builds.dotnet.microsoft.com/dotnet/Sdk/8.0.415/dotnet-sdk-8.0.415-linux-x64.tar.gz"
     source = "https://builds.dotnet.microsoft.com/dotnet/Sdk/8.0.415/dotnet-sdk-8.0.415-linux-x64.tar.gz"
@@ -37,7 +37,7 @@ api = "0.8"
     cpe = "cpe:2.3:a:microsoft:.net:9.0.306:*:*:*:*:*:*:*"
     deprecation_date = "2026-11-10T00:00:00Z"
     id = "dotnet-sdk"
-    licenses = ["JSON", "MIT", "MIT-0", "MIT-advertising", "MIT-feh", "X11-distribute-modifications-variant"]
+    licenses = ["MIT", "MIT-0"]
     name = ".NET Core SDK"
     purl = "pkg:generic/dotnet-core-sdk@9.0.306?checksum=bbb6bdc3c8048e7cc189759b406257839e7d4bd6b8b1ba4bcdaeea8f92340e6855231043dd73f902130ca5357af72b810bb51a4da4d1315a2927ff85f831f1d5&download_url=https://builds.dotnet.microsoft.com/dotnet/Sdk/9.0.306/dotnet-sdk-9.0.306-linux-x64.tar.gz"
     source = "https://builds.dotnet.microsoft.com/dotnet/Sdk/9.0.306/dotnet-sdk-9.0.306-linux-x64.tar.gz"
@@ -51,7 +51,7 @@ api = "0.8"
     cpe = "cpe:2.3:a:microsoft:.net:10.0.100-rc.2.25502.107:*:*:*:*:*:*:*"
     deprecation_date = "2025-11-11T00:00:00Z"
     id = "dotnet-sdk"
-    licenses = ["JSON", "MIT", "MIT-0", "MIT-advertising", "MIT-feh", "X11-distribute-modifications-variant"]
+    licenses = ["MIT", "MIT-0"]
     name = ".NET Core SDK"
     purl = "pkg:generic/dotnet-core-sdk@10.0.100-rc.2.25502.107?checksum=1200ff33d7c2a834499590e05f46c065d0f7dc1f7520f35403b5d4fc1fb00bddfb7c4aae230280e8dc6890fe5fc5ca738dea4789056614ed02a84d1e86d068e9&download_url=https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.100-rc.2.25502.107/dotnet-sdk-10.0.100-rc.2.25502.107-linux-x64.tar.gz"
     source = "https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.100-rc.2.25502.107/dotnet-sdk-10.0.100-rc.2.25502.107-linux-x64.tar.gz"
