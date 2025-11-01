@@ -46,6 +46,20 @@ api = "0.8"
     uri = "https://builds.dotnet.microsoft.com/dotnet/Sdk/9.0.306/dotnet-sdk-9.0.306-linux-x64.tar.gz"
     version = "9.0.306"
 
+  [[metadata.dependencies]]
+    checksum = "sha512:1200ff33d7c2a834499590e05f46c065d0f7dc1f7520f35403b5d4fc1fb00bddfb7c4aae230280e8dc6890fe5fc5ca738dea4789056614ed02a84d1e86d068e9"
+    cpe = "cpe:2.3:a:microsoft:.net:10.0.100-rc.2.25502.107:*:*:*:*:*:*:*"
+    deprecation_date = "2025-11-11T00:00:00Z"
+    id = "dotnet-sdk"
+    licenses = ["JSON", "MIT", "MIT-0", "MIT-advertising", "MIT-feh", "X11-distribute-modifications-variant"]
+    name = ".NET Core SDK"
+    purl = "pkg:generic/dotnet-core-sdk@10.0.100-rc.2.25502.107?checksum=1200ff33d7c2a834499590e05f46c065d0f7dc1f7520f35403b5d4fc1fb00bddfb7c4aae230280e8dc6890fe5fc5ca738dea4789056614ed02a84d1e86d068e9&download_url=https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.100-rc.2.25502.107/dotnet-sdk-10.0.100-rc.2.25502.107-linux-x64.tar.gz"
+    source = "https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.100-rc.2.25502.107/dotnet-sdk-10.0.100-rc.2.25502.107-linux-x64.tar.gz"
+    source-checksum = "sha512:1200ff33d7c2a834499590e05f46c065d0f7dc1f7520f35403b5d4fc1fb00bddfb7c4aae230280e8dc6890fe5fc5ca738dea4789056614ed02a84d1e86d068e9"
+    stacks = ["io.buildpacks.stacks.bionic", "io.buildpacks.stacks.jammy"]
+    uri = "https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.100-rc.2.25502.107/dotnet-sdk-10.0.100-rc.2.25502.107-linux-x64.tar.gz"
+    version = "10.0.100-rc.2.25502.107"
+
   [[metadata.dependency-constraints]]
     constraint = "8.0.*"
     id = "dotnet-sdk"
@@ -53,6 +67,11 @@ api = "0.8"
 
   [[metadata.dependency-constraints]]
     constraint = "9.0.*"
+    id = "dotnet-sdk"
+    patches = 1
+
+  [[metadata.dependency-constraints]]
+    constraint = "~10.0.0-0"
     id = "dotnet-sdk"
     patches = 1
 
