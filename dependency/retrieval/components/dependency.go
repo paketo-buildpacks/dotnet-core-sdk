@@ -25,11 +25,6 @@ func ConvertReleaseToDependency(release Release) (cargo.ConfigMetadataDependency
 
 	purl := GeneratePURL("dotnet-core-sdk", release.Version, archive.Hash, archive.URL)
 
-	licenses, err := GenerateLicenseInformation(archive.URL)
-	if err != nil {
-		return cargo.ConfigMetadataDependency{}, err
-	}
-
 	// Validate the artifact
 	response, err := http.Get(archive.URL)
 	if err != nil {
@@ -45,15 +40,6 @@ func ConvertReleaseToDependency(release Release) (cargo.ConfigMetadataDependency
 
 	if !valid {
 		return cargo.ConfigMetadataDependency{}, fmt.Errorf("the given checksum of the artifact does not match with downloaded artifact")
-	}
-
-	stacks := []string{
-		"io.buildpacks.stacks.bionic",
-	}
-
-	c, _ := semver.NewConstraint("3.1.*")
-	if !(c.Check(release.SemVer)) {
-		stacks = append(stacks, "io.buildpacks.stacks.jammy")
 	}
 
 	var depDate *time.Time
@@ -74,7 +60,7 @@ func ConvertReleaseToDependency(release Release) (cargo.ConfigMetadataDependency
 		ID:              "dotnet-sdk",
 		Name:            ".NET Core SDK",
 		Version:         release.SemVer.String(),
-		Stacks:          stacks,
+		Stacks:          []string{"*"},
 		DeprecationDate: depDate,
 		URI:             archive.URL,
 		Checksum:        fmt.Sprintf("sha512:%s", archive.Hash),
@@ -82,6 +68,6 @@ func ConvertReleaseToDependency(release Release) (cargo.ConfigMetadataDependency
 		SourceChecksum:  fmt.Sprintf("sha512:%s", archive.Hash),
 		CPE:             fmt.Sprintf("cpe:2.3:a:microsoft:%s:%s:*:*:*:*:*:*:*", productName, release.Version),
 		PURL:            purl,
-		Licenses:        licenses,
+		Licenses:        []interface{}{"MIT", "MIT-0"},
 	}, nil
 }
