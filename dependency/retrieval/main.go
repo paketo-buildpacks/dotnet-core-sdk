@@ -7,5 +7,5 @@ import (
 
 func main() {
 	fetcher := components.NewFetcher()
-	retrieve.NewMetadataWithPlatforms("icu", fetcher.GetVersions, components.GenerateMetadata)
+	retrieve.NewMetadataWithPlatforms("dotnet-sdk", fetcher.GetVersions, components.GenerateMetadata)
 }
