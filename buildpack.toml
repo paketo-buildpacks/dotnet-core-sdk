@@ -71,7 +71,7 @@ api = "0.8"
     patches = 1
 
   [[metadata.dependency-constraints]]
-    constraint = "~10.0.0-0"
+    constraint = "10.0.*"
     id = "dotnet-sdk"
     patches = 1
 
@@ -80,4 +80,8 @@ api = "0.8"
 
 [[targets]]
   arch = "amd64"
+  os = "linux"
+
+[[targets]]
+  arch = "arm64"
   os = "linux"

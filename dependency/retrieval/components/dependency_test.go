@@ -12,6 +12,8 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/paketo-buildpacks/dotnet-core-sdk/dependency/retrieval/components"
+	"github.com/paketo-buildpacks/libdependency/retrieve"
+	"github.com/paketo-buildpacks/libdependency/versionology"
 	"github.com/paketo-buildpacks/packit/v2/cargo"
 	"github.com/sclevine/spec"
 
@@ -51,7 +53,7 @@ func testDependency(t *testing.T, context spec.G, it spec.S) {
 		Expect = NewWithT(t).Expect
 	)
 
-	context("ConvertReleaseToDependency", func() {
+	context("GenerateMetadata", func() {
 		var (
 			server *httptest.Server
 		)
@@ -89,10 +91,10 @@ func testDependency(t *testing.T, context spec.G, it spec.S) {
 		})
 
 		it("returns returns a cargo dependency generated from the given release", func() {
-			dependency, err := components.ConvertReleaseToDependency(components.Release{
-				SemVer:  semver.MustParse("6.0.401"),
-				EOLDate: "2024-11-12",
-				Version: "6.0.401",
+			dependencies, err := components.GenerateMetadata(components.SdkRelease{
+				SemVer:         semver.MustParse("6.0.401"),
+				EOLDate:        "2024-11-12",
+				ReleaseVersion: "6.0.401",
 				Files: []components.ReleaseFile{
 					{
 						Name: "dotnet-sdk-linux-x64.zip",
@@ -107,68 +109,76 @@ func testDependency(t *testing.T, context spec.G, it spec.S) {
 						Hash: "365237c83e7b0b836d933618bb8be9cee018e905b2c01156ef0ae1162cffbdc003ae4082ea9bb85d39f667e875882804c00d90a4280be4486ec81edb2fb64ad6",
 					},
 				},
-			},
-			)
+			}, retrieve.Platform{OS: "linux", Arch: "amd64"})
 			Expect(err).NotTo(HaveOccurred())
+
+			Expect(dependencies).To(HaveLen(1))
+			dependency := dependencies[0]
 
 			depDate, err := time.ParseInLocation("2006-01-02", "2024-11-12", time.UTC)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(dependency).To(Equal(cargo.ConfigMetadataDependency{
-				Checksum:        "sha512:365237c83e7b0b836d933618bb8be9cee018e905b2c01156ef0ae1162cffbdc003ae4082ea9bb85d39f667e875882804c00d90a4280be4486ec81edb2fb64ad6",
-				CPE:             "cpe:2.3:a:microsoft:.net:6.0.401:*:*:*:*:*:*:*",
-				PURL:            fmt.Sprintf("pkg:generic/dotnet-core-sdk@6.0.401?checksum=365237c83e7b0b836d933618bb8be9cee018e905b2c01156ef0ae1162cffbdc003ae4082ea9bb85d39f667e875882804c00d90a4280be4486ec81edb2fb64ad6&download_url=%s", server.URL),
-				DeprecationDate: &depDate,
-				ID:              "dotnet-sdk",
-				Licenses:        []interface{}{"MIT", "MIT-0"},
-				Name:            ".NET Core SDK",
-				SHA256:          "",
-				Source:          server.URL,
-				SourceChecksum:  "sha512:365237c83e7b0b836d933618bb8be9cee018e905b2c01156ef0ae1162cffbdc003ae4082ea9bb85d39f667e875882804c00d90a4280be4486ec81edb2fb64ad6",
-				SourceSHA256:    "",
-				Stacks: []string{
-					"*",
-				},
-				StripComponents: 0,
-				URI:             server.URL,
-				Version:         "6.0.401",
-			}))
+			Expect(dependency).To(BeEquivalentTo(
+				versionology.Dependency{
+					ConfigMetadataDependency: cargo.ConfigMetadataDependency{
+						Checksum:        "sha512:365237c83e7b0b836d933618bb8be9cee018e905b2c01156ef0ae1162cffbdc003ae4082ea9bb85d39f667e875882804c00d90a4280be4486ec81edb2fb64ad6",
+						CPE:             "cpe:2.3:a:microsoft:.net:6.0.401:*:*:*:*:*:*:*",
+						PURL:            fmt.Sprintf("pkg:generic/dotnet-core-sdk@6.0.401?checksum=365237c83e7b0b836d933618bb8be9cee018e905b2c01156ef0ae1162cffbdc003ae4082ea9bb85d39f667e875882804c00d90a4280be4486ec81edb2fb64ad6&download_url=%s", server.URL),
+						DeprecationDate: &depDate,
+						ID:              "dotnet-sdk",
+						Licenses:        []interface{}{"MIT", "MIT-0"},
+						Name:            ".NET Core SDK",
+						SHA256:          "",
+						Source:          server.URL,
+						SourceChecksum:  "sha512:365237c83e7b0b836d933618bb8be9cee018e905b2c01156ef0ae1162cffbdc003ae4082ea9bb85d39f667e875882804c00d90a4280be4486ec81edb2fb64ad6",
+						SourceSHA256:    "",
+						Stacks: []string{
+							"*",
+						},
+						StripComponents: 0,
+						URI:             server.URL,
+						Version:         "6.0.401",
+						OS:              "linux",
+						Arch:            "amd64",
+					},
+					SemverVersion: semver.MustParse("6.0.401"),
+					Target:        "*",
+				}))
 		})
 
 		context("failure cases", func() {
 			context("when there is not a linux-x64 release file", func() {
 				it("returns an error", func() {
-					_, err := components.ConvertReleaseToDependency(components.Release{})
+					_, err := components.GenerateMetadata(components.SdkRelease{}, retrieve.Platform{OS: "linux", Arch: "amd64"})
 					Expect(err).To(MatchError("could not find release file for linux/x64"))
 				})
 			})
 
 			context("when the checksum does not match", func() {
 				it("returns an error", func() {
-					_, err := components.ConvertReleaseToDependency(components.Release{
-						SemVer:  semver.MustParse("3.1.423"),
-						EOLDate: "2022-12-13",
-						Version: "3.1.423",
+					_, err := components.GenerateMetadata(components.SdkRelease{
+						SemVer:         semver.MustParse("3.1.423"),
+						EOLDate:        "2022-12-13",
+						ReleaseVersion: "3.1.423",
 						Files: []components.ReleaseFile{
 							{
 								Name: "dotnet-sdk-linux-x64.tar.gz",
 								Rid:  "linux-x64",
 								URL:  server.URL,
-								Hash: "invlaid hash",
+								Hash: "invalid hash",
 							},
 						},
-					},
-					)
+					}, retrieve.Platform{OS: "linux", Arch: "amd64"})
 					Expect(err).To(MatchError("the given checksum of the artifact does not match with downloaded artifact"))
 				})
 			})
 
 			context("when the eol date is unparseable", func() {
 				it("returns an error", func() {
-					_, err := components.ConvertReleaseToDependency(components.Release{
-						SemVer:  semver.MustParse("3.1.423"),
-						EOLDate: "not a date",
-						Version: "3.1.423",
+					_, err := components.GenerateMetadata(components.SdkRelease{
+						SemVer:         semver.MustParse("3.1.423"),
+						EOLDate:        "not a date",
+						ReleaseVersion: "3.1.423",
 						Files: []components.ReleaseFile{
 							{
 								Name: "dotnet-sdk-linux-x64.tar.gz",
@@ -177,8 +187,7 @@ func testDependency(t *testing.T, context spec.G, it spec.S) {
 								Hash: "365237c83e7b0b836d933618bb8be9cee018e905b2c01156ef0ae1162cffbdc003ae4082ea9bb85d39f667e875882804c00d90a4280be4486ec81edb2fb64ad6",
 							},
 						},
-					},
-					)
+					}, retrieve.Platform{OS: "linux", Arch: "amd64"})
 					Expect(err).To(MatchError(ContainSubstring("cannot parse")))
 				})
 			})

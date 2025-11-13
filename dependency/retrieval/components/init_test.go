@@ -10,9 +10,6 @@ import (
 func TestUnit(t *testing.T) {
 	suite := spec.New("dotnet-core-sdk-retrieval", spec.Report(report.Terminal{}), spec.Parallel())
 	suite("Dependency", testDependency)
-	suite("Output", testOutput)
-	suite("Purl", testPurl)
 	suite("Releases", testReleases)
-	suite("Versions", testVersions)
 	suite.Run(t)
 }

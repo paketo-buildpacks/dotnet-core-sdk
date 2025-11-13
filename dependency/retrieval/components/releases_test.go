@@ -8,6 +8,7 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/paketo-buildpacks/dotnet-core-sdk/dependency/retrieval/components"
+	"github.com/paketo-buildpacks/libdependency/versionology"
 	"github.com/sclevine/spec"
 
 	. "github.com/onsi/gomega"
@@ -19,7 +20,7 @@ func testReleases(t *testing.T, context spec.G, it spec.S) {
 		Expect = NewWithT(t).Expect
 	)
 
-	context("Fetcher", func() {
+	context("GetReleases", func() {
 		var (
 			fetcher components.Fetcher
 
@@ -187,14 +188,14 @@ func testReleases(t *testing.T, context spec.G, it spec.S) {
 		})
 
 		it("fetches a list of relevant releases", func() {
-			releases, err := fetcher.Get()
+			releases, err := fetcher.GetVersions()
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(releases).To(Equal([]components.Release{
-				{
-					SemVer:  semver.MustParse("6.0.401"),
-					EOLDate: "2024-11-12",
-					Version: "6.0.401",
+			Expect(releases).To(BeEquivalentTo([]versionology.VersionFetcher{
+				components.SdkRelease{
+					SemVer:         semver.MustParse("6.0.401"),
+					EOLDate:        "2024-11-12",
+					ReleaseVersion: "6.0.401",
 					Files: []components.ReleaseFile{
 						{
 							Name: "dotnet-sdk-linux-arm.tar.gz",
@@ -204,10 +205,10 @@ func testReleases(t *testing.T, context spec.G, it spec.S) {
 						},
 					},
 				},
-				{
-					SemVer:  semver.MustParse("6.0.400"),
-					EOLDate: "2024-11-12",
-					Version: "6.0.400",
+				components.SdkRelease{
+					SemVer:         semver.MustParse("6.0.400"),
+					EOLDate:        "2024-11-12",
+					ReleaseVersion: "6.0.400",
 					Files: []components.ReleaseFile{
 						{
 							Name: "dotnet-sdk-linux-arm.tar.gz",
@@ -217,10 +218,10 @@ func testReleases(t *testing.T, context spec.G, it spec.S) {
 						},
 					},
 				},
-				{
-					SemVer:  semver.MustParse("3.1.423"),
-					EOLDate: "2022-12-13",
-					Version: "3.1.423",
+				components.SdkRelease{
+					SemVer:         semver.MustParse("3.1.423"),
+					EOLDate:        "2022-12-13",
+					ReleaseVersion: "3.1.423",
 					Files: []components.ReleaseFile{
 						{
 							Name: "dotnet-sdk-linux-arm.tar.gz",
@@ -240,7 +241,7 @@ func testReleases(t *testing.T, context spec.G, it spec.S) {
 				})
 
 				it("returns an error", func() {
-					_, err := fetcher.Get()
+					_, err := fetcher.GetVersions()
 					Expect(err).To(MatchError(ContainSubstring("unsupported protocol scheme")))
 				})
 			})
@@ -251,7 +252,7 @@ func testReleases(t *testing.T, context spec.G, it spec.S) {
 				})
 
 				it("returns an error", func() {
-					_, err := fetcher.Get()
+					_, err := fetcher.GetVersions()
 					Expect(err).To(MatchError(fmt.Sprintf("received a non 200 status code from %s: status code 418 received", fmt.Sprintf("%s/index-non-200", releaseIndex.URL))))
 				})
 			})
@@ -262,7 +263,7 @@ func testReleases(t *testing.T, context spec.G, it spec.S) {
 				})
 
 				it("returns an error", func() {
-					_, err := fetcher.Get()
+					_, err := fetcher.GetVersions()
 					Expect(err).To(MatchError(ContainSubstring("invalid character '?' looking for beginning of value")))
 				})
 			})
@@ -273,7 +274,7 @@ func testReleases(t *testing.T, context spec.G, it spec.S) {
 				})
 
 				it("returns an error", func() {
-					_, err := fetcher.Get()
+					_, err := fetcher.GetVersions()
 					Expect(err).To(MatchError(ContainSubstring("unsupported protocol scheme")))
 				})
 			})
@@ -284,7 +285,7 @@ func testReleases(t *testing.T, context spec.G, it spec.S) {
 				})
 
 				it("returns an error", func() {
-					_, err := fetcher.Get()
+					_, err := fetcher.GetVersions()
 					Expect(err).To(MatchError(fmt.Sprintf("received a non 200 status code from %s: status code 418 received", fmt.Sprintf("%s/non-200", releasePage.URL))))
 				})
 			})
@@ -295,7 +296,7 @@ func testReleases(t *testing.T, context spec.G, it spec.S) {
 				})
 
 				it("returns an error", func() {
-					_, err := fetcher.Get()
+					_, err := fetcher.GetVersions()
 					Expect(err).To(MatchError(ContainSubstring("invalid character '?' looking for beginning of value")))
 				})
 			})
@@ -306,7 +307,7 @@ func testReleases(t *testing.T, context spec.G, it spec.S) {
 				})
 
 				it("returns an error", func() {
-					_, err := fetcher.Get()
+					_, err := fetcher.GetVersions()
 					Expect(err).To(MatchError(ContainSubstring("invalid semantic version")))
 				})
 			})
