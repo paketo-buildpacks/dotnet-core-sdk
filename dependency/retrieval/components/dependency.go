@@ -30,7 +30,7 @@ func GenerateMetadata(version versionology.VersionFetcher, platform retrieve.Pla
 	}
 
 	if (archive == ReleaseFile{}) {
-		return nil, fmt.Errorf("could not find release file for %s/%s", platform.OS, arch)
+		return nil, fmt.Errorf("could not find release file for %s", rid)
 	}
 
 	// Validate the artifact
