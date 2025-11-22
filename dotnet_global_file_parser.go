@@ -154,7 +154,9 @@ func FindGlobalJson(dir string) (*GlobalJson, error) {
 		return &globalJson, nil
 	}
 
-	if dir == "/" {
+	parentDir := filepath.Dir(dir)
+
+	if dir == parentDir {
 		return nil, nil
 	}
 

@@ -18,6 +18,27 @@ func Detect() packit.DetectFunc {
 			},
 		}
 
+		globalJson, err := FindGlobalJson(context.WorkingDir)
+		if err != nil {
+			return packit.DetectResult{}, err
+		}
+		if globalJson != nil {
+			constraints, err := GetConstraintsFromGlobalJson(*globalJson)
+			if err != nil {
+				return packit.DetectResult{}, err
+			}
+
+			for _, constraint := range constraints {
+				plan.Requires = append(plan.Requires, packit.BuildPlanRequirement{
+					Name: "dotnet-sdk",
+					Metadata: map[string]interface{}{
+						"version":        constraint.Constraint,
+						"version-source": constraint.Name,
+					},
+				})
+			}
+		}
+
 		if frameworkVersion, ok := os.LookupEnv("BP_DOTNET_FRAMEWORK_VERSION"); ok {
 			frameworkSemver, err := semver.NewVersion(frameworkVersion)
 			if err != nil {

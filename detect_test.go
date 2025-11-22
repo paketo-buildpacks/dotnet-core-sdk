@@ -2,6 +2,7 @@ package dotnetcoresdk_test
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	dotnetcoresdk "github.com/paketo-buildpacks/dotnet-core-sdk"
@@ -57,6 +58,45 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 						Metadata: map[string]interface{}{
 							"version":        "1.2.*",
 							"version-source": "BP_DOTNET_FRAMEWORK_VERSION",
+						},
+					},
+				},
+			}))
+		})
+	})
+
+	context("when a global.json file is provided", func() {
+		it("requires the version(s) specified in the global.json file", func() {
+			tempDir := t.TempDir()
+			err := os.WriteFile(filepath.Join(tempDir, "global.json"), []byte(`{
+				"sdk": {
+					"version": "7.0.203",
+					"rollForward": "patch"
+				}
+			}`), 0644)
+			Expect(err).NotTo(HaveOccurred())
+
+			result, err := detect(packit.DetectContext{
+				WorkingDir: tempDir,
+			})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(result.Plan).To(Equal(packit.BuildPlan{
+				Provides: []packit.BuildPlanProvision{
+					{Name: "dotnet-sdk"},
+				},
+				Requires: []packit.BuildPlanRequirement{
+					{
+						Name: "dotnet-sdk",
+						Metadata: map[string]interface{}{
+							"version":        "7.0.203",
+							"version-source": "global.json exact",
+						},
+					},
+					{
+						Name: "dotnet-sdk",
+						Metadata: map[string]interface{}{
+							"version":        ">= 7.0.203, < 7.0.300",
+							"version-source": "global.json patch",
 						},
 					},
 				},
