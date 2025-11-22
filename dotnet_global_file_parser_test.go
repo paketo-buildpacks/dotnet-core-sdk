@@ -109,107 +109,46 @@ func testGlobalFileParser(t *testing.T, context spec.G, it spec.S) {
 
 	context("GetConstraintsFromGlobalJson", func() {
 		it("generates exact version constraint", func() {
-			globalJson := dotnetcoresdk.GlobalJson{
-				Sdk: &dotnetcoresdk.Sdk{
-					Version:     ptr("5.0.201"),
-					RollForward: ptr("disabled"),
-				},
-			}
-
-			constraints, err := dotnetcoresdk.GetConstraintsFromGlobalJson(globalJson)
+			constraints, err := dotnetcoresdk.GetConstraintsFromGlobalJson("5.0.201", "disabled")
 			Expect(err).NotTo(HaveOccurred())
-			Expect(constraints).To(Equal([]dotnetcoresdk.ConstraintResult{
-				{
-					Constraint: "5.0.201",
-					Name:       "global.json exact",
-				},
+			Expect(constraints).To(Equal([]string{
+				"5.0.201",
 			}))
 		})
 
 		it("generates constraints for next version rollForward", func() {
-			globalJson := dotnetcoresdk.GlobalJson{
-				Sdk: &dotnetcoresdk.Sdk{
-					Version:     ptr("6.0.205"),
-					RollForward: ptr("major"),
-				},
-			}
-
-			constraints, err := dotnetcoresdk.GetConstraintsFromGlobalJson(globalJson)
+			constraints, err := dotnetcoresdk.GetConstraintsFromGlobalJson("6.0.205", "major")
 			Expect(err).NotTo(HaveOccurred())
-			Expect(constraints).To(Equal([]dotnetcoresdk.ConstraintResult{
-				{
-					Constraint: ">= 6.0.205, < 6.0.300",
-					Name:       "global.json patch",
-				},
-				{
-					Constraint: ">= 6.0.300, < 6.0.400",
-					Name:       "global.json feature",
-				},
-				{
-					Constraint: ">= 6.1.100, < 6.1.200",
-					Name:       "global.json minor",
-				},
-				{
-					Constraint: ">= 7.0.100, < 7.0.200",
-					Name:       "global.json major",
-				},
+			Expect(constraints).To(Equal([]string{
+				">= 6.0.205, < 6.0.300",
+				">= 6.0.300, < 6.0.400",
+				">= 6.1.100, < 6.1.200",
+				">= 7.0.100, < 7.0.200",
 			}))
 		})
 
 		it("generates constraints for latest feature rollForward", func() {
-			globalJson := dotnetcoresdk.GlobalJson{
-				Sdk: &dotnetcoresdk.Sdk{
-					Version:     ptr("7.0.150"),
-					RollForward: ptr("latestFeature"),
-				},
-			}
-
-			constraints, err := dotnetcoresdk.GetConstraintsFromGlobalJson(globalJson)
+			constraints, err := dotnetcoresdk.GetConstraintsFromGlobalJson("7.0.150", "latestFeature")
 			Expect(err).NotTo(HaveOccurred())
-			Expect(constraints).To(Equal([]dotnetcoresdk.ConstraintResult{
-				{
-					Constraint: ">= 7.0.150, 7.0.*",
-					Name:       "global.json feature",
-				},
+			Expect(constraints).To(Equal([]string{
+				">= 7.0.150, 7.0.*",
 			}))
 		})
 
 		it("generates constraints for latest minor rollForward", func() {
-			globalJson := dotnetcoresdk.GlobalJson{
-				Sdk: &dotnetcoresdk.Sdk{
-					Version:     ptr("8.1.300"),
-					RollForward: ptr("latestMinor"),
-				},
-			}
-			constraints, err := dotnetcoresdk.GetConstraintsFromGlobalJson(globalJson)
+			constraints, err := dotnetcoresdk.GetConstraintsFromGlobalJson("8.1.300", "latestMinor")
 			Expect(err).NotTo(HaveOccurred())
-			Expect(constraints).To(Equal([]dotnetcoresdk.ConstraintResult{
-				{
-					Constraint: ">= 8.1.300, 8.*.*",
-					Name:       "global.json minor",
-				},
+			Expect(constraints).To(Equal([]string{
+				">= 8.1.300, 8.*.*",
 			}))
 		})
 
 		it("generates constraints for latest major rollForward", func() {
-			globalJson := dotnetcoresdk.GlobalJson{
-				Sdk: &dotnetcoresdk.Sdk{
-					Version:     ptr("9.2.400"),
-					RollForward: ptr("latestMajor"),
-				},
-			}
-			constraints, err := dotnetcoresdk.GetConstraintsFromGlobalJson(globalJson)
+			constraints, err := dotnetcoresdk.GetConstraintsFromGlobalJson("9.2.400", "latestMajor")
 			Expect(err).NotTo(HaveOccurred())
-			Expect(constraints).To(Equal([]dotnetcoresdk.ConstraintResult{
-				{
-					Constraint: ">= 9.2.400",
-					Name:       "global.json major",
-				},
+			Expect(constraints).To(Equal([]string{
+				">= 9.2.400",
 			}))
 		})
 	})
-}
-
-func ptr[T any](v T) *T {
-	return &v
 }

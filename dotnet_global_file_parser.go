@@ -22,50 +22,22 @@ type Sdk struct {
 	RollForward     *string `json:"rollForward,omitempty"`
 }
 
-type ConstraintResult struct {
-	Constraint string
-	Name       string
-}
+func GetConstraintsFromGlobalJson(versionStr string, rollForward string) ([]string, error) {
+	results := []string{}
 
-func GetConstraintsFromGlobalJson(global GlobalJson) ([]ConstraintResult, error) {
-	results := []ConstraintResult{}
-
-	sdk := global.Sdk
-	if sdk == nil {
-		return results, nil
-	}
-
-	if sdk.Version == nil {
-		return results, nil
-	}
-	version, err := semver.NewVersion(*sdk.Version)
-	if err != nil {
-		return nil, err
-	}
-
-	rollForward := "patch"
-	if sdk.RollForward != nil {
-		rollForward = *sdk.RollForward
-	}
-
+	version := semver.MustParse(versionStr)
 	featureLevel := version.Patch() / 100
 
 	// Refer to the documentation on rollForward behaviour
 	// https://learn.microsoft.com/en-us/dotnet/core/tools/global-json#rollforward
 	if slices.Contains([]string{"patch", "disabled"}, rollForward) {
-		results = append(results, ConstraintResult{
-			Constraint: version.String(),
-			Name:       "global.json exact",
-		})
+		results = append(results, version.String())
 	}
 	if slices.Contains([]string{"patch", "feature", "minor", "major", "latestPatch"}, rollForward) {
 		maxPatch := getPatchForFeatureLevel(featureLevel + 1)
 		maxVersion := fmt.Sprintf("%d.%d.%d", version.Major(), version.Minor(), maxPatch)
 
-		results = append(results, ConstraintResult{
-			Constraint: fmt.Sprintf(">= %s, < %s", version.String(), maxVersion),
-			Name:       "global.json patch",
-		})
+		results = append(results, fmt.Sprintf(">= %s, < %s", version.String(), maxVersion))
 	}
 	if slices.Contains([]string{"feature", "minor", "major"}, rollForward) {
 		nextFeaturePatch := getPatchForFeatureLevel(featureLevel + 1)
@@ -74,10 +46,7 @@ func GetConstraintsFromGlobalJson(global GlobalJson) ([]ConstraintResult, error)
 		minVersion := fmt.Sprintf("%d.%d.%d", version.Major(), version.Minor(), nextFeaturePatch)
 		maxVersion := fmt.Sprintf("%d.%d.%d", version.Major(), version.Minor(), maxFeaturePatch)
 
-		results = append(results, ConstraintResult{
-			Constraint: fmt.Sprintf(">= %s, < %s", minVersion, maxVersion),
-			Name:       "global.json feature",
-		})
+		results = append(results, fmt.Sprintf(">= %s, < %s", minVersion, maxVersion))
 	}
 	if slices.Contains([]string{"minor", "major"}, rollForward) {
 		nextMinor := version.Minor() + 1
@@ -87,10 +56,7 @@ func GetConstraintsFromGlobalJson(global GlobalJson) ([]ConstraintResult, error)
 		minVersion := fmt.Sprintf("%d.%d.%d", version.Major(), nextMinor, minFeaturePatch)
 		maxVersion := fmt.Sprintf("%d.%d.%d", version.Major(), nextMinor, maxFeaturePatch)
 
-		results = append(results, ConstraintResult{
-			Constraint: fmt.Sprintf(">= %s, < %s", minVersion, maxVersion),
-			Name:       "global.json minor",
-		})
+		results = append(results, fmt.Sprintf(">= %s, < %s", minVersion, maxVersion))
 	}
 	if rollForward == "major" {
 		nextMajor := version.Major() + 1
@@ -100,32 +66,20 @@ func GetConstraintsFromGlobalJson(global GlobalJson) ([]ConstraintResult, error)
 		minVersion := fmt.Sprintf("%d.0.%d", nextMajor, minFeaturePatch)
 		maxVersion := fmt.Sprintf("%d.0.%d", nextMajor, maxFeaturePatch)
 
-		results = append(results, ConstraintResult{
-			Constraint: fmt.Sprintf(">= %s, < %s", minVersion, maxVersion),
-			Name:       "global.json major",
-		})
+		results = append(results, fmt.Sprintf(">= %s, < %s", minVersion, maxVersion))
 	}
 	if rollForward == "latestFeature" {
 		maxVersion := fmt.Sprintf("%d.%d.*", version.Major(), version.Minor())
 
-		results = append(results, ConstraintResult{
-			Constraint: fmt.Sprintf(">= %s, %s", version.String(), maxVersion),
-			Name:       "global.json feature",
-		})
+		results = append(results, fmt.Sprintf(">= %s, %s", version.String(), maxVersion))
 	}
 	if rollForward == "latestMinor" {
 		maxVersion := fmt.Sprintf("%d.*.*", version.Major())
 
-		results = append(results, ConstraintResult{
-			Constraint: fmt.Sprintf(">= %s, %s", version.String(), maxVersion),
-			Name:       "global.json minor",
-		})
+		results = append(results, fmt.Sprintf(">= %s, %s", version.String(), maxVersion))
 	}
 	if rollForward == "latestMajor" {
-		results = append(results, ConstraintResult{
-			Constraint: fmt.Sprintf(">= %s", version.String()),
-			Name:       "global.json major",
-		})
+		results = append(results, fmt.Sprintf(">= %s", version.String()))
 	}
 
 	return results, nil

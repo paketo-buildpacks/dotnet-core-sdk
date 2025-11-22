@@ -22,21 +22,25 @@ func Detect() packit.DetectFunc {
 		if err != nil {
 			return packit.DetectResult{}, err
 		}
-		if globalJson != nil {
-			constraints, err := GetConstraintsFromGlobalJson(*globalJson)
+		if globalJson != nil && globalJson.Sdk != nil && globalJson.Sdk.Version != nil {
+			version, err := semver.NewVersion(*globalJson.Sdk.Version)
 			if err != nil {
 				return packit.DetectResult{}, err
 			}
 
-			for _, constraint := range constraints {
-				plan.Requires = append(plan.Requires, packit.BuildPlanRequirement{
-					Name: "dotnet-sdk",
-					Metadata: map[string]interface{}{
-						"version":        constraint.Constraint,
-						"version-source": constraint.Name,
-					},
-				})
+			rollForward := "patch"
+			if globalJson.Sdk.RollForward != nil {
+				rollForward = *globalJson.Sdk.RollForward
 			}
+
+			plan.Requires = append(plan.Requires, packit.BuildPlanRequirement{
+				Name: "dotnet-sdk",
+				Metadata: map[string]interface{}{
+					"version":        version.String(),
+					"version-source": "global.json",
+					"roll-forward":   rollForward,
+				},
+			})
 		}
 
 		if frameworkVersion, ok := os.LookupEnv("BP_DOTNET_FRAMEWORK_VERSION"); ok {
