@@ -77,7 +77,7 @@ func testRollforwardResolver(t *testing.T, context spec.G, it spec.S) {
 				"some-stack",
 			)
 			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("failed to resolve 8.0.100 version with rollforward patch"))
+			Expect(err.Error()).To(ContainSubstring("failed to resolve version 8.0.100 with roll-forward policy 'patch'"))
 		})
 	})
 }

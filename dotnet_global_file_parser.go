@@ -22,7 +22,7 @@ type Sdk struct {
 	RollForward     *string `json:"rollForward,omitempty"`
 }
 
-func GetConstraintsFromGlobalJson(versionStr string, rollForward string) ([]string, error) {
+func GetRollforwardConstraints(versionStr string, rollForward string) ([]string, error) {
 	results := []string{}
 
 	version := semver.MustParse(versionStr)

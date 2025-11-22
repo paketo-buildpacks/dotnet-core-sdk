@@ -107,9 +107,9 @@ func testGlobalFileParser(t *testing.T, context spec.G, it spec.S) {
 		})
 	})
 
-	context("GetConstraintsFromGlobalJson", func() {
+	context("GetRollforwardConstraints", func() {
 		it("generates exact version constraint", func() {
-			constraints, err := dotnetcoresdk.GetConstraintsFromGlobalJson("5.0.201", "disabled")
+			constraints, err := dotnetcoresdk.GetRollforwardConstraints("5.0.201", "disabled")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(constraints).To(Equal([]string{
 				"5.0.201",
@@ -117,7 +117,7 @@ func testGlobalFileParser(t *testing.T, context spec.G, it spec.S) {
 		})
 
 		it("generates constraints for next version rollForward", func() {
-			constraints, err := dotnetcoresdk.GetConstraintsFromGlobalJson("6.0.205", "major")
+			constraints, err := dotnetcoresdk.GetRollforwardConstraints("6.0.205", "major")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(constraints).To(Equal([]string{
 				">= 6.0.205, < 6.0.300",
@@ -128,7 +128,7 @@ func testGlobalFileParser(t *testing.T, context spec.G, it spec.S) {
 		})
 
 		it("generates constraints for latest feature rollForward", func() {
-			constraints, err := dotnetcoresdk.GetConstraintsFromGlobalJson("7.0.150", "latestFeature")
+			constraints, err := dotnetcoresdk.GetRollforwardConstraints("7.0.150", "latestFeature")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(constraints).To(Equal([]string{
 				">= 7.0.150, 7.0.*",
@@ -136,7 +136,7 @@ func testGlobalFileParser(t *testing.T, context spec.G, it spec.S) {
 		})
 
 		it("generates constraints for latest minor rollForward", func() {
-			constraints, err := dotnetcoresdk.GetConstraintsFromGlobalJson("8.1.300", "latestMinor")
+			constraints, err := dotnetcoresdk.GetRollforwardConstraints("8.1.300", "latestMinor")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(constraints).To(Equal([]string{
 				">= 8.1.300, 8.*.*",
@@ -144,7 +144,7 @@ func testGlobalFileParser(t *testing.T, context spec.G, it spec.S) {
 		})
 
 		it("generates constraints for latest major rollForward", func() {
-			constraints, err := dotnetcoresdk.GetConstraintsFromGlobalJson("9.2.400", "latestMajor")
+			constraints, err := dotnetcoresdk.GetRollforwardConstraints("9.2.400", "latestMajor")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(constraints).To(Equal([]string{
 				">= 9.2.400",

@@ -66,7 +66,7 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 	})
 
 	context("when a global.json file is provided", func() {
-		it("requires the version(s) specified in the global.json file", func() {
+		it("requires the version specified in the global.json file", func() {
 			tempDir := t.TempDir()
 			err := os.WriteFile(filepath.Join(tempDir, "global.json"), []byte(`{
 				"sdk": {

@@ -18,7 +18,7 @@ func ResolveWithRollforward(path string, version string, rollForward string, sta
 		return postal.Dependency{}, err
 	}
 
-	constraints, err := GetConstraintsFromGlobalJson(version, rollForward)
+	constraints, err := GetRollforwardConstraints(version, rollForward)
 	if err != nil {
 		return postal.Dependency{}, err
 	}
@@ -46,7 +46,7 @@ func ResolveWithRollforward(path string, version string, rollForward string, sta
 	}
 
 	if len(compatibleVersions) == 0 {
-		return postal.Dependency{}, fmt.Errorf("failed to resolve %s version with rollforward %s. Supported versions are: [%s]",
+		return postal.Dependency{}, fmt.Errorf("failed to resolve version %s with roll-forward policy '%s'. Supported versions are: [%s]",
 			version,
 			rollForward,
 			strings.Join(supportedVersions, ", "),
