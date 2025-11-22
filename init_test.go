@@ -12,5 +12,6 @@ func TestUnitDotnetCoreSDK(t *testing.T) {
 	suite("Build", testBuild)
 	suite("Detect", testDetect)
 	suite("GlobalFileParser", testGlobalFileParser)
+	suite("RollforwardResolver", testRollforwardResolver)
 	suite.Run(t)
 }
