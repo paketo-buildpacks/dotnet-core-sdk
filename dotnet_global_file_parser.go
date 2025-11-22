@@ -97,8 +97,8 @@ func GetConstraintsFromGlobalJson(global GlobalJson) ([]ConstraintResult, error)
 		minFeaturePatch := getPatchForFeatureLevel(1)
 		maxFeaturePatch := getPatchForFeatureLevel(2)
 
-		minVersion := fmt.Sprintf("%d.%d.%d", nextMajor, 0, minFeaturePatch)
-		maxVersion := fmt.Sprintf("%d.%d.%d", nextMajor, 0, maxFeaturePatch)
+		minVersion := fmt.Sprintf("%d.0.%d", nextMajor, minFeaturePatch)
+		maxVersion := fmt.Sprintf("%d.0.%d", nextMajor, maxFeaturePatch)
 
 		results = append(results, ConstraintResult{
 			Constraint: fmt.Sprintf(">= %s, < %s", minVersion, maxVersion),
@@ -109,7 +109,7 @@ func GetConstraintsFromGlobalJson(global GlobalJson) ([]ConstraintResult, error)
 		maxVersion := fmt.Sprintf("%d.%d.*", version.Major(), version.Minor())
 
 		results = append(results, ConstraintResult{
-			Constraint: fmt.Sprintf(">= %s, < %s", version.String(), maxVersion),
+			Constraint: fmt.Sprintf(">= %s, %s", version.String(), maxVersion),
 			Name:       "global.json feature",
 		})
 	}
@@ -117,7 +117,7 @@ func GetConstraintsFromGlobalJson(global GlobalJson) ([]ConstraintResult, error)
 		maxVersion := fmt.Sprintf("%d.*.*", version.Major())
 
 		results = append(results, ConstraintResult{
-			Constraint: fmt.Sprintf(">= %s, < %s", version.String(), maxVersion),
+			Constraint: fmt.Sprintf(">= %s, %s", version.String(), maxVersion),
 			Name:       "global.json minor",
 		})
 	}
