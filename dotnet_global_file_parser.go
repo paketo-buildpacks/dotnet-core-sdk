@@ -48,6 +48,8 @@ func GetConstraintsFromGlobalJson(global GlobalJson) ([]ConstraintResult, error)
 		rollForward = *sdk.RollForward
 	}
 
+	featureLevel := version.Patch() / 100
+
 	// Refer to the documentation on rollForward behaviour
 	// https://learn.microsoft.com/en-us/dotnet/core/tools/global-json#rollforward
 	if slices.Contains([]string{"patch", "disabled"}, rollForward) {
@@ -57,7 +59,6 @@ func GetConstraintsFromGlobalJson(global GlobalJson) ([]ConstraintResult, error)
 		})
 	}
 	if slices.Contains([]string{"patch", "feature", "minor", "major", "latestPatch"}, rollForward) {
-		featureLevel := getFeatureLevel(version)
 		maxPatch := getPatchForFeatureLevel(featureLevel + 1)
 		maxVersion := fmt.Sprintf("%d.%d.%d", version.Major(), version.Minor(), maxPatch)
 
@@ -67,7 +68,6 @@ func GetConstraintsFromGlobalJson(global GlobalJson) ([]ConstraintResult, error)
 		})
 	}
 	if slices.Contains([]string{"feature", "minor", "major"}, rollForward) {
-		featureLevel := getFeatureLevel(version)
 		nextFeaturePatch := getPatchForFeatureLevel(featureLevel + 1)
 		maxFeaturePatch := getPatchForFeatureLevel(featureLevel + 2)
 
@@ -136,19 +136,19 @@ func FindGlobalJson(dir string) (*GlobalJson, error) {
 	if _, err := os.Stat(filePath); err == nil {
 		jsonFile, err := os.Open(filePath)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to load global.json: %w", err)
 		}
 
 		fileContents, err := io.ReadAll(jsonFile)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to read global.json: %w", err)
 		}
 
 		var globalJson GlobalJson
 
 		err = json.Unmarshal(fileContents, &globalJson)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to parse global.json: %w", err)
 		}
 
 		return &globalJson, nil
@@ -160,10 +160,6 @@ func FindGlobalJson(dir string) (*GlobalJson, error) {
 
 	// Recurse up the tree to try find global.json
 	return FindGlobalJson(filepath.Dir(dir))
-}
-
-func getFeatureLevel(version *semver.Version) uint64 {
-	return version.Patch() / 100
 }
 
 func getPatchForFeatureLevel(featureLevel uint64) uint64 {
