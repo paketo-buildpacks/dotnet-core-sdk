@@ -89,14 +89,8 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 						Name: "dotnet-sdk",
 						Metadata: map[string]interface{}{
 							"version":        "7.0.203",
-							"version-source": "global.json exact",
-						},
-					},
-					{
-						Name: "dotnet-sdk",
-						Metadata: map[string]interface{}{
-							"version":        ">= 7.0.203, < 7.0.300",
-							"version-source": "global.json patch",
+							"version-source": "global.json",
+							"roll-forward":   "patch",
 						},
 					},
 				},
