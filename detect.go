@@ -18,6 +18,31 @@ func Detect() packit.DetectFunc {
 			},
 		}
 
+		globalJson, err := FindGlobalJson(context.WorkingDir)
+		if err != nil {
+			return packit.DetectResult{}, err
+		}
+		if globalJson != nil && globalJson.Sdk != nil && globalJson.Sdk.Version != nil {
+			version, err := semver.NewVersion(*globalJson.Sdk.Version)
+			if err != nil {
+				return packit.DetectResult{}, err
+			}
+
+			rollForward := "patch"
+			if globalJson.Sdk.RollForward != nil {
+				rollForward = *globalJson.Sdk.RollForward
+			}
+
+			plan.Requires = append(plan.Requires, packit.BuildPlanRequirement{
+				Name: "dotnet-sdk",
+				Metadata: map[string]interface{}{
+					"version":        version.String(),
+					"version-source": "global.json",
+					"roll-forward":   rollForward,
+				},
+			})
+		}
+
 		if frameworkVersion, ok := os.LookupEnv("BP_DOTNET_FRAMEWORK_VERSION"); ok {
 			frameworkSemver, err := semver.NewVersion(frameworkVersion)
 			if err != nil {
