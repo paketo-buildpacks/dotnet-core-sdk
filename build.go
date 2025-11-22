@@ -52,6 +52,9 @@ func Build(entryResolver EntryResolver,
 		var err error
 		if versionSource == "global.json" {
 			rollforward, _ := planEntry.Metadata["roll-forward"].(string)
+
+			logger.Subprocess("Resolving with roll-forward strategy '%s'", rollforward)
+
 			sdkDependency, err = ResolveWithRollforward(
 				filepath.Join(context.CNBPath, "buildpack.toml"),
 				version,
