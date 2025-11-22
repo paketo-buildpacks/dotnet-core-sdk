@@ -90,7 +90,7 @@ func FindGlobalJson(dir string) (*GlobalJson, error) {
 	if _, err := os.Stat(filePath); err == nil {
 		jsonFile, err := os.Open(filePath)
 		if err != nil {
-			return nil, fmt.Errorf("failed to load global.json: %w", err)
+			return nil, fmt.Errorf("failed to open global.json: %w", err)
 		}
 
 		fileContents, err := io.ReadAll(jsonFile)
@@ -99,7 +99,6 @@ func FindGlobalJson(dir string) (*GlobalJson, error) {
 		}
 
 		var globalJson GlobalJson
-
 		err = json.Unmarshal(fileContents, &globalJson)
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse global.json: %w", err)
@@ -109,13 +108,12 @@ func FindGlobalJson(dir string) (*GlobalJson, error) {
 	}
 
 	parentDir := filepath.Dir(dir)
-
 	if dir == parentDir {
 		return nil, nil
 	}
 
 	// Recurse up the tree to try find global.json
-	return FindGlobalJson(filepath.Dir(dir))
+	return FindGlobalJson(parentDir)
 }
 
 func getPatchForFeatureLevel(featureLevel uint64) uint64 {
