@@ -71,6 +71,36 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 		})
 	})
 
+	context("when a version is specified via BP_DOTNET_SDK_VERSION", func() {
+		it.Before(func() {
+			Expect(os.Setenv("BP_DOTNET_SDK_VERSION", "8.0.*")).To(Succeed())
+		})
+		it.After(func() {
+			Expect(os.Unsetenv("BP_DOTNET_SDK_VERSION")).To(Succeed())
+		})
+
+		it("requires the version of the SDK specified in the variable", func() {
+			result, err := detect(packit.DetectContext{
+				WorkingDir: "working-dir",
+			})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(result.Plan).To(Equal(packit.BuildPlan{
+				Provides: []packit.BuildPlanProvision{
+					{Name: "dotnet-sdk"},
+				},
+				Requires: []packit.BuildPlanRequirement{
+					{
+						Name: "dotnet-sdk",
+						Metadata: map[string]interface{}{
+							"version":        "8.0.*",
+							"version-source": "BP_DOTNET_SDK_VERSION",
+						},
+					},
+				},
+			}))
+		})
+	})
+
 	context("when a global.json file is provided", func() {
 		it("requires the version specified in the global.json file", func() {
 			tempDir := t.TempDir()
