@@ -25,7 +25,9 @@ func main() {
 	dependencyManager := postal.NewService(cargo.NewTransport())
 
 	packit.Run(
-		dotnetcoresdk.Detect(),
+		dotnetcoresdk.Detect(
+			logEmitter,
+		),
 		dotnetcoresdk.Build(
 			entryResolver,
 			dependencyManager,

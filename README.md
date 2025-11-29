@@ -43,15 +43,15 @@ file that looks like the following:
 
 ## Configuration
 
-### `BP_DOTNET_FRAMEWORK_VERSION`
-The `BP_DOTNET_FRAMEWORK_VERSION` variable allows you to specify the version of
-ASP.NET Core Runtime that is installed. The environment variable can be
-set at build-time either directly  (ex. `pack build my-app --env
-BP_ENVIRONMENT_VARIABLE=some-value`) or through a [`project.toml`
+### `BP_DOTNET_SDK_VERSION`
+The `BP_DOTNET_SDK_VERSION` variable allows you to specify the version of
+SDK that is installed. This overrides any configuration set in `global.json`.
+The environment variable can be set at build-time either directly
+(ex. `pack build my-app --env BP_ENVIRONMENT_VARIABLE=some-value`) or through a [`project.toml`
 file](https://github.com/buildpacks/spec/blob/main/extensions/project-descriptor.md)
 
 ```shell
-BP_DOTNET_FRAMEWORK_VERSION=6.0.5
+BP_DOTNET_SDK_VERSION=8.0.*
 ```
 
 ### `BP_LOG_LEVEL`
