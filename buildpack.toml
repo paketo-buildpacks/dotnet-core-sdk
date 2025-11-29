@@ -15,6 +15,12 @@ api = "0.8"
 [metadata]
   include-files = ["buildpack.toml", "linux/amd64/bin/build", "linux/amd64/bin/detect", "linux/amd64/bin/run", "linux/arm64/bin/build", "linux/arm64/bin/detect", "linux/arm64/bin/run"]
   pre-package = "./scripts/build.sh --target linux/amd64 --target linux/arm64"
+
+  [[metadata.configurations]]
+    name        = "BP_DOTNET_SDK_VERSION"
+    description = "specify a version of SDK to use"
+    build       = true
+
   [metadata.default-versions]
     dotnet-sdk = "8.*"
 

@@ -1,12 +1,14 @@
 package dotnetcoresdk_test
 
 import (
+	"bytes"
 	"os"
 	"path/filepath"
 	"testing"
 
 	dotnetcoresdk "github.com/paketo-buildpacks/dotnet-core-sdk"
 	"github.com/paketo-buildpacks/packit/v2"
+	"github.com/paketo-buildpacks/packit/v2/scribe"
 	"github.com/sclevine/spec"
 
 	. "github.com/onsi/gomega"
@@ -17,10 +19,14 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 		Expect = NewWithT(t).Expect
 
 		detect packit.DetectFunc
+		buffer *bytes.Buffer
 	)
 
 	it.Before(func() {
-		detect = dotnetcoresdk.Detect()
+		buffer = bytes.NewBuffer(nil)
+		detect = dotnetcoresdk.Detect(
+			scribe.NewEmitter(buffer),
+		)
 	})
 
 	it("provides the dotnet-sdk as a dependency and requires nothing", func() {

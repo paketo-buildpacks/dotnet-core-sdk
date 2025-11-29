@@ -6,9 +6,10 @@ import (
 
 	"github.com/Masterminds/semver"
 	"github.com/paketo-buildpacks/packit/v2"
+	"github.com/paketo-buildpacks/packit/v2/scribe"
 )
 
-func Detect() packit.DetectFunc {
+func Detect(logger scribe.Emitter) packit.DetectFunc {
 	return func(context packit.DetectContext) (packit.DetectResult, error) {
 		plan := packit.BuildPlan{
 			Provides: []packit.BuildPlanProvision{
@@ -43,7 +44,22 @@ func Detect() packit.DetectFunc {
 			})
 		}
 
-		if frameworkVersion, ok := os.LookupEnv("BP_DOTNET_FRAMEWORK_VERSION"); ok {
+		if sdkVersion, ok := os.LookupEnv(DotnetSdkVersion); ok {
+			_, err := semver.NewConstraint(sdkVersion)
+			if err != nil {
+				return packit.DetectResult{}, err
+			}
+			plan.Requires = append(plan.Requires, packit.BuildPlanRequirement{
+				Name: "dotnet-sdk",
+				Metadata: map[string]interface{}{
+					"version-source": DotnetSdkVersion,
+					"version":        sdkVersion,
+				},
+			})
+		}
+
+		if frameworkVersion, ok := os.LookupEnv(DeprecatedFrameworkVersion); ok {
+			logger.Subprocess(scribe.YellowColor("WARNING: BP_DOTNET_FRAMEWORK_VERSION is deprecated and will be removed in a future version. Please use global.json or BP_DOTNET_SDK_VERSION to select SDK version instead."))
 			frameworkSemver, err := semver.NewVersion(frameworkVersion)
 			if err != nil {
 				return packit.DetectResult{}, err
@@ -51,7 +67,7 @@ func Detect() packit.DetectFunc {
 			plan.Requires = append(plan.Requires, packit.BuildPlanRequirement{
 				Name: "dotnet-sdk",
 				Metadata: map[string]interface{}{
-					"version-source": "BP_DOTNET_FRAMEWORK_VERSION",
+					"version-source": DeprecatedFrameworkVersion,
 					"version":        fmt.Sprintf("%d.%d.*", frameworkSemver.Major(), frameworkSemver.Minor()),
 				},
 			})
