@@ -1,11 +1,14 @@
 package dotnetcoresdk_test
 
 import (
+	"bytes"
 	"os"
+	"path/filepath"
 	"testing"
 
 	dotnetcoresdk "github.com/paketo-buildpacks/dotnet-core-sdk"
 	"github.com/paketo-buildpacks/packit/v2"
+	"github.com/paketo-buildpacks/packit/v2/scribe"
 	"github.com/sclevine/spec"
 
 	. "github.com/onsi/gomega"
@@ -16,10 +19,14 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 		Expect = NewWithT(t).Expect
 
 		detect packit.DetectFunc
+		buffer *bytes.Buffer
 	)
 
 	it.Before(func() {
-		detect = dotnetcoresdk.Detect()
+		buffer = bytes.NewBuffer(nil)
+		detect = dotnetcoresdk.Detect(
+			scribe.NewEmitter(buffer),
+		)
 	})
 
 	it("provides the dotnet-sdk as a dependency and requires nothing", func() {
@@ -57,6 +64,69 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 						Metadata: map[string]interface{}{
 							"version":        "1.2.*",
 							"version-source": "BP_DOTNET_FRAMEWORK_VERSION",
+						},
+					},
+				},
+			}))
+		})
+	})
+
+	context("when a version is specified via BP_DOTNET_SDK_VERSION", func() {
+		it.Before(func() {
+			Expect(os.Setenv("BP_DOTNET_SDK_VERSION", "8.0.*")).To(Succeed())
+		})
+		it.After(func() {
+			Expect(os.Unsetenv("BP_DOTNET_SDK_VERSION")).To(Succeed())
+		})
+
+		it("requires the version of the SDK specified in the variable", func() {
+			result, err := detect(packit.DetectContext{
+				WorkingDir: "working-dir",
+			})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(result.Plan).To(Equal(packit.BuildPlan{
+				Provides: []packit.BuildPlanProvision{
+					{Name: "dotnet-sdk"},
+				},
+				Requires: []packit.BuildPlanRequirement{
+					{
+						Name: "dotnet-sdk",
+						Metadata: map[string]interface{}{
+							"version":        "8.0.*",
+							"version-source": "BP_DOTNET_SDK_VERSION",
+						},
+					},
+				},
+			}))
+		})
+	})
+
+	context("when a global.json file is provided", func() {
+		it("requires the version specified in the global.json file", func() {
+			tempDir := t.TempDir()
+			err := os.WriteFile(filepath.Join(tempDir, "global.json"), []byte(`{
+				"sdk": {
+					"version": "7.0.203",
+					"rollForward": "patch"
+				}
+			}`), 0644)
+			Expect(err).NotTo(HaveOccurred())
+
+			result, err := detect(packit.DetectContext{
+				WorkingDir: tempDir,
+			})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(result.Plan).To(Equal(packit.BuildPlan{
+				Provides: []packit.BuildPlanProvision{
+					{Name: "dotnet-sdk"},
+				},
+				Requires: []packit.BuildPlanRequirement{
+					{
+						Name: "dotnet-sdk",
+						Metadata: map[string]interface{}{
+							"version":        "7.0.203",
+							"version-source": "global.json",
+							"roll-forward":   "patch",
 						},
 					},
 				},

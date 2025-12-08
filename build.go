@@ -46,10 +46,33 @@ func Build(entryResolver EntryResolver,
 		logger.Candidates(entries)
 
 		version, _ := planEntry.Metadata["version"].(string)
+		versionSource, _ := planEntry.Metadata["version-source"].(string)
 
-		sdkDependency, err := dependencyManager.Resolve(filepath.Join(context.CNBPath, "buildpack.toml"), planEntry.Name, version, context.Stack)
-		if err != nil {
-			return packit.BuildResult{}, err
+		var sdkDependency postal.Dependency
+		var err error
+		if versionSource == "global.json" {
+			rollforward, _ := planEntry.Metadata["roll-forward"].(string)
+
+			logger.Subprocess("Resolving with roll-forward strategy '%s'", rollforward)
+
+			sdkDependency, err = ResolveWithRollforward(
+				filepath.Join(context.CNBPath, "buildpack.toml"),
+				version,
+				rollforward,
+				context.Stack,
+			)
+			if err != nil {
+				return packit.BuildResult{}, err
+			}
+		} else {
+			sdkDependency, err = dependencyManager.Resolve(
+				filepath.Join(context.CNBPath, "buildpack.toml"),
+				planEntry.Name,
+				version,
+				context.Stack)
+			if err != nil {
+				return packit.BuildResult{}, err
+			}
 		}
 
 		logger.SelectedDependency(planEntry, sdkDependency, clock.Now())
