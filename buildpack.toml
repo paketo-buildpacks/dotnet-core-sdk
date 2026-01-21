@@ -57,35 +57,35 @@ api = "0.8"
 
   [[metadata.dependencies]]
     arch = "amd64"
-    checksum = "sha512:c00280165072e80fa1f6f84761c245228d3edc880bb9992fc5b4b5c3a317eda56bf01fe15f7844fe176b57a16660d21cd2635a20793569c22ebae27fd5cd2966"
-    cpe = "cpe:2.3:a:microsoft:.net:9.0.309:*:*:*:*:*:*:*"
+    checksum = "sha512:8203f566a23e09142381b2730ba2efed79a93240c096b02c9a8341e95d550a26d9c31496d9b11ce24ede61bbd7fb72131d4cf85880d101c90ae84d2442d0a596"
+    cpe = "cpe:2.3:a:microsoft:.net:9.0.310:*:*:*:*:*:*:*"
     deprecation_date = "2026-11-10T00:00:00Z"
     id = "dotnet-sdk"
     licenses = ["MIT", "MIT-0"]
     name = ".NET Core SDK"
     os = "linux"
-    purl = "pkg:generic/dotnet-core-sdk@9.0.309?checksum=c00280165072e80fa1f6f84761c245228d3edc880bb9992fc5b4b5c3a317eda56bf01fe15f7844fe176b57a16660d21cd2635a20793569c22ebae27fd5cd2966&download_url=https://builds.dotnet.microsoft.com/dotnet/Sdk/9.0.309/dotnet-sdk-9.0.309-linux-x64.tar.gz"
-    source = "https://builds.dotnet.microsoft.com/dotnet/Sdk/9.0.309/dotnet-sdk-9.0.309-linux-x64.tar.gz"
-    source-checksum = "sha512:c00280165072e80fa1f6f84761c245228d3edc880bb9992fc5b4b5c3a317eda56bf01fe15f7844fe176b57a16660d21cd2635a20793569c22ebae27fd5cd2966"
+    purl = "pkg:generic/dotnet-core-sdk@9.0.310?checksum=8203f566a23e09142381b2730ba2efed79a93240c096b02c9a8341e95d550a26d9c31496d9b11ce24ede61bbd7fb72131d4cf85880d101c90ae84d2442d0a596&download_url=https://builds.dotnet.microsoft.com/dotnet/Sdk/9.0.310/dotnet-sdk-9.0.310-linux-x64.tar.gz"
+    source = "https://builds.dotnet.microsoft.com/dotnet/Sdk/9.0.310/dotnet-sdk-9.0.310-linux-x64.tar.gz"
+    source-checksum = "sha512:8203f566a23e09142381b2730ba2efed79a93240c096b02c9a8341e95d550a26d9c31496d9b11ce24ede61bbd7fb72131d4cf85880d101c90ae84d2442d0a596"
     stacks = ["*"]
-    uri = "https://builds.dotnet.microsoft.com/dotnet/Sdk/9.0.309/dotnet-sdk-9.0.309-linux-x64.tar.gz"
-    version = "9.0.309"
+    uri = "https://builds.dotnet.microsoft.com/dotnet/Sdk/9.0.310/dotnet-sdk-9.0.310-linux-x64.tar.gz"
+    version = "9.0.310"
 
   [[metadata.dependencies]]
     arch = "arm64"
-    checksum = "sha512:80f3ba0533a207ed39ccf0f43cfac4d6b96269b4ca539dabe0f379d5e31a812e103a56e4636b8475a191ea81285cd98231e10fb486de3c1c93dfd56bf4542e7c"
-    cpe = "cpe:2.3:a:microsoft:.net:9.0.309:*:*:*:*:*:*:*"
+    checksum = "sha512:6559b4df6a44b290bce228a2002b1ccc6dc03ec0041b7dc065007a85de3b32ed1980a1a40fd06d36d1dc78f081114da8c98705eca4be83255c6df8647080a0e7"
+    cpe = "cpe:2.3:a:microsoft:.net:9.0.310:*:*:*:*:*:*:*"
     deprecation_date = "2026-11-10T00:00:00Z"
     id = "dotnet-sdk"
     licenses = ["MIT", "MIT-0"]
     name = ".NET Core SDK"
     os = "linux"
-    purl = "pkg:generic/dotnet-core-sdk@9.0.309?checksum=80f3ba0533a207ed39ccf0f43cfac4d6b96269b4ca539dabe0f379d5e31a812e103a56e4636b8475a191ea81285cd98231e10fb486de3c1c93dfd56bf4542e7c&download_url=https://builds.dotnet.microsoft.com/dotnet/Sdk/9.0.309/dotnet-sdk-9.0.309-linux-arm64.tar.gz"
-    source = "https://builds.dotnet.microsoft.com/dotnet/Sdk/9.0.309/dotnet-sdk-9.0.309-linux-arm64.tar.gz"
-    source-checksum = "sha512:80f3ba0533a207ed39ccf0f43cfac4d6b96269b4ca539dabe0f379d5e31a812e103a56e4636b8475a191ea81285cd98231e10fb486de3c1c93dfd56bf4542e7c"
+    purl = "pkg:generic/dotnet-core-sdk@9.0.310?checksum=6559b4df6a44b290bce228a2002b1ccc6dc03ec0041b7dc065007a85de3b32ed1980a1a40fd06d36d1dc78f081114da8c98705eca4be83255c6df8647080a0e7&download_url=https://builds.dotnet.microsoft.com/dotnet/Sdk/9.0.310/dotnet-sdk-9.0.310-linux-arm64.tar.gz"
+    source = "https://builds.dotnet.microsoft.com/dotnet/Sdk/9.0.310/dotnet-sdk-9.0.310-linux-arm64.tar.gz"
+    source-checksum = "sha512:6559b4df6a44b290bce228a2002b1ccc6dc03ec0041b7dc065007a85de3b32ed1980a1a40fd06d36d1dc78f081114da8c98705eca4be83255c6df8647080a0e7"
     stacks = ["*"]
-    uri = "https://builds.dotnet.microsoft.com/dotnet/Sdk/9.0.309/dotnet-sdk-9.0.309-linux-arm64.tar.gz"
-    version = "9.0.309"
+    uri = "https://builds.dotnet.microsoft.com/dotnet/Sdk/9.0.310/dotnet-sdk-9.0.310-linux-arm64.tar.gz"
+    version = "9.0.310"
 
   [[metadata.dependencies]]
     arch = "amd64"
