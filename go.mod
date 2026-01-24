@@ -2,12 +2,6 @@ module github.com/paketo-buildpacks/dotnet-core-sdk
 
 go 1.25.6
 
-replace (
-	// pinned back until https://github.com/containerd/containerd/issues/12493 is resolved and containerd/containerd handles the new runtime spec.
-	github.com/containerd/cgroups/v3 => github.com/containerd/cgroups/v3 v3.1.0
-	github.com/opencontainers/runtime-spec => github.com/opencontainers/runtime-spec v1.2.1
-)
-
 require (
 	github.com/BurntSushi/toml v1.6.0
 	github.com/Masterminds/semver v1.5.0
