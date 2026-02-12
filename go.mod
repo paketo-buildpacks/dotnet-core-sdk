@@ -157,7 +157,7 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.3.12 // indirect
 	github.com/googleapis/gax-go/v2 v2.17.0 // indirect
 	github.com/gookit/color v1.6.0 // indirect
-	github.com/gpustack/gguf-parser-go v0.23.1 // indirect
+	github.com/gpustack/gguf-parser-go v0.24.0 // indirect
 	github.com/hashicorp/aws-sdk-go-base/v2 v2.0.0-beta.70 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
@@ -213,7 +213,7 @@ require (
 	github.com/oklog/ulid/v2 v2.1.1 // indirect
 	github.com/olekukonko/cat v0.0.0-20250911104152-50322a0618f6 // indirect
 	github.com/olekukonko/errors v1.2.0 // indirect
-	github.com/olekukonko/ll v0.1.4 // indirect
+	github.com/olekukonko/ll v0.1.5 // indirect
 	github.com/olekukonko/tablewriter v1.1.3 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.1 // indirect
