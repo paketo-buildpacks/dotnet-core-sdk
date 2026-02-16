@@ -1,6 +1,6 @@
 module github.com/paketo-buildpacks/dotnet-core-sdk
 
-go 1.25.7
+go 1.26.0
 
 require (
 	github.com/BurntSushi/toml v1.6.0
