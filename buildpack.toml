@@ -89,35 +89,35 @@ api = "0.8"
 
   [[metadata.dependencies]]
     arch = "amd64"
-    checksum = "sha512:48738fed91d6a47daf778b5729fe169d65a1ba43d5ecc3e4da139712b66d2c62c516878700f5e2749f4af8f816ca3562f3d93367b03e369b6faffafc11bce69b"
-    cpe = "cpe:2.3:a:microsoft:.net:10.0.200:*:*:*:*:*:*:*"
+    checksum = "sha512:a33354e3291aa21ea5e1983733f001d45264c31ee3c0dc4a85509d4cb6d4896cfec57fd2143a7b54c93bc42b328e059b16802b4085257a367ef2652f1c8fa424"
+    cpe = "cpe:2.3:a:microsoft:.net:10.0.201:*:*:*:*:*:*:*"
     deprecation_date = "2028-11-14T00:00:00Z"
     id = "dotnet-sdk"
     licenses = ["MIT", "MIT-0"]
     name = ".NET Core SDK"
     os = "linux"
-    purl = "pkg:generic/dotnet-core-sdk@10.0.200?checksum=48738fed91d6a47daf778b5729fe169d65a1ba43d5ecc3e4da139712b66d2c62c516878700f5e2749f4af8f816ca3562f3d93367b03e369b6faffafc11bce69b&download_url=https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.200/dotnet-sdk-10.0.200-linux-x64.tar.gz"
-    source = "https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.200/dotnet-sdk-10.0.200-linux-x64.tar.gz"
-    source-checksum = "sha512:48738fed91d6a47daf778b5729fe169d65a1ba43d5ecc3e4da139712b66d2c62c516878700f5e2749f4af8f816ca3562f3d93367b03e369b6faffafc11bce69b"
+    purl = "pkg:generic/dotnet-core-sdk@10.0.201?checksum=a33354e3291aa21ea5e1983733f001d45264c31ee3c0dc4a85509d4cb6d4896cfec57fd2143a7b54c93bc42b328e059b16802b4085257a367ef2652f1c8fa424&download_url=https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.201/dotnet-sdk-10.0.201-linux-x64.tar.gz"
+    source = "https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.201/dotnet-sdk-10.0.201-linux-x64.tar.gz"
+    source-checksum = "sha512:a33354e3291aa21ea5e1983733f001d45264c31ee3c0dc4a85509d4cb6d4896cfec57fd2143a7b54c93bc42b328e059b16802b4085257a367ef2652f1c8fa424"
     stacks = ["*"]
-    uri = "https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.200/dotnet-sdk-10.0.200-linux-x64.tar.gz"
-    version = "10.0.200"
+    uri = "https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.201/dotnet-sdk-10.0.201-linux-x64.tar.gz"
+    version = "10.0.201"
 
   [[metadata.dependencies]]
     arch = "arm64"
-    checksum = "sha512:ed00104271c4db3063d0739efe48ee2395d5d38d7952de531dd4ee1177dfc762751ef0ae5e856e71f9f6b3a75b9ed9d38c692340f50aacf240dd11c202b46e36"
-    cpe = "cpe:2.3:a:microsoft:.net:10.0.200:*:*:*:*:*:*:*"
+    checksum = "sha512:98015bc0decaa0aba0cd61a82d5b9e2df882c1406dcd5574de639cbd2e0764066dc5488dde8f704351c5420ae730a2a39f7b7e789f280f1fb42b90871dda3ecb"
+    cpe = "cpe:2.3:a:microsoft:.net:10.0.201:*:*:*:*:*:*:*"
     deprecation_date = "2028-11-14T00:00:00Z"
     id = "dotnet-sdk"
     licenses = ["MIT", "MIT-0"]
     name = ".NET Core SDK"
     os = "linux"
-    purl = "pkg:generic/dotnet-core-sdk@10.0.200?checksum=ed00104271c4db3063d0739efe48ee2395d5d38d7952de531dd4ee1177dfc762751ef0ae5e856e71f9f6b3a75b9ed9d38c692340f50aacf240dd11c202b46e36&download_url=https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.200/dotnet-sdk-10.0.200-linux-arm64.tar.gz"
-    source = "https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.200/dotnet-sdk-10.0.200-linux-arm64.tar.gz"
-    source-checksum = "sha512:ed00104271c4db3063d0739efe48ee2395d5d38d7952de531dd4ee1177dfc762751ef0ae5e856e71f9f6b3a75b9ed9d38c692340f50aacf240dd11c202b46e36"
+    purl = "pkg:generic/dotnet-core-sdk@10.0.201?checksum=98015bc0decaa0aba0cd61a82d5b9e2df882c1406dcd5574de639cbd2e0764066dc5488dde8f704351c5420ae730a2a39f7b7e789f280f1fb42b90871dda3ecb&download_url=https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.201/dotnet-sdk-10.0.201-linux-arm64.tar.gz"
+    source = "https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.201/dotnet-sdk-10.0.201-linux-arm64.tar.gz"
+    source-checksum = "sha512:98015bc0decaa0aba0cd61a82d5b9e2df882c1406dcd5574de639cbd2e0764066dc5488dde8f704351c5420ae730a2a39f7b7e789f280f1fb42b90871dda3ecb"
     stacks = ["*"]
-    uri = "https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.200/dotnet-sdk-10.0.200-linux-arm64.tar.gz"
-    version = "10.0.200"
+    uri = "https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.201/dotnet-sdk-10.0.201-linux-arm64.tar.gz"
+    version = "10.0.201"
 
   [[metadata.dependency-constraints]]
     constraint = "8.0.*"
