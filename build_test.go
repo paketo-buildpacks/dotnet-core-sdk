@@ -181,7 +181,15 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		Expect(spdx.Extension).To(Equal("spdx.json"))
 		content, err = io.ReadAll(spdx.Content)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(string(content)).To(MatchJSON(`{
+
+		versionPattern := regexp.MustCompile(`"licenseListVersion": "\d+\.\d+"`)
+		contentReplaced := versionPattern.ReplaceAllString(string(content), `"licenseListVersion": "x.x"`)
+
+		uuidRegex := regexp.MustCompile(`[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}`)
+
+		contentReplaced = uuidRegex.ReplaceAllString(contentReplaced, "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
+
+		Expect(string(contentReplaced)).To(MatchJSON(`{
 			"SPDXID": "SPDXRef-DOCUMENT",
 			"creationInfo": {
 				"created": "0001-01-01T00:00:00Z",
@@ -189,8 +197,11 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 					"Organization: Anchore, Inc",
 					"Tool: -"
 				],
-				"licenseListVersion": "3.27"
+				"licenseListVersion": "x.x"
 			},
+			"dataLicense": "CC0-1.0",
+            "documentNamespace": "https://paketo.io/unknown-source-type/unknown-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+			"name": "unknown",
             "packages": [
                 {
                   "SPDXID": "SPDXRef-DocumentRoot-Unknown-",
@@ -203,9 +214,6 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
                   "supplier": "NOASSERTION"
                 }
               ],
-			"dataLicense": "CC0-1.0",
-            "documentNamespace": "https://paketo.io/unknown-source-type/unknown-33ef57ff-45c2-53a8-8899-1c2b7e94d0dd",
-			"name": "unknown",
 			"relationships": [
 				{
 				    "relatedSpdxElement": "SPDXRef-DocumentRoot-Unknown-",
