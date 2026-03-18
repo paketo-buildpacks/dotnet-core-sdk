@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 	"testing"
 
 	dotnetcoresdk "github.com/paketo-buildpacks/dotnet-core-sdk"
