@@ -4,7 +4,7 @@ go 1.27.1
 
 require (
 	github.com/Masterminds/semver/v3 v3.5.0
-	github.com/onsi/gomega v1.43.0
+	github.com/onsi/gomega v1.43.1
 	github.com/paketo-buildpacks/libdependency v0.2.1
 	github.com/paketo-buildpacks/packit/v2 v2.25.7
 	github.com/sclevine/spec v1.4.0
