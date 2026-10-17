@@ -79,7 +79,7 @@ func GenerateMetadata(version versionology.VersionFetcher, platform retrieve.Pla
 		SourceChecksum:  fmt.Sprintf("sha512:%s", archive.Hash),
 		CPE:             cpe,
 		PURL:            purl,
-		Licenses:        []interface{}{"MIT", "MIT-0"},
+		Licenses:        []any{"MIT", "MIT-0"},
 		OS:              platform.OS,
 		Arch:            platform.Arch,
 	}

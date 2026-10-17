@@ -16,7 +16,7 @@ import (
 
 //go:generate faux --interface EntryResolver --output fakes/entry_resolver.go
 type EntryResolver interface {
-	Resolve(name string, entries []packit.BuildpackPlanEntry, priorites []interface{}) (packit.BuildpackPlanEntry, []packit.BuildpackPlanEntry)
+	Resolve(name string, entries []packit.BuildpackPlanEntry, priorites []any) (packit.BuildpackPlanEntry, []packit.BuildpackPlanEntry)
 	MergeLayerTypes(name string, entries []packit.BuildpackPlanEntry) (launch, build bool)
 }
 
@@ -136,7 +136,7 @@ func Build(entryResolver EntryResolver,
 		logger.Action("Completed in %s", duration.Round(time.Millisecond))
 		logger.Break()
 
-		sdkLayer.Metadata = map[string]interface{}{
+		sdkLayer.Metadata = map[string]any{
 			"dependency-checksum": dependencyChecksum,
 		}
 

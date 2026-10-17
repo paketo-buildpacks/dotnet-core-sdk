@@ -56,7 +56,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		entryResolver = &fakes.EntryResolver{}
 		entryResolver.ResolveCall.Returns.BuildpackPlanEntry = packit.BuildpackPlanEntry{
 			Name: "dotnet-sdk",
-			Metadata: map[string]interface{}{
+			Metadata: map[string]any{
 				"version":        "2.5.x",
 				"version-source": "some-source",
 			},
@@ -123,7 +123,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 				Entries: []packit.BuildpackPlanEntry{
 					{
 						Name: "dotnet-sdk",
-						Metadata: map[string]interface{}{
+						Metadata: map[string]any{
 							"version-source": "some-source",
 							"version":        "2.5.x",
 							"build":          true,
@@ -149,7 +149,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			"PATH.delim":   string(os.PathListSeparator),
 		}))
 		Expect(layer.Path).To(Equal(filepath.Join(layersDir, "dotnet-core-sdk")))
-		Expect(layer.Metadata).To(Equal(map[string]interface{}{
+		Expect(layer.Metadata).To(Equal(map[string]any{
 			"dependency-checksum": "sha256:some-sha",
 		}))
 
@@ -253,7 +253,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 			To(Equal([]packit.BuildpackPlanEntry{
 				{
 					Name: "dotnet-sdk",
-					Metadata: map[string]interface{}{
+					Metadata: map[string]any{
 						"version-source": "some-source",
 						"version":        "2.5.x",
 						"build":          true,
@@ -264,7 +264,7 @@ func testBuild(t *testing.T, context spec.G, it spec.S) {
 		Expect(entryResolver.MergeLayerTypesCall.Receives.Entries).To(Equal([]packit.BuildpackPlanEntry{
 			{
 				Name: "dotnet-sdk",
-				Metadata: map[string]interface{}{
+				Metadata: map[string]any{
 					"version-source": "some-source",
 					"version":        "2.5.x",
 					"build":          true,
