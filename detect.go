@@ -36,7 +36,7 @@ func Detect(logger scribe.Emitter) packit.DetectFunc {
 
 			plan.Requires = append(plan.Requires, packit.BuildPlanRequirement{
 				Name: "dotnet-sdk",
-				Metadata: map[string]interface{}{
+				Metadata: map[string]any{
 					"version":        version.String(),
 					"version-source": "global.json",
 					"roll-forward":   rollForward,
@@ -51,7 +51,7 @@ func Detect(logger scribe.Emitter) packit.DetectFunc {
 			}
 			plan.Requires = append(plan.Requires, packit.BuildPlanRequirement{
 				Name: "dotnet-sdk",
-				Metadata: map[string]interface{}{
+				Metadata: map[string]any{
 					"version-source": DotnetSdkVersion,
 					"version":        sdkVersion,
 				},
@@ -66,7 +66,7 @@ func Detect(logger scribe.Emitter) packit.DetectFunc {
 			}
 			plan.Requires = append(plan.Requires, packit.BuildPlanRequirement{
 				Name: "dotnet-sdk",
-				Metadata: map[string]interface{}{
+				Metadata: map[string]any{
 					"version-source": DeprecatedFrameworkVersion,
 					"version":        fmt.Sprintf("%d.%d.*", frameworkSemver.Major(), frameworkSemver.Minor()),
 				},

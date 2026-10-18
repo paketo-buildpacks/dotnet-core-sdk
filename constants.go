@@ -2,7 +2,7 @@ package dotnetcoresdk
 
 import "regexp"
 
-var Priorities = []interface{}{
+var Priorities = []any{
 	DotnetSdkVersion,
 	DeprecatedFrameworkVersion,
 	"buildpack.yml",

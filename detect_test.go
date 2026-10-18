@@ -61,7 +61,7 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 				Requires: []packit.BuildPlanRequirement{
 					{
 						Name: "dotnet-sdk",
-						Metadata: map[string]interface{}{
+						Metadata: map[string]any{
 							"version":        "1.2.*",
 							"version-source": "BP_DOTNET_FRAMEWORK_VERSION",
 						},
@@ -91,7 +91,7 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 				Requires: []packit.BuildPlanRequirement{
 					{
 						Name: "dotnet-sdk",
-						Metadata: map[string]interface{}{
+						Metadata: map[string]any{
 							"version":        "8.0.*",
 							"version-source": "BP_DOTNET_SDK_VERSION",
 						},
@@ -123,7 +123,7 @@ func testDetect(t *testing.T, context spec.G, it spec.S) {
 				Requires: []packit.BuildPlanRequirement{
 					{
 						Name: "dotnet-sdk",
-						Metadata: map[string]interface{}{
+						Metadata: map[string]any{
 							"version":        "7.0.203",
 							"version-source": "global.json",
 							"roll-forward":   "patch",

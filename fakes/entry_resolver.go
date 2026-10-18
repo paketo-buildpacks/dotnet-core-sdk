@@ -26,15 +26,13 @@ type EntryResolver struct {
 		Receives  struct {
 			Name      string
 			Entries   []packit.BuildpackPlanEntry
-			Priorites []interface {
-			}
+			Priorites []any
 		}
 		Returns struct {
 			BuildpackPlanEntry      packit.BuildpackPlanEntry
 			BuildpackPlanEntrySlice []packit.BuildpackPlanEntry
 		}
-		Stub func(string, []packit.BuildpackPlanEntry, []interface {
-		}) (packit.BuildpackPlanEntry, []packit.BuildpackPlanEntry)
+		Stub func(string, []packit.BuildpackPlanEntry, []any) (packit.BuildpackPlanEntry, []packit.BuildpackPlanEntry)
 	}
 }
 
@@ -49,8 +47,7 @@ func (f *EntryResolver) MergeLayerTypes(param1 string, param2 []packit.Buildpack
 	}
 	return f.MergeLayerTypesCall.Returns.Launch, f.MergeLayerTypesCall.Returns.Build
 }
-func (f *EntryResolver) Resolve(param1 string, param2 []packit.BuildpackPlanEntry, param3 []interface {
-}) (packit.BuildpackPlanEntry, []packit.BuildpackPlanEntry) {
+func (f *EntryResolver) Resolve(param1 string, param2 []packit.BuildpackPlanEntry, param3 []any) (packit.BuildpackPlanEntry, []packit.BuildpackPlanEntry) {
 	f.ResolveCall.mutex.Lock()
 	defer f.ResolveCall.mutex.Unlock()
 	f.ResolveCall.CallCount++
